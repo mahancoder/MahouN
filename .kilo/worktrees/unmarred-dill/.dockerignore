@@ -1,0 +1,232 @@
+# ============================================================================
+# MAHOUN Platform - Backend .dockerignore
+# ============================================================================
+# Exclude files from Docker build context to speed up builds and reduce image size
+# ============================================================================
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Python distribution
+*.egg
+*.egg-info/
+dist/
+build/
+wheels/
+pip-wheel-metadata/
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Environment files (NEVER include secrets!)
+.env
+.env.*
+!.env.example
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+coverage.xml
+*.cover
+.mypy_cache/
+.ruff_cache/
+.basedpyright/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Database files (should not be in image)
+*.db
+*.sqlite
+*.sqlite3
+vector_store_data/
+neo4j_data/
+
+# Runtime directories (should be mounted, not copied)
+uploads/
+data/
+output/
+runtime/
+models/
+
+# Documentation
+docs/
+*.md
+!README.md
+ARCHITECTURE*.md
+BRUTAL*.md
+CI_*.md
+DOCKER*.md
+FRONTEND*.md
+GOLDEN*.md
+HEALTH*.md
+HEAVY*.md
+MAHOUN*.md
+PLATFORM*.md
+PROJECT*.md
+REAL*.md
+REASONING*.md
+REFACTORING*.md
+STABILITY*.md
+SYSTEM*.md
+TYPE*.md
+WIRING*.md
+WHY*.md
+*.fa.md
+
+# Markdown files (except README)
+reports/
+proof_pack/
+گزارش_*.md
+مقایسه_*.md
+راهنمای_*.md
+برآورد_*.md
+محاسبات_*.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.circleci/
+ci/
+first_step_ci_cd/
+scripts/ci_*
+scripts/backup*.py
+scripts/restore*.py
+scripts/validate_*.py
+scripts/execute_*.py
+scripts/phase_*.py
+scripts/verify_*.py
+scripts/check_*.py
+scripts/quick_*.py
+
+# Tests
+tests/
+test_*.py
+*_test.py
+mega_stress_test.py
+sovereign_handover_test.py
+ultimate_scenario_test.py
+verify_hajix.py
+conftest.py
+pytest.ini
+.pytest_cache/
+
+# Demo files
+demo_*.py
+demos/
+examples/
+deadlock_audit_test.py
+demo_switching_logic.py
+
+# Docker files (don't need these in the image)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Frontend (not needed in backend image)
+frontend/
+node_modules/
+
+# Mypy
+mypy.ini
+mypy_baseline.txt
+mypy_fresh.txt
+
+# Monitoring configs (mounted separately if needed)
+monitoring/
+
+# Secrets & keys
+*.key
+*.pem
+*.crt
+*.csr
+secrets/
+.secrets/
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+*.temp
+
+# Build artifacts
+*.tar.gz
+*.zip
+
+# Jupyter
+*.ipynb
+.ipynb_checkpoints/
+
+# Archive directories
+mahoun/core/archive/
+mahoun/rag/archive/
+mahoun/agents/archive/
+
+# Temporary analysis files
+*_ANALYSIS.md
+*_AUDIT.md
+*_REPORT.md
+*_COMPLETE.md
+*_SUMMARY.md
+*_GUIDE.md
+*_PLAN.md
+*_STATUS.md
+*_ROADMAP.md
+*_TIMELINE.md
+CORE_*.md
+PHASE_*.md
+ENTERPRISE_*.md
+GRAPH_*.md
+INTEGRATION_*.md
+RETRIEVAL_*.md
+SCHEMA_*.md
+UID_*.md
+TECHNICAL_*.md
+FORENSIC_*.md
+
+# Coverage files
+.coverage*
+coverage_baseline.txt
+htmlcov/
+
+# Shell scripts (except deploy)
+run_*.sh
+!scripts/deploy_server.sh

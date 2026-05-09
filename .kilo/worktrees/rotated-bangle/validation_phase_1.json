@@ -1,0 +1,93 @@
+{
+  "phase": 1,
+  "timestamp": "2026-02-25T01:34:05.921127",
+  "passed": 7,
+  "failed": 0,
+  "skipped": 0,
+  "warnings": 0,
+  "total_duration_seconds": 20.236072,
+  "checks": [
+    {
+      "name": "Infrastructure dir exists",
+      "command": "test -d mahoun/infrastructure",
+      "status": "passed",
+      "duration_seconds": 0.0060541629791259766,
+      "output": "",
+      "error": null,
+      "metadata": null
+    },
+    {
+      "name": "Monitoring dir exists",
+      "command": "test -d mahoun/infrastructure/monitoring",
+      "status": "passed",
+      "duration_seconds": 0.002838134765625,
+      "output": "",
+      "error": null,
+      "metadata": null
+    },
+    {
+      "name": "Observability dir exists",
+      "command": "test -d mahoun/infrastructure/observability",
+      "status": "passed",
+      "duration_seconds": 0.005615711212158203,
+      "output": "",
+      "error": null,
+      "metadata": null
+    },
+    {
+      "name": "LLM dir exists",
+      "command": "test -d mahoun/infrastructure/llm",
+      "status": "passed",
+      "duration_seconds": 0.005997657775878906,
+      "output": "",
+      "error": null,
+      "metadata": null
+    },
+    {
+      "name": "RAG dir exists",
+      "command": "test -d mahoun/infrastructure/rag",
+      "status": "passed",
+      "duration_seconds": 0.0053789615631103516,
+      "output": "",
+      "error": null,
+      "metadata": null
+    },
+    {
+      "name": "Infrastructure imports",
+      "command": "/home/haji/Desktop/Platform/venv/bin/python3 -c 'import mahoun.infrastructure'",
+      "status": "passed",
+      "duration_seconds": 0.07263493537902832,
+      "output": "",
+      "error": null,
+      "metadata": null
+    },
+    {
+      "name": "Test suite regression check",
+      "command": "/home/haji/Desktop/Platform/venv/bin/python3 -m pytest tests/ -q --tb=no",
+      "status": "passed",
+      "duration_seconds": 20.225590229034424,
+      "output": "\n=============================== warnings summary ===============================\nvenv/lib/python3.12/site-packages/_hypothesis_pytestplugin.py:469\n  /home/haji/Desktop/Platform/venv/lib/python3.12/site-packages/_hypothesis_pytestplugin.py:469: UserWarning: Skipping collection of '.hypothesis' directory - this usually means you've explicitly set the `norecursedirs` pytest config option, replacing rather than extending the default ignores.\n    warnings.warn(\n\napi/routers/search.py:42\n  /home/haji/Desktop/Platform/api/routers/search.py:42: PydanticDeprecatedSince20: Using extra keyword arguments on `Field` is deprecated and will be removed. Use `json_schema_extra` instead. (Extra keys: 'example'). Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/\n    court_level: Optional[str] = Field(\n\napi/routers/search.py:47\n  /home/haji/Desktop/Platform/api/routers/search.py:47: PydanticDeprecatedSince20: Using extra keyword arguments on `Field` is deprecated and will be removed. Use `json_schema_extra` instead. (Extra keys: 'example'). Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/\n    case_type: Optional[str] = Field(\n\napi/routers/search.py:55\n  /home/haji/Desktop/Platform/api/routers/search.py:55: PydanticDeprecatedSince20: Using extra keyword arguments on `Field` is deprecated and will be removed. Use `json_schema_extra` instead. (Extra keys: 'example'). Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/\n    article_no: Optional[str] = Field(\n\napi/routers/search.py:58\n  /home/haji/Desktop/Platform/api/routers/search.py:58: PydanticDeprecatedSince20: Using extra keyword arguments on `Field` is deprecated and will be removed. Use `json_schema_extra` instead. (Extra keys: 'example'). Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/\n    law_name: Optional[str] = Field(\n\napi/routers/search.py:63\n  /home/haji/Desktop/Platform/api/routers/search.py:63: PydanticDeprecatedSince20: Using extra keyword arguments on `Field` is deprecated and will be removed. Use `json_schema_extra` instead. (Extra keys: 'example'). Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/\n    tags: Optional[List[str]] = Field(\n\napi/routers/search.py:73\n  /home/haji/Desktop/Platform/api/routers/search.py:73: PydanticDeprecatedSince20: Using extra keyword arguments on `Field` is deprecated and will be removed. Use `json_schema_extra` instead. (Extra keys: 'example'). Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/\n    query: str = Field(\n\napi/routers/search.py:92\n  /home/haji/Desktop/Platform/api/routers/search.py:92: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/\n    class VerdictHit(BaseModel):\n\napi/main.py:331\n  /home/haji/Desktop/Platform/api/main.py:331: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    @app.on_event(\"startup\")\n\nvenv/lib/python3.12/site-packages/fastapi/applications.py:4576\nvenv/lib/python3.12/site-packages/fastapi/applications.py:4576\n  /home/haji/Desktop/Platform/venv/lib/python3.12/site-packages/fastapi/applications.py:4576: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    return self.router.on_event(event_type)\n\napi/main.py:371\n  /home/haji/Desktop/Platform/api/main.py:371: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    @app.on_event(\"shutdown\")\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nERROR tests/test_async_ledger_comprehensive.py\nERROR tests/test_concurrent_graph_comprehensive.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n2 skipped, 34 deselected, 12 warnings, 2 errors in 15.56s\n",
+      "error": null,
+      "metadata": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 2,
+        "test_duration": 15.56,
+        "total_tests": 2
+      }
+    }
+  ],
+  "success": true,
+  "recommendations": [
+    "\u2705 All checks passed - ready for next phase"
+  ],
+  "test_baseline": {
+    "phase": 1,
+    "timestamp": "2026-02-25T01:34:05.921127",
+    "passed": 0,
+    "failed": 0,
+    "skipped": 2,
+    "total": 2,
+    "duration": 15.56
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Code Quality Guardian",
+  "description": "Analyzes modified Python source files for code smells, design patterns, best practices, and potential improvements. Provides detailed suggestions for readability, maintainability, and performance while maintaining zero-hallucination guarantees and architectural integrity.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.py"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "As the MAHOUN Forensic Architecture Guardian, analyze the modified code with extreme rigor:\n\n1. **Code Smells & Anti-patterns**: Identify any code smells, anti-patterns, or violations of SOLID principles\n2. **Type Safety**: Check for missing type hints, potential None/null issues, and type inconsistencies\n3. **Error Handling**: Verify proper exception handling, edge cases, and failure modes\n4. **Performance**: Identify potential performance bottlenecks, inefficient algorithms, or resource leaks\n5. **Security**: Check for security vulnerabilities, input validation issues, or unsafe operations\n6. **Maintainability**: Assess code complexity, readability, and adherence to project conventions\n7. **Dual-Mode Compliance**: Verify the code respects DESKTOP_MINIMAL vs ENTERPRISE_FULL mode constraints\n8. **Architectural Integrity**: Ensure no silent behavioral changes, contract violations, or semantic drift\n9. **Best Practices**: Suggest improvements aligned with Python best practices and project standards\n\nProvide specific, actionable recommendations. Be ruthless but constructive. Only approve if ZERO issues remain."
+  }
+}

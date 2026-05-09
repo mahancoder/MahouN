@@ -1,0 +1,3366 @@
+mahoun/schemas/field_labels_fa.py:178: error: Incompatible default for argument
+"default" (default has type "None", argument has type "str")  [assignment]
+    def get_persian_label(field_path: str, default: str = None) -> str:
+                                                          ^~~~
+mahoun/schemas/field_labels_fa.py:178: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+mahoun/schemas/field_labels_fa.py:178: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+mahoun/reasoning/policies.py:166: error: Item "None" of "dict[Any, Any] | None"
+has no attribute "items"  [union-attr]
+            for key, weight in self.score_weights.items():
+                               ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/knowledge_graph.py:64: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/reasoning/knowledge_graph.py:65: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/reasoning/knowledge_graph.py:66: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/reasoning/knowledge_graph.py:67: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/reasoning/knowledge_graph.py:163: error: Argument "key" to "sort" of
+"list" has incompatible type "Callable[[dict[str, object]], object]"; expected
+"Callable[[dict[str, object]], SupportsDunderLT[Any] | SupportsDunderGT[Any]]" 
+[arg-type]
+            applicable_rules.sort(key=lambda x: x["match_score"], reverse=...
+                                      ^
+mahoun/reasoning/knowledge_graph.py:163: error: Incompatible return value type
+(got "object", expected "SupportsDunderLT[Any] | SupportsDunderGT[Any]") 
+[return-value]
+            applicable_rules.sort(key=lambda x: x["match_score"], reverse=...
+                                                ^~~~~~~~~~~~~~~~
+mahoun/reasoning/knowledge_graph.py:215: error: Argument "key" to "sort" of
+"list" has incompatible type "Callable[[dict[str, object]], object]"; expected
+"Callable[[dict[str, object]], SupportsDunderLT[Any] | SupportsDunderGT[Any]]" 
+[arg-type]
+            similar_cases.sort(key=lambda x: x["similarity"], reverse=True...
+                                   ^
+mahoun/reasoning/knowledge_graph.py:215: error: Incompatible return value type
+(got "object", expected "SupportsDunderLT[Any] | SupportsDunderGT[Any]") 
+[return-value]
+            similar_cases.sort(key=lambda x: x["similarity"], reverse=True...
+                                             ^~~~~~~~~~~~~~~
+mahoun/reasoning/kg_adapters.py:23: error: Unused "type: ignore" comment 
+[unused-ignore]
+                from neo4j import GraphDatabase  # type: ignore
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/chain_of_thought.py:147: error: Need type annotation for
+"legal_concepts"  [var-annotated]
+            legal_concepts = {
+                             ^
+mahoun/graph/neo4j/algorithms.py:26: error: Function "builtins.any" is not
+valid as a type  [valid-type]
+        ) -> List[Dict[str, any]]:
+                            ^
+mahoun/graph/neo4j/algorithms.py:26: note: Perhaps you meant "typing.Any" instead of "any"?
+mahoun/graph/neo4j/algorithms.py:78: error: Function "builtins.any" is not
+valid as a type  [valid-type]
+        ) -> List[Dict[str, any]]:
+                            ^
+mahoun/graph/neo4j/algorithms.py:78: note: Perhaps you meant "typing.Any" instead of "any"?
+mahoun/graph/neo4j/algorithms.py:98: error: Function "builtins.any" is not
+valid as a type  [valid-type]
+        ) -> List[Dict[str, any]]:
+                            ^
+mahoun/graph/neo4j/algorithms.py:98: note: Perhaps you meant "typing.Any" instead of "any"?
+mahoun/graph/neo4j/algorithms.py:185: error: Function "builtins.any" is not
+valid as a type  [valid-type]
+        ) -> List[Dict[str, any]]:
+                            ^
+mahoun/graph/neo4j/algorithms.py:185: note: Perhaps you meant "typing.Any" instead of "any"?
+mahoun/graph/neo4j/algorithms.py:221: error: Function "builtins.any" is not
+valid as a type  [valid-type]
+        ) -> List[Dict[str, any]]:
+                            ^
+mahoun/graph/neo4j/algorithms.py:221: note: Perhaps you meant "typing.Any" instead of "any"?
+mahoun/graph/neo4j/algorithms.py:252: error: Function "builtins.any" is not
+valid as a type  [valid-type]
+    ) -> List[Dict[str, any]]:
+                        ^
+mahoun/graph/neo4j/algorithms.py:252: note: Perhaps you meant "typing.Any" instead of "any"?
+mahoun/graph/neo4j/algorithms.py:262: error: Function "builtins.any" is not
+valid as a type  [valid-type]
+    ) -> List[Dict[str, any]]:
+                        ^
+mahoun/graph/neo4j/algorithms.py:262: note: Perhaps you meant "typing.Any" instead of "any"?
+mahoun/graph/neo4j/__init__.py:24: error: Unused "type: ignore" comment 
+[unused-ignore]
+        import neo4j  # type: ignore
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:50: error: Name "Neo4jConnection" already
+defined (possibly by an import)  [no-redef]
+            class Neo4jConnection:
+            ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:57: error: Name "CypherQueryBuilder" already
+defined (possibly by an import)  [no-redef]
+            class CypherQueryBuilder:
+            ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:60: error: Name "GraphOperations" already
+defined (possibly by an import)  [no-redef]
+            class GraphOperations:
+            ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:63: error: Name "SchemaManager" already defined
+(possibly by an import)  [no-redef]
+            class SchemaManager:
+            ^~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:66: error: Name "Constraint" already defined
+(possibly by an import)  [no-redef]
+            class Constraint:
+            ^~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:69: error: Name "Index" already defined
+(possibly by an import)  [no-redef]
+            class Index:
+            ^~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:73: error: Name "Neo4jConnection" already
+defined (possibly by an import)  [no-redef]
+        class Neo4jConnection:
+        ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:80: error: Name "CypherQueryBuilder" already
+defined (possibly by an import)  [no-redef]
+        class CypherQueryBuilder:
+        ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:83: error: Name "GraphOperations" already
+defined (possibly by an import)  [no-redef]
+        class GraphOperations:
+        ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:86: error: Name "SchemaManager" already defined
+(possibly by an import)  [no-redef]
+        class SchemaManager:
+        ^~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:89: error: Name "Constraint" already defined
+(possibly by an import)  [no-redef]
+        class Constraint:
+        ^~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/__init__.py:92: error: Name "Index" already defined
+(possibly by an import)  [no-redef]
+        class Index:
+        ^~~~~~~~~~~~
+mahoun/rag/training/config.py:237: error: Name "max_grad_norm" already defined
+on line 135  [no-redef]
+        max_grad_norm: float = 1.0
+        ^~~~~~~~~~~~~
+mahoun/graph/neo4j/query_builder.py:27: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/graph/neo4j/query_builder.py:28: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/graph/neo4j/query_builder.py:29: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/graph/neo4j/query_builder.py:30: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/graph/neo4j/query_builder.py:31: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/graph/neo4j/query_builder.py:32: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/graph/neo4j/query_builder.py:33: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/graph/neo4j/query_builder.py:34: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/graph/neo4j/connection.py:16: error: Library stubs not installed for
+"yaml"  [import-untyped]
+        import yaml
+    ^
+mahoun/orchestrator/bootstrap_verdict_dataloader.py:335: error: Unsupported
+operand types for + ("object" and "int")  [operator]
+                results["skipped"] += 1
+                ^
+mahoun/orchestrator/bootstrap_verdict_dataloader.py:348: error: Unsupported
+operand types for + ("object" and "int")  [operator]
+                results["success"] += 1
+                ^
+mahoun/orchestrator/bootstrap_verdict_dataloader.py:350: error: Unsupported
+operand types for + ("object" and "int")  [operator]
+                results["failed"] += 1
+                ^
+mahoun/orchestrator/bootstrap_verdict_dataloader.py:351: error: "object" has no
+attribute "append"  [attr-defined]
+                results["errors"].append({
+                ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/bootstrap_verdict_dataloader.py:374: error: "object" has no
+attribute "__iter__"; maybe "__dir__" or "__str__"? (not iterable) 
+[attr-defined]
+            for error_info in results["errors"]:
+                              ^~~~~~~~~~~~~~~~~
+mahoun/guardrails/ultra_citation_auditor.py:145: error: Unsupported operand
+types for <= ("int" and "None")  [operator]
+    ...              source_reference=match.group(2) if match.lastindex >= 2 ...
+                                                        ^
+mahoun/guardrails/ultra_citation_auditor.py:145: note: Left operand is of type "int | None"
+mahoun/guardrails/ultra_citation_auditor.py:161: error: Unsupported operand
+types for <= ("int" and "None")  [operator]
+    ...                article_number=match.group(1) if match.lastindex >= 1 ...
+                                                        ^
+mahoun/guardrails/ultra_citation_auditor.py:161: note: Left operand is of type "int | None"
+mahoun/guardrails/ultra_citation_auditor.py:162: error: Unsupported operand
+types for <= ("int" and "None")  [operator]
+                        law_name=match.group(2) if match.lastindex >= 2 el...
+                                                   ^
+mahoun/guardrails/ultra_citation_auditor.py:162: note: Left operand is of type "int | None"
+mahoun/guardrails/ultra_citation_auditor.py:178: error: Unsupported operand
+types for <= ("int" and "None")  [operator]
+    ...                   case_number=match.group(2) if match.lastindex >= 2 ...
+                                                        ^
+mahoun/guardrails/ultra_citation_auditor.py:178: note: Left operand is of type "int | None"
+mahoun/guardrails/ultra_citation_auditor.py:198: error: Unsupported operand
+types for <= ("int" and "None")  [operator]
+    ...              source_reference=match.group(2) if match.lastindex >= 2 ...
+                                                        ^
+mahoun/guardrails/ultra_citation_auditor.py:198: note: Left operand is of type "int | None"
+mahoun/schemas/__init__.py:46: error: Module "HAJIX.mahoun.schemas.text_schema"
+has no attribute "DocumentType"  [attr-defined]
+        from .text_schema import TextDocument, DocumentType
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/schemas/__init__.py:50: error: Cannot assign to a type  [misc]
+        TextDocument = None
+        ^~~~~~~~~~~~
+mahoun/schemas/__init__.py:50: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[TextDocument]") 
+[assignment]
+        TextDocument = None
+                       ^~~~
+mahoun/retrieval/graph_hop.py:63: error: Variable
+"HAJIX.mahoun.retrieval.graph_hop.DiGraph" is not valid as a type  [valid-type]
+            graph: Optional[DiGraph] = None,
+                            ^
+mahoun/retrieval/graph_hop.py:63: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/graph_hop.py:100: error: Variable
+"HAJIX.mahoun.retrieval.graph_hop.DiGraph" is not valid as a type  [valid-type]
+        def set_graph(self, graph: DiGraph):
+                                   ^
+mahoun/retrieval/graph_hop.py:100: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/graph_hop.py:103: error: DiGraph? has no attribute
+"number_of_nodes"  [attr-defined]
+            logger.info(f"Graph set: {graph.number_of_nodes()} nodes, {gra...
+                                      ^~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/graph_hop.py:103: error: DiGraph? has no attribute
+"number_of_edges"  [attr-defined]
+    ...o(f"Graph set: {graph.number_of_nodes()} nodes, {graph.number_of_edges...
+                                                        ^~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/graph_hop.py:338: error: Item DiGraph? of "DiGraph? | None"
+has no attribute "edges"  [union-attr]
+                edge_data = self.graph.edges.get((source, target), {})
+                            ^~~~~~~~~~~~~~~~
+mahoun/retrieval/graph_hop.py:338: error: Item "None" of "DiGraph? | None" has
+no attribute "edges"  [union-attr]
+                edge_data = self.graph.edges.get((source, target), {})
+                            ^~~~~~~~~~~~~~~~
+mahoun/retrieval/graph_hop.py:352: error: Variable
+"HAJIX.mahoun.retrieval.graph_hop.DiGraph" is not valid as a type  [valid-type]
+        ) -> Optional[DiGraph]:
+                      ^
+mahoun/retrieval/graph_hop.py:352: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/graph_hop.py:420: error: Variable
+"HAJIX.mahoun.retrieval.graph_hop.DiGraph" is not valid as a type  [valid-type]
+        graph: DiGraph,
+               ^
+mahoun/retrieval/graph_hop.py:420: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/reasoning/reasoning_chain.py:238: error: Need type annotation for
+"reasoning_chain" (hint: "reasoning_chain: list[<type>] = ...")  [var-annotated]
+            reasoning_chain = []
+            ^~~~~~~~~~~~~~~
+mahoun/reasoning/reasoning_chain.py:503: error: Dict entry 3 has incompatible
+type "str": "str"; expected "str": "float"  [dict-item]
+                    'error': str(e)
+                    ^~~~~~~~~~~~~~~
+mahoun/reasoning/causal_structure.py:46: error: Name "np" is not defined 
+[name-defined]
+            data: np.ndarray,
+                  ^
+mahoun/reasoning/causal_structure.py:90: error: Name "np" is not defined 
+[name-defined]
+        def learn_structure(self, data: np.ndarray, var_names: Optional[Li...
+                                        ^
+mahoun/reasoning/causal_structure.py:201: error: Name "np" is not defined 
+[name-defined]
+        def _h_func(self, W: np.ndarray) -> float:
+                             ^
+mahoun/reasoning/causal_structure.py:212: error: Name "np" is not defined 
+[name-defined]
+            M = np.eye(d) + W * W / d
+                ^~
+mahoun/reasoning/causal_structure.py:213: error: Name "np" is not defined 
+[name-defined]
+            E = np.linalg.matrix_power(M, d - 1)
+                ^~
+mahoun/reasoning/causal_structure.py:214: error: Name "np" is not defined 
+[name-defined]
+            h = np.trace(E) - d
+                ^~
+mahoun/reasoning/causal_structure.py:219: error: Name "np" is not defined 
+[name-defined]
+            data: np.ndarray,
+                  ^
+mahoun/reasoning/causal_structure.py:241: error: Name "np" is not defined 
+[name-defined]
+            W = np.zeros((n_vars, n_vars))
+                ^~
+mahoun/reasoning/causal_structure.py:248: error: Name "np" is not defined 
+[name-defined]
+                X = np.delete(data_std, j, axis=1)
+                    ^~
+mahoun/reasoning/causal_structure.py:265: error: Name "np" is not defined 
+[name-defined]
+            W[np.abs(W) < 0.1] = 0
+              ^~
+mahoun/reasoning/causal_structure.py:319: error: Incompatible types in
+assignment (expression has type "NOTEARSAlgorithm", variable has type
+"PCAlgorithm")  [assignment]
+                self.learner = NOTEARSAlgorithm(**kwargs)
+                               ^~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/causal_structure.py:327: error: Name "np" is not defined 
+[name-defined]
+            data: np.ndarray,
+                  ^
+mahoun/rag/query_router.py:180: error: Need type annotation for
+"keywords_found"  [var-annotated]
+            keywords_found = {qt: [] for qt in QueryType}
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/indexing_pipeline.py:146: error: Item "None" of "Any | None" has no
+attribute "ingest_document"  [union-attr]
+                ingestion_result = await self.ingestion_pipeline.ingest_do...
+                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/rag/indexing_pipeline.py:173: error: Unsupported operand types for +
+("object" and "int")  [operator]
+                self.stats["failed_indexings"] += 1
+                ^
+mahoun/rag/indexing_pipeline.py:272: error: Unsupported operand types for +
+("object" and "int")  [operator]
+            self.stats["total_indexed"] += 1
+            ^
+mahoun/rag/indexing_pipeline.py:276: error: Value of type "object" is not
+indexable  [index]
+                self.stats["by_type"][doc_type] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/indexing_pipeline.py:276: error: Unsupported target for indexed
+assignment ("object")  [index]
+                self.stats["by_type"][doc_type] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/indexing_pipeline.py:278: error: Value of type "object" is not
+indexable  [index]
+                self.stats["by_type"][DocumentType.OTHER.value] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/indexing_pipeline.py:278: error: Unsupported target for indexed
+assignment ("object")  [index]
+                self.stats["by_type"][DocumentType.OTHER.value] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/indexing_pipeline.py:285: error: Unsupported operand types for +
+("object" and "int")  [operator]
+                self.stats["failed_indexings"] += 1
+                ^
+mahoun/pipelines/ingestion/enhanced_embedding.py:60: error: Incompatible types
+in assignment (expression has type "str | None", variable has type "None") 
+[assignment]
+                    self._current_model = self.preferred_model
+                                          ^~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/enhanced_embedding.py:69: error: Incompatible types
+in assignment (expression has type "str", variable has type "None") 
+[assignment]
+                        self._current_model = self.fallback_model
+                                              ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/enhanced_chunker.py:240: error: Incompatible types
+in assignment (expression has type "float", variable has type "int") 
+[assignment]
+                        best_score = score
+                                     ^~~~~
+mahoun/pipelines/ingestion/enhanced_chunker.py:260: error: Need type annotation
+for "processed" (hint: "processed: list[<type>] = ...")  [var-annotated]
+            processed = []
+            ^~~~~~~~~
+mahoun/metrics/metrics.py:297: error: Need type annotation for "result" 
+[var-annotated]
+            result = {
+                     ^
+mahoun/graph/training/run_gat_trainer.py:45: error: Incompatible types in
+assignment (expression has type "Path", variable has type "str | None") 
+[assignment]
+            config_path = Path(__file__).parent.parent.parent / "configs" ...
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/graph/training/run_gat_trainer.py:47: error: Incompatible types in
+assignment (expression has type "Path", variable has type "str | None") 
+[assignment]
+            config_path = Path(config_path)
+                          ^~~~~~~~~~~~~~~~~
+mahoun/graph/training/run_gat_trainer.py:61: error: Item "str" of "str | None"
+has no attribute "exists"  [union-attr]
+        if not config_path.exists():
+               ^~~~~~~~~~~~~~~~~~
+mahoun/graph/training/run_gat_trainer.py:61: error: Item "None" of "str | None"
+has no attribute "exists"  [union-attr]
+        if not config_path.exists():
+               ^~~~~~~~~~~~~~~~~~
+mahoun/graph/training/run_gat_trainer.py:66: error: Library stubs not installed
+for "yaml"  [import-untyped]
+            import yaml
+    ^
+mahoun/graph/training/run_gat_trainer.py:67: error: Argument 1 to "open" has
+incompatible type "str | None"; expected
+"int | str | bytes | PathLike[str] | PathLike[bytes]"  [arg-type]
+            with open(config_path, 'r', encoding='utf-8') as f:
+                      ^~~~~~~~~~~
+mahoun/graph/services/rag_integration.py:186: error: Need type annotation for
+"related" (hint: "related: list[<type>] = ...")  [var-annotated]
+                related = []
+                ^~~~~~~
+mahoun/graph/services/rag_integration.py:221: error: Need type annotation for
+"result"  [var-annotated]
+            result = {
+                     ^
+mahoun/graph/optimizer/run_optimizer_job.py:44: error: Incompatible types in
+assignment (expression has type "Path", variable has type "str | None") 
+[assignment]
+            config_path = Path(__file__).parent.parent.parent / "configs" ...
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/graph/optimizer/run_optimizer_job.py:46: error: Incompatible types in
+assignment (expression has type "Path", variable has type "str | None") 
+[assignment]
+            config_path = Path(config_path)
+                          ^~~~~~~~~~~~~~~~~
+mahoun/graph/optimizer/run_optimizer_job.py:54: error: Item "str" of
+"str | None" has no attribute "exists"  [union-attr]
+        if not config_path.exists():
+               ^~~~~~~~~~~~~~~~~~
+mahoun/graph/optimizer/run_optimizer_job.py:54: error: Item "None" of
+"str | None" has no attribute "exists"  [union-attr]
+        if not config_path.exists():
+               ^~~~~~~~~~~~~~~~~~
+mahoun/graph/optimizer/run_optimizer_job.py:59: error: Library stubs not
+installed for "yaml"  [import-untyped]
+            import yaml
+    ^
+mahoun/graph/optimizer/run_optimizer_job.py:60: error: Argument 1 to "open" has
+incompatible type "str | None"; expected
+"int | str | bytes | PathLike[str] | PathLike[bytes]"  [arg-type]
+            with open(config_path, 'r', encoding='utf-8') as f:
+                      ^~~~~~~~~~~
+mahoun/graph/optimizer/feedback.py:20: error: Unused "type: ignore" comment 
+[unused-ignore]
+        Driver = None  # type: ignore
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/operations.py:291: error: Need type annotation for "by_type"
+(hint: "by_type: dict[<type>, <type>] = ...")  [var-annotated]
+                by_type = {}
+                ^~~~~~~
+mahoun/graph/neo4j/operations.py:925: error: "type[GraphOperations]" has no
+attribute "get_law_articles_for_verdict"  [attr-defined]
+    GraphOperations.get_law_articles_for_verdict = _graph_get_law_articles...
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/operations.py:926: error: "type[GraphOperations]" has no
+attribute "get_tags_for_verdict"  [attr-defined]
+    GraphOperations.get_tags_for_verdict = _graph_get_tags_for_verdict
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/operations.py:927: error: "type[GraphOperations]" has no
+attribute "get_parties_for_verdict"  [attr-defined]
+    GraphOperations.get_parties_for_verdict = _graph_get_parties_for_verdi...
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/operations.py:928: error: "type[GraphOperations]" has no
+attribute "get_verdict_by_id"  [attr-defined]
+    GraphOperations.get_verdict_by_id = _graph_get_verdict_by_id
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/flows/enhanced_rag.py:266: error: Value of type "Collection[str]" is not
+indexable  [index]
+                        "has_hallucination": not verification["nli_check"]...
+                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/flows/enhanced_rag.py:267: error: Value of type "Collection[str]" is not
+indexable  [index]
+                        "score": 1.0 - verification["nli_check"]["entailme...
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/core/runtime_config.py:97: error: Incompatible types in assignment
+(expression has type "Path", variable has type "str | None")  [assignment]
+                config_path = Path(env_config_path)
+                              ^~~~~~~~~~~~~~~~~~~~~
+mahoun/core/runtime_config.py:104: error: Incompatible types in assignment
+(expression has type "Path", variable has type "str | None")  [assignment]
+                        config_path = desktop_config
+                                      ^~~~~~~~~~~~~~
+mahoun/core/runtime_config.py:106: error: Incompatible types in assignment
+(expression has type "Path", variable has type "str | None")  [assignment]
+                        config_path = Path(__file__).parent.parent / "conf...
+                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/core/runtime_config.py:108: error: Incompatible types in assignment
+(expression has type "Path", variable has type "str | None")  [assignment]
+                    config_path = Path(__file__).parent.parent / "configs"...
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/core/runtime_config.py:110: error: Incompatible types in assignment
+(expression has type "Path", variable has type "str | None")  [assignment]
+            config_path = Path(config_path)
+                          ^~~~~~~~~~~~~~~~~
+mahoun/core/runtime_config.py:112: error: Item "str" of "str | None" has no
+attribute "exists"  [union-attr]
+        if not config_path.exists():
+               ^~~~~~~~~~~~~~~~~~
+mahoun/core/runtime_config.py:112: error: Item "None" of "str | None" has no
+attribute "exists"  [union-attr]
+        if not config_path.exists():
+               ^~~~~~~~~~~~~~~~~~
+mahoun/core/runtime_config.py:116: error: Library stubs not installed for
+"yaml"  [import-untyped]
+            import yaml
+    ^
+mahoun/core/runtime_config.py:116: note: Hint: "python3 -m pip install types-PyYAML"
+mahoun/core/runtime_config.py:116: note: (or run "mypy --install-types" to install all missing stub packages)
+mahoun/core/runtime_config.py:116: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+mahoun/core/runtime_config.py:117: error: Argument 1 to "open" has incompatible
+type "str | None"; expected
+"int | str | bytes | PathLike[str] | PathLike[bytes]"  [arg-type]
+            with open(config_path, 'r', encoding='utf-8') as f:
+                      ^~~~~~~~~~~
+mahoun/core/monitoring/anomaly_detector.py:51: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/core/monitoring/anomaly_detector.py:52: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/core/monitoring/anomaly_detector.py:105: error: Argument "threshold" to
+"Alert" has incompatible type "float | None"; expected "float"  [arg-type]
+                    threshold=threshold,
+                              ^~~~~~~~~
+mahoun/core/monitoring/anomaly_detector.py:176: error: Need type annotation for
+"by_severity" (hint: "by_severity: dict[<type>, <type>] = ...")  [var-annotated]
+            by_severity = {}
+            ^~~~~~~~~~~
+mahoun/core/llm/ultra_loader.py:12: error: Need type annotation for "cache"
+(hint: "cache: dict[<type>, <type>] = ...")  [var-annotated]
+            self.cache = {}
+            ^~~~~~~~~~
+mahoun/agents/archive/ultra_timeline_agent.py:202: error: Argument
+"date_normalized" to "TimelineEvent" has incompatible type "str | None";
+expected "str"  [arg-type]
+                            date_normalized=date_norm,
+                                            ^~~~~~~~~
+mahoun/agents/archive/ultra_timeline_agent.py:259: error: Need type annotation
+for "dates" (hint: "dates: dict[<type>, <type>] = ...")  [var-annotated]
+            dates = {}
+            ^~~~~
+mahoun/agents/archive/doc_parser_agent_simple.py:52: error: "None" has no
+attribute "initialize"  [attr-defined]
+                await self.ingestion_pipeline.initialize()
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/doc_parser_agent_simple.py:87: error: "None" has no
+attribute "normalize_file"  [attr-defined]
+                    normalized = await self.normalizer.normalize_file(
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/doc_parser_agent_simple.py:93: error: "None" has no
+attribute "normalize_text"  [attr-defined]
+                    normalized = await self.normalizer.normalize_text(
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/doc_parser_agent_simple.py:105: error: "None" has no
+attribute "extract"  [attr-defined]
+                extracted_metadata = await self.metadata_extractor.extract...
+                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/doc_parser_agent_simple.py:115: error: "None" has no
+attribute "ingest_document"  [attr-defined]
+                    result = await self.ingestion_pipeline.ingest_document...
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/doc_parser_agent_simple.py:125: error: "None" has no
+attribute "to_dict"  [attr-defined]
+                    "normalized": self.normalizer.to_dict(normalized),
+                                  ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/contract_agent_simple.py:110: error: "None" has no
+attribute "retrieve"  [attr-defined]
+                rag_result = await self.rag_service.retrieve(
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/claim_agent_simple.py:94: error: "None" has no attribute
+"retrieve"  [attr-defined]
+                rag_result = await self.rag_service.retrieve(
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/claim_agent_simple.py:100: error: "None" has no attribute
+"extract_citations"  [attr-defined]
+                citation_result = await self.citation_engine.extract_citat...
+                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/agents/archive/base_agent_simple.py:82: error: Item "None" of
+"Any | None" has no attribute "record_counter"  [union-attr]
+            self.metrics_collector.record_counter(f"agent.{self.name}.call...
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/base_agent_simple.py:89: error: Item "None" of
+"Any | None" has no attribute "record_counter"  [union-attr]
+                self.metrics_collector.record_counter(f"agent.{self.name}....
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/base_agent_simple.py:90: error: Item "None" of
+"Any | None" has no attribute "record_timing"  [union-attr]
+                self.metrics_collector.record_timing(f"agent.{self.name}",...
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/base_agent_simple.py:96: error: Item "None" of
+"Any | None" has no attribute "record_counter"  [union-attr]
+                self.metrics_collector.record_counter(
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/base_agent_simple.py:100: error: Item "None" of
+"Any | None" has no attribute "record_timing"  [union-attr]
+                self.metrics_collector.record_timing(
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/base_agent_simple.py:150: error: Item "None" of
+"Any | None" has no attribute "record_counter"  [union-attr]
+                self.metrics_collector.record_counter(
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/base_agent_simple.py:191: error: Item "None" of
+"Any | None" has no attribute "get_metrics"  [union-attr]
+            calls = self.metrics_collector.get_metrics(f"agent.{self.name}...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/base_agent_simple.py:192: error: Item "None" of
+"Any | None" has no attribute "get_metrics"  [union-attr]
+            success = self.metrics_collector.get_metrics(f"agent.{self.nam...
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/base_agent_simple.py:193: error: Item "None" of
+"Any | None" has no attribute "get_metrics"  [union-attr]
+            errors = self.metrics_collector.get_metrics(f"agent.{self.name...
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/base_agent_simple.py:194: error: Item "None" of
+"Any | None" has no attribute "get_metrics"  [union-attr]
+            timing = self.metrics_collector.get_metrics(f"agent.{self.name...
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/tracing/middleware.py:15: error: Module "HAJIX.mahoun.tracing.tracing"
+has no attribute "finish_trace"  [attr-defined]
+    from .tracing import get_tracer, start_trace, finish_trace, start_span...
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/pipelines/ingestion/legal_ner.py:647: error: Unsupported operand types
+for + ("None" and "float")  [operator]
+    ...                      p["confidence"] = min(1.0, p["confidence"] + 0.1...
+                                                        ^
+mahoun/pipelines/ingestion/legal_ner.py:647: note: Left operand is of type "float | int | str | Any | None"
+mahoun/pipelines/ingestion/legal_ner.py:647: error: Unsupported operand types
+for + ("str" and "float")  [operator]
+    ...                     p["confidence"] = min(1.0, p["confidence"] + 0.1)
+                                                                         ^~~
+mahoun/pipelines/ingestion/legal_ner.py:1097: error: Need type annotation for
+"consolidated"  [var-annotated]
+            consolidated = {
+                           ^
+mahoun/pipelines/ingestion/ocr_handler.py:208: error: "None" has no attribute
+"ocr"  [attr-defined]
+            result = self.paddle_ocr.ocr(image_path, cls=True)
+                     ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/ocr_handler.py:261: error: Need type annotation for
+"current_line" (hint: "current_line: list[<type>] = ...")  [var-annotated]
+            current_line = []
+            ^~~~~~~~~~~~
+mahoun/pipelines/ingestion/ocr_handler.py:295: error: List comprehension has
+incompatible type List[object]; expected List[str]  [misc]
+            full_text = '\n'.join([l['text'] for l in lines])
+                                   ^~~~~~~~~
+mahoun/pipelines/ingestion/ocr_handler.py:296: error: Generator has
+incompatible item type "object"; expected "bool"  [misc]
+            avg_conf = sum(l['confidence'] for l in lines) / len(lines) if...
+                           ^~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/ocr_handler.py:320: error: "None" has no attribute
+"readtext"  [attr-defined]
+            result = self.easyocr_reader.readtext(image_path)
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/ocr_handler.py:572: error: Incompatible return value
+type (got "None", expected "bool")  [return-value]
+            return self._available
+                   ^~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/ocr_handler.py:616: error: "None" has no attribute
+"ocr_image"  [attr-defined]
+                result = self._engine.ocr_image(file_path)
+                         ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/optimizer/graph_optimizer.py:10: error: Unused "type: ignore"
+comment  [unused-ignore]
+        Driver = None  # type: ignore
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/optimizer/graph_optimizer.py:237: error: Incompatible types in
+assignment (expression has type "GraphFeedbackCollector", variable has type
+"None")  [assignment]
+                self._feedback_collector = GraphFeedbackCollector(
+                                           ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/optimizer/graph_optimizer.py:242: error: "None" has no attribute
+"aggregate_edge_feedback"  [attr-defined]
+            return self._feedback_collector.aggregate_edge_feedback()
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/domain/timeline_analyzer.py:74: error: "None" has no attribute "process"
+ [attr-defined]
+                result = await self.timeline_agent.process(input_data)
+                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/domain/dispute_extractor.py:75: error: "None" has no attribute "process"
+ [attr-defined]
+                result = await self.dispute_agent.process(input_data)
+                               ^~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/domain/contract_reasoning.py:101: error: "None" has no attribute
+"process"  [attr-defined]
+                contract_result = await self.contract_agent.process({
+                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/timeline_agent.py:96: error: "None" has no attribute "route" 
+[attr-defined]
+                    routed_result = await self.query_router.route(
+                                          ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/timeline_agent.py:193: error: Need type annotation for
+"date_groups" (hint: "date_groups: dict[<type>, <type>] = ...")  [var-annotated]
+            date_groups = {}
+            ^~~~~~~~~~~
+mahoun/agents/timeline_agent.py:217: error: Need type annotation for "matrix" 
+[var-annotated]
+            matrix = {
+                     ^
+mahoun/agents/narrative_agent.py:94: error: "None" has no attribute "retrieve" 
+[attr-defined]
+                rag_result = await self.rag_service.retrieve(
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/narrative_agent.py:100: error: "None" has no attribute
+"extract_citations"  [attr-defined]
+                citation_result = await self.citation_engine.extract_citat...
+                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/agents/narrative_agent.py:107: error: Need type annotation for
+"sections" (hint: "sections: dict[<type>, <type>] = ...")  [var-annotated]
+                sections = {}
+                ^~~~~~~~
+mahoun/agents/legal_precedent_agent.py:78: error: "None" has no attribute
+"retrieve"  [attr-defined]
+                result = await self.rag_service.retrieve(
+                               ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/dispute_agent.py:171: error: Need type annotation for "disputes"
+(hint: "disputes: list[<type>] = ...")  [var-annotated]
+            disputes = []
+            ^~~~~~~~
+mahoun/agents/dispute_agent.py:173: error: Need type annotation for
+"all_citations" (hint: "all_citations: list[<type>] = ...")  [var-annotated]
+            all_citations = []
+            ^~~~~~~~~~~~~
+mahoun/agents/dispute_agent.py:187: error: "None" has no attribute "route" 
+[attr-defined]
+                routed = await self.query_router.route(query=search_query,...
+                               ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/dispute_agent.py:284: error: Argument 1 to "get" of "dict" has
+incompatible type "Any | None"; expected "DisputeType"  [arg-type]
+                }.get(dispute.get("type"), 1.0)
+                      ^~~~~~~~~~~~~~~~~~~
+mahoun/agents/dispute_agent.py:312: error: Argument 1 to "get" of "dict" has
+incompatible type "Any | None"; expected "DisputeSeverity"  [arg-type]
+            }.get(x.get("severity"), 0), reverse=True)
+                  ^~~~~~~~~~~~~~~~~
+mahoun/agents/dispute_agent.py:321: error: Need type annotation for
+"legal_refs" (hint: "legal_refs: list[<type>] = ...")  [var-annotated]
+            legal_refs = []
+            ^~~~~~~~~~
+mahoun/agents/dispute_agent.py:416: error: Need type annotation for
+"type_counts" (hint: "type_counts: dict[<type>, <type>] = ...")  [var-annotated]
+            type_counts = {}
+            ^~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:29: error: Incompatible
+types in assignment (expression has type "None", variable has type
+"Callable[[str], dict[str, list[dict[str, Any]]]]")  [assignment]
+        extract_ner_entities = None
+                               ^~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:100: error: Incompatible
+types in assignment (expression has type "str | Any", target has type "None") 
+[assignment]
+            details["branch"] = m1.group(1)
+                                ^~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:101: error: Incompatible
+types in assignment (expression has type "str | Any", target has type "None") 
+[assignment]
+            details["level"] = m1.group(2).strip()
+                               ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:102: error: Incompatible
+types in assignment (expression has type "str | Any", target has type "None") 
+[assignment]
+            details["city"] = m1.group(3).strip() # heuristic
+                              ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:103: error: Incompatible
+types in assignment (expression has type "str", target has type "None") 
+[assignment]
+            details["full_name"] = m1.group(0)
+                                   ^~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:111: error: Incompatible
+types in assignment (expression has type "str | Any", target has type "None") 
+[assignment]
+            details["level"] = m2.group(1).strip()
+                               ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:112: error: Incompatible
+types in assignment (expression has type "str | Any", target has type "None") 
+[assignment]
+            details["province"] = m2.group(2).strip()
+                                  ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:113: error: Incompatible
+types in assignment (expression has type "str | Any", target has type "None") 
+[assignment]
+            details["branch"] = m2.group(3)
+                                ^~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:114: error: Incompatible
+types in assignment (expression has type "str", target has type "None") 
+[assignment]
+            details["full_name"] = m2.group(0)
+                                   ^~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:133: error: Incompatible
+types in assignment (expression has type "str | Any", target has type "None") 
+[assignment]
+                details["level"] = match.group(1)
+                                   ^~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:290: error: Incompatible
+return value type (got "None", expected "str")  [return-value]
+        return None
+               ^~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:299: error: Need type
+annotation for "parties"  [var-annotated]
+        parties = {
+                  ^
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:317: error: Incompatible
+types in assignment (expression has type "dict[str, str | Any]", target has type
+"list[Any] | None")  [assignment]
+            parties["third_party_objector"] = {
+                                              ^
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:329: error: Incompatible
+types in assignment (expression has type "dict[str, str | Any]", target has type
+"list[Any] | None")  [assignment]
+                parties["third_party_objector_attorney"] = {
+                                                           ^
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:336: error: Item "None" of
+"list[Any] | None" has no attribute "append"  [union-attr]
+                parties["respondents"].append({
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:353: error: Item "None" of
+"list[Any] | None" has no attribute "append"  [union-attr]
+                parties["respondents_attorneys"].append(person)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:355: error: Item "None" of
+"list[Any] | None" has no attribute "append"  [union-attr]
+                parties["respondents"].append(person)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:449: error: Need type
+annotation for "info"  [var-annotated]
+        info = {
+               ^
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:464: error: Incompatible
+types in assignment (expression has type "str | Any", target has type
+"list[Any] | None")  [assignment]
+                info["decision"] = match.group(1).strip()
+                                   ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:480: error: Item "None" of
+"list[Any] | None" has no attribute "append"  [union-attr]
+                info["reasoning_keywords"].append(phrase)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:489: error: Need type
+annotation for "info"  [var-annotated]
+        info = {
+               ^
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:503: error: Incompatible
+types in assignment (expression has type "str", target has type
+"list[Any] | None")  [assignment]
+                info["result"] = result
+                                 ^~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:518: error: Item "None" of
+"list[Any] | None" has no attribute "append"  [union-attr]
+                info["key_points"].append(phrase)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:527: error: Need type
+annotation for "claims"  [var-annotated]
+        claims = {
+                 ^
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:907: error: Incompatible
+return value type (got "None", expected "str")  [return-value]
+        return None
+               ^~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:938: error: Incompatible
+types in assignment (expression has type "str", target has type "None") 
+[assignment]
+            sections["summary"] = text_clean[:split_index].strip()
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:939: error: Incompatible
+types in assignment (expression has type "str", target has type "None") 
+[assignment]
+            sections["verdict"] = text_clean[split_index:].strip()
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:943: error: Incompatible
+types in assignment (expression has type "str", target has type "None") 
+[assignment]
+            sections["summary"] = text_clean
+                                  ^~~~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:945: error: Incompatible
+return value type (got "dict[str, None]", expected "dict[str, str]") 
+[return-value]
+        return sections
+               ^~~~~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:964: error: Incompatible
+types in assignment (expression has type "str | None", target has type "None") 
+[assignment]
+            dates["decision_date"] = PersianLegalNormalizer.normalize_date...
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:966: error: Incompatible
+return value type (got "dict[str, None]", expected "dict[str, str]") 
+[return-value]
+        return dates
+               ^~~~~
+mahoun/pipelines/ingestion/minimal_verdict_parser.py:1035: error: Need type
+annotation for "entities"  [var-annotated]
+        entities = {
+                   ^
+mahoun/pipelines/ingestion/metadata_extractor.py:87: error: Incompatible types
+in assignment (expression has type "dict[str, Any]", target has type "str") 
+[assignment]
+                    metadata["entities"] = {
+                                           ^
+mahoun/pipelines/ingestion/metadata_extractor.py:101: error: Need type
+annotation for "dates"  [var-annotated]
+            dates = {
+                    ^
+mahoun/pipelines/ingestion/metadata_extractor.py:112: error: Item "None" of
+"list[Any] | None" has no attribute "extend"  [union-attr]
+                    dates["dates_found"].extend([m[0] if isinstance(m, tup...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/metadata_extractor.py:120: error: Incompatible types
+in assignment (expression has type "str", target has type "list[Any] | None") 
+[assignment]
+                    dates["date_issued"] = match.group(0)
+                                           ^~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/metadata_extractor.py:121: error: Incompatible types
+in assignment (expression has type "str", target has type "list[Any] | None") 
+[assignment]
+                    dates["date"] = match.group(0)  # Default to first dat...
+                                    ^~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/metadata_extractor.py:134: error: Incompatible types
+in assignment (expression has type "str", target has type "list[Any] | None") 
+[assignment]
+                            dates["date_received"] = match.group(0)
+                                                     ^~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/metadata_extractor.py:191: error: Need type
+annotation for "parties"  [var-annotated]
+            parties = {
+                      ^
+mahoun/pipelines/ingestion/metadata_extractor.py:207: error: Item "None" of
+"list[Any] | None" has no attribute "append"  [union-attr]
+                            parties["parties"].append({
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/metadata_extractor.py:221: error: Incompatible types
+in assignment (expression has type "str | Any", target has type
+"list[Any] | None")  [assignment]
+                            parties["sender"] = match.group(1).strip()
+                                                ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/metadata_extractor.py:231: error: Incompatible types
+in assignment (expression has type "str | Any", target has type
+"list[Any] | None")  [assignment]
+                            parties["receiver"] = match.group(1).strip()
+                                                  ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/metadata_extractor.py:238: error: Need type
+annotation for "signatures"  [var-annotated]
+            signatures = {
+                         ^
+mahoun/pipelines/ingestion/metadata_extractor.py:254: error: Incompatible types
+in assignment (expression has type "str", target has type
+"list[Any] | bool | None")  [assignment]
+                    signatures["signature_text"] = signature_section
+                                                   ^~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/enhanced_ner.py:84: error: Need type annotation for
+"enhanced_result"  [var-annotated]
+            enhanced_result = {
+                              ^
+mahoun/pipelines/ingestion/enhanced_ner.py:115: error: Need type annotation for
+"entity_counts"  [var-annotated]
+            entity_counts = Counter()
+                            ^~~~~~~~~
+mahoun/domain/delay_analyzer.py:81: error: "None" has no attribute "process" 
+[attr-defined]
+                delay_result = await self.delay_agent.process(input_data)
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/domain/delay_analyzer.py:91: error: "None" has no attribute "analyze" 
+[attr-defined]
+                timeline_result = await self.timeline_analyzer.analyze({
+                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/delay_agent.py:92: error: "None" has no attribute "process" 
+[attr-defined]
+                timeline_result = await self.timeline_agent.process({
+                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/delay_agent.py:107: error: "None" has no attribute "retrieve" 
+[attr-defined]
+                    rag_result = await self.rag_service.retrieve(
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/delay_agent.py:213: error: Need type annotation for "attribution"
+ [var-annotated]
+            attribution = {key: [] for key in responsibility_keywords.keys...
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/risk_assessment_agent.py:89: error: "None" has no attribute
+"process"  [attr-defined]
+                dispute_result = await self.dispute_agent.process({
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/domain/delay_narrative.py:84: error: "None" has no attribute "analyze" 
+[attr-defined]
+                    delay_analysis = await self.delay_analyzer.analyze(inp...
+                                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/domain/delay_narrative.py:93: error: "None" has no attribute "process" 
+[attr-defined]
+                narrative_result = await self.narrative_agent.process({
+                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improve_integration.py:210: error: Need type
+annotation for "improvement_history" (hint:
+"improvement_history: list[<type>] = ...")  [var-annotated]
+            self.improvement_history = []
+            ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improve_integration.py:378: error: Incompatible
+types in assignment (expression has type "dict[str, Any]", target has type
+"float")  [assignment]
+                status["components"]["rl_agent"] = {
+                                                   ^
+mahoun/retrieval/gat_reranker.py:170: error: Variable
+"HAJIX.mahoun.retrieval.gat_reranker.Tensor" is not valid as a type 
+[valid-type]
+                x: Tensor,
+                   ^
+mahoun/retrieval/gat_reranker.py:170: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/gat_reranker.py:171: error: Variable
+"HAJIX.mahoun.retrieval.gat_reranker.Tensor" is not valid as a type 
+[valid-type]
+                edge_index: Tensor,
+                            ^
+mahoun/retrieval/gat_reranker.py:171: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/gat_reranker.py:172: error: Variable
+"HAJIX.mahoun.retrieval.gat_reranker.Tensor" is not valid as a type 
+[valid-type]
+                edge_attr: Optional[Tensor] = None,
+                                    ^
+mahoun/retrieval/gat_reranker.py:172: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/gat_reranker.py:174: error: Variable
+"HAJIX.mahoun.retrieval.gat_reranker.Tensor" is not valid as a type 
+[valid-type]
+            ) -> Union[Tensor, Tuple[Tensor, List]]:
+                       ^
+mahoun/retrieval/gat_reranker.py:174: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/gat_reranker.py:211: error: Variable
+"HAJIX.mahoun.retrieval.gat_reranker.Tensor" is not valid as a type 
+[valid-type]
+                x: Tensor,
+                   ^
+mahoun/retrieval/gat_reranker.py:211: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/gat_reranker.py:212: error: Variable
+"HAJIX.mahoun.retrieval.gat_reranker.Tensor" is not valid as a type 
+[valid-type]
+                edge_index: Tensor,
+                            ^
+mahoun/retrieval/gat_reranker.py:212: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/gat_reranker.py:213: error: Variable
+"HAJIX.mahoun.retrieval.gat_reranker.Tensor" is not valid as a type 
+[valid-type]
+                edge_attr: Optional[Tensor] = None,
+                                    ^
+mahoun/retrieval/gat_reranker.py:213: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/gat_reranker.py:215: error: Variable
+"HAJIX.mahoun.retrieval.gat_reranker.Tensor" is not valid as a type 
+[valid-type]
+            ) -> Tuple[Tensor, Tensor]:
+                       ^
+mahoun/retrieval/gat_reranker.py:215: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/gat_reranker.py:246: error: Name "GATRerankerModel" already
+defined on line 85  [no-redef]
+        class GATRerankerModel:
+        ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:421: error: Item "None" of "Any | None" has no
+attribute "doc_id_to_idx"  [union-attr]
+                    if doc_id in self.graph_data.doc_id_to_idx:
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:422: error: Item "None" of "Any | None" has no
+attribute "doc_id_to_idx"  [union-attr]
+                        idx = self.graph_data.doc_id_to_idx[doc_id]
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:448: error: Need type annotation for
+"pagerank_scores_dict" (hint:
+"pagerank_scores_dict: dict[<type>, <type>] = ...")  [var-annotated]
+            pagerank_scores_dict = {}
+            ^~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:489: error: Argument "doc_id" to
+"RerankResult" has incompatible type "Any | None"; expected "str"  [arg-type]
+                    doc_id=doc_id,
+                           ^~~~~~
+mahoun/retrieval/gat_reranker.py:503: error: Incompatible types in assignment
+(expression has type "RerankResult", variable has type "dict[str, Any]") 
+[assignment]
+            for i, result in enumerate(reranked_results):
+            ^
+mahoun/retrieval/gat_reranker.py:504: error: "dict[str, Any]" has no attribute
+"rank"  [attr-defined]
+                result.rank = i + 1
+                ^~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:557: error: Value of type Tensor? is not
+indexable  [index]
+                score_dict = {"score": scores[i, 0].item()}
+                                       ^~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:575: error: Item "None" of "Any | None" has no
+attribute "edge_index"  [union-attr]
+                edge_index=self.graph_data.edge_index,
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:577: error: Item "None" of "Any | None" has no
+attribute "num_nodes"  [union-attr]
+                num_nodes=self.graph_data.num_nodes,
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:581: error: Item "None" of "Any | None" has no
+attribute "x"  [union-attr]
+            x = self.graph_data.x[subset]
+                ^~~~~~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:582: error: Item "None" of "Any | None" has no
+attribute "edge_attr"  [union-attr]
+            edge_attr = self.graph_data.edge_attr[edge_mask] if self.graph...
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:600: error: Variable
+"HAJIX.mahoun.retrieval.gat_reranker.Tensor" is not valid as a type 
+[valid-type]
+            attention_weights: List[Tuple[Tensor, Tensor]],
+                                          ^
+mahoun/retrieval/gat_reranker.py:600: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+mahoun/retrieval/gat_reranker.py:608: error: Value of type Tensor? is not
+indexable  [index]
+                mask = edge_index[1] == node_idx
+                       ^~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:614: error: Value of type Tensor? is not
+indexable  [index]
+                src_nodes = edge_index[0][mask]
+                            ^~~~~~~~~~~~~
+mahoun/retrieval/gat_reranker.py:615: error: Value of type Tensor? is not
+indexable  [index]
+                attn_weights = alpha[mask]
+                               ^~~~~~~~~~~
+mahoun/reasoning/ultra_reasoning_service.py:398: error: Name "json" is not
+defined  [name-defined]
+                {json.dumps([s.to_dict() for s in reasoning_chain], ensure...
+                 ^~~~
+mahoun/reasoning/ultra_reasoning_service.py:401: error: Name "json" is not
+defined  [name-defined]
+                {json.dumps([{'text': e.text, 'source': e.source} for e in...
+                 ^~~~
+mahoun/profiler/profiler.py:304: error: Incompatible return value type (got
+"_Wrapped[[VarArg(Any), KwArg(Any)], Coroutine[Any, Any, Any], [VarArg(Any), KwArg(Any)], Coroutine[Any, Any, T]]",
+expected "Callable[..., T]")  [return-value]
+                return async_wrapper
+                       ^~~~~~~~~~~~~
+mahoun/profiler/profiler.py:304: note: "_Wrapped[[VarArg(Any), KwArg(Any)], Coroutine[Any, Any, Any], [VarArg(Any), KwArg(Any)], Coroutine[Any, Any, T]].__call__" has type "def __call__(self, *args: Any, **kwargs: Any) -> Coroutine[Any, Any, T]"
+mahoun/pipelines/llm/ollama_llm.py:100: error: Unsupported target for indexed
+assignment ("object")  [index]
+                    request_data["options"]["num_predict"] = max_tokens
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/pipeline.py:76: error: Incompatible types in
+assignment (expression has type "None", variable has type "list[str]") 
+[assignment]
+        warnings: List[str] = None
+                              ^~~~
+mahoun/pipelines/ingestion/pipeline.py:215: error: "None" has no attribute
+"initialize"  [attr-defined]
+                await self.vector_store.initialize()
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/pipeline.py:219: error: Incompatible types in
+assignment (expression has type "ThreadPoolExecutor", variable has type "None") 
+[assignment]
+                self.executor = ThreadPoolExecutor(
+                                ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/pipeline.py:344: error: "None" has no attribute
+"chunk_document"  [attr-defined]
+                        self.chunker.chunk_document,
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/pipeline.py:374: error: "None" has no attribute
+"embed_texts"  [attr-defined]
+                    self.embedding_service.embed_texts,
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/pipeline.py:415: error: "None" has no attribute
+"insert"  [attr-defined]
+                        storage_success = await self.vector_store.insert(
+                                                ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/legal_storage.py:535: error: Argument 1 to "append"
+of "list" has incompatible type "int"; expected "str"  [arg-type]
+                    params.append(limit)
+                                  ^~~~~
+mahoun/orchestrator/demo_mvp.py:52: error: Incompatible default for argument
+"query" (default has type "None", argument has type "str")  [assignment]
+        query: str = None,
+                     ^~~~
+mahoun/orchestrator/demo_mvp.py:52: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+mahoun/orchestrator/demo_mvp.py:52: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+mahoun/orchestrator/demo_mvp.py:53: error: Incompatible default for argument
+"output_file" (default has type "None", argument has type "str")  [assignment]
+        output_file: str = None
+                           ^~~~
+mahoun/orchestrator/demo_mvp.py:53: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+mahoun/orchestrator/demo_mvp.py:53: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+mahoun/orchestrator/demo_mvp.py:143: error: Incompatible types in assignment
+(expression has type "dict[str, Any]", target has type "str")  [assignment]
+                results["ingestion"] = {"success": False, "error": ingesti...
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/orchestrator/demo_mvp.py:156: error: Incompatible types in assignment
+(expression has type "dict[str, Any]", target has type "str")  [assignment]
+            results["ingestion"] = {
+                                   ^
+mahoun/orchestrator/demo_mvp.py:171: error: Incompatible types in assignment
+(expression has type "dict[str, object]", target has type "str")  [assignment]
+            results["ingestion"] = {"success": False, "error": str(e)}
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:213: error: Incompatible types in assignment
+(expression has type "dict[str, Any]", target has type "str")  [assignment]
+            results["retrieval"] = {
+                                   ^
+mahoun/orchestrator/demo_mvp.py:230: error: Incompatible types in assignment
+(expression has type "dict[str, object]", target has type "str")  [assignment]
+            results["retrieval"] = {"success": False, "error": str(e)}
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:246: error: Incompatible types in assignment
+(expression has type "dict[str, Any]", target has type "str")  [assignment]
+                results["answer"] = {
+                                    ^
+mahoun/orchestrator/demo_mvp.py:253: error: Incompatible types in assignment
+(expression has type "dict[str, str]", target has type "str")  [assignment]
+                results["answer"] = {
+                                    ^
+mahoun/orchestrator/demo_mvp.py:263: error: Incompatible types in assignment
+(expression has type "dict[str, str]", target has type "str")  [assignment]
+            results["answer"] = {"text": generated_answer, "error": str(e)...
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:322: error: Incompatible types in assignment
+(expression has type "dict[str, Any]", target has type "str")  [assignment]
+            results["reasoning"] = {
+                                   ^
+mahoun/orchestrator/demo_mvp.py:345: error: Incompatible types in assignment
+(expression has type "dict[str, object]", target has type "str")  [assignment]
+            results["reasoning"] = {"success": False, "error": str(e)}
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:378: error: Need type annotation for
+"reasoning_meta"  [var-annotated]
+            reasoning_meta = results.get('reasoning', {})
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:379: error: Item "str" of
+"str | dict[Any, Any]" has no attribute "get"  [union-attr]
+            nli_available = reasoning_meta.get("nli_available", False)
+                            ^~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:380: error: Item "str" of
+"str | dict[Any, Any]" has no attribute "get"  [union-attr]
+            citation_available = reasoning_meta.get("citation_available", ...
+                                 ^~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:381: error: Item "str" of
+"str | dict[Any, Any]" has no attribute "get"  [union-attr]
+            uncertainty_available = reasoning_meta.get("uncertainty_availa...
+                                    ^~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:414: error: Incompatible types in assignment
+(expression has type "float", target has type "str")  [assignment]
+        results["total_time_ms"] = total_time
+                                   ^~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:419: error: No overload variant of "get" of
+"dict" matches argument types "str", "int"  [call-overload]
+        print(f"   • Chunks indexed: {results.get('ingestion', {}).get('ch...
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/orchestrator/demo_mvp.py:419: note: Possible overload variants:
+mahoun/orchestrator/demo_mvp.py:419: note:     def get(self, Never, None = ..., /) -> None
+mahoun/orchestrator/demo_mvp.py:419: note:     def get(self, Never, Never, /) -> Never
+mahoun/orchestrator/demo_mvp.py:419: note:     def [_T] get(self, Never, _T, /) -> _T
+mahoun/orchestrator/demo_mvp.py:419: error: Item "str" of
+"str | dict[Never, Never]" has no attribute "get"  [union-attr]
+        print(f"   • Chunks indexed: {results.get('ingestion', {}).get('ch...
+                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/demo_mvp.py:420: error: No overload variant of "get" of
+"dict" matches argument types "str", "int"  [call-overload]
+        print(f"   • Retrieved: {results.get('retrieval', {}).get('num_res...
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/orchestrator/demo_mvp.py:420: note: Possible overload variants:
+mahoun/orchestrator/demo_mvp.py:420: note:     def get(self, Never, None = ..., /) -> None
+mahoun/orchestrator/demo_mvp.py:420: note:     def get(self, Never, Never, /) -> Never
+mahoun/orchestrator/demo_mvp.py:420: note:     def [_T] get(self, Never, _T, /) -> _T
+mahoun/orchestrator/demo_mvp.py:420: error: Item "str" of
+"str | dict[Never, Never]" has no attribute "get"  [union-attr]
+        print(f"   • Retrieved: {results.get('retrieval', {}).get('num_res...
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/mcp/tools/graph.py:29: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/mcp/tools/graph.py:30: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/mcp/tools/graph.py:98: error: Dict entry 0 has incompatible type "str":
+"str"; expected "str": "list[dict[str, Any]]"  [dict-item]
+                    "root": doc_id,
+                    ^~~~~~~~~~~~~~
+mahoun/mcp/tools/graph.py:100: error: Dict entry 2 has incompatible type "str":
+"int"; expected "str": "list[dict[str, Any]]"  [dict-item]
+                    "count": 0
+                    ^~~~~~~~~~
+mahoun/mcp/tools/graph.py:104: error: Dict entry 0 has incompatible type "str":
+"str"; expected "str": "list[dict[str, Any]]"  [dict-item]
+                return {"error": str(e), "message": "Neo4j backend not ava...
+                        ^~~~~~~~~~~~~~~
+mahoun/mcp/tools/graph.py:104: error: Dict entry 1 has incompatible type "str":
+"str"; expected "str": "list[dict[str, Any]]"  [dict-item]
+                return {"error": str(e), "message": "Neo4j backend not ava...
+                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/mcp/tools/graph.py:107: error: Dict entry 0 has incompatible type "str":
+"str"; expected "str": "list[dict[str, Any]]"  [dict-item]
+                return {"error": str(e)}
+                        ^~~~~~~~~~~~~~~
+mahoun/core/health_checker.py:618: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                response["self_improve"]["status"] = "ENABLED" if si_healt...
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/core/health_checker.py:619: error: Unsupported target for indexed
+assignment ("Collection[str]")  [index]
+                response["self_improve"]["reason"] = si_health.message
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/core/health_checker.py:632: error: Value of type "Collection[str]" is
+not indexable  [index]
+            elif response["agents"]["status"] == "DEGRADED":
+                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/base_agent.py:331: error: Unsupported operand types for + ("None"
+and "int")  [operator]
+            self._metrics["total_calls"] += 1
+            ^
+mahoun/agents/base_agent.py:331: note: Left operand is of type "float | int | None"
+mahoun/agents/base_agent.py:332: error: Incompatible types in assignment
+(expression has type "str", target has type "float | int | None")  [assignment]
+            self._metrics["last_call_time"] = datetime.now().isoformat()
+                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/base_agent.py:369: error: Unsupported operand types for + ("None"
+and "int")  [operator]
+                    self._metrics["successful_calls"] += 1
+                    ^
+mahoun/agents/base_agent.py:369: note: Left operand is of type "float | int | None"
+mahoun/agents/base_agent.py:373: error: Unsupported operand types for + ("None"
+and "float")  [operator]
+                    self._metrics["total_processing_time_ms"] += processin...
+                    ^
+mahoun/agents/base_agent.py:373: note: Left operand is of type "float | int | None"
+mahoun/agents/base_agent.py:394: error: Unsupported operand types for + ("None"
+and "int")  [operator]
+                    self._metrics["total_retries"] += 1
+                    ^
+mahoun/agents/base_agent.py:394: note: Left operand is of type "float | int | None"
+mahoun/agents/base_agent.py:406: error: Unsupported operand types for + ("None"
+and "int")  [operator]
+            self._metrics["failed_calls"] += 1
+            ^
+mahoun/agents/base_agent.py:406: note: Left operand is of type "float | int | None"
+mahoun/agents/base_agent.py:407: error: Incompatible types in assignment
+(expression has type "str | None", target has type "float | int | None") 
+[assignment]
+            self._metrics["last_error"] = last_error
+                                          ^~~~~~~~~~
+mahoun/agents/base_agent.py:417: error: Unsupported operand types for + ("None"
+and "int")  [operator]
+                    self._metrics["fallback_calls"] += 1
+                    ^
+mahoun/agents/base_agent.py:417: note: Left operand is of type "float | int | None"
+mahoun/agents/base_agent.py:528: error: Unsupported operand types for < ("int"
+and "None")  [operator]
+            if total > 0:
+               ^
+mahoun/agents/base_agent.py:528: note: Left operand is of type "float | int | None"
+mahoun/agents/base_agent.py:529: error: Unsupported operand types for /
+("float" and "None")  [operator]
+                metrics["success_rate"] = metrics["successful_calls"] / to...
+                                          ^
+mahoun/agents/base_agent.py:529: error: Unsupported operand types for / ("int"
+and "None")  [operator]
+                metrics["success_rate"] = metrics["successful_calls"] / to...
+                                          ^
+mahoun/agents/base_agent.py:529: error: Unsupported operand types for / ("None"
+and "float")  [operator]
+                metrics["success_rate"] = metrics["successful_calls"] / to...
+                                          ^
+mahoun/agents/base_agent.py:529: error: Unsupported operand types for / ("None"
+and "int")  [operator]
+                metrics["success_rate"] = metrics["successful_calls"] / to...
+                                          ^
+mahoun/agents/base_agent.py:529: error: Unsupported left operand type for /
+("None")  [operator]
+                metrics["success_rate"] = metrics["successful_calls"] / to...
+                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/base_agent.py:529: note: Both left and right operands are unions
+mahoun/agents/base_agent.py:530: error: Unsupported operand types for /
+("float" and "None")  [operator]
+                metrics["avg_processing_time_ms"] = metrics["total_process...
+                                                    ^
+mahoun/agents/base_agent.py:530: error: Unsupported operand types for / ("int"
+and "None")  [operator]
+                metrics["avg_processing_time_ms"] = metrics["total_process...
+                                                    ^
+mahoun/agents/base_agent.py:530: error: Unsupported operand types for / ("None"
+and "float")  [operator]
+                metrics["avg_processing_time_ms"] = metrics["total_process...
+                                                    ^
+mahoun/agents/base_agent.py:530: error: Unsupported operand types for / ("None"
+and "int")  [operator]
+                metrics["avg_processing_time_ms"] = metrics["total_process...
+                                                    ^
+mahoun/agents/base_agent.py:530: error: Unsupported left operand type for /
+("None")  [operator]
+                metrics["avg_processing_time_ms"] = metrics["total_process...
+                                                    ^~~~~~~~~~~~~~~~~~~~~~...
+mahoun/agents/base_agent.py:530: note: Both left and right operands are unions
+mahoun/agents/archive/ultra_precedent_agent.py:370: error: Incompatible return
+value type (got "None", expected "dict[str, Any]")  [return-value]
+                return None
+                       ^~~~
+mahoun/agents/archive/orchestrator_simple.py:47: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/agents/archive/orchestrator_simple.py:48: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/agents/archive/orchestrator_simple.py:121: error: "Sequence[str]" has no
+attribute "append"  [attr-defined]
+                        workflow_result["steps"].append({
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/orchestrator_simple.py:135: error: "Sequence[str]" has no
+attribute "append"  [attr-defined]
+                        workflow_result["steps"].append({
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/orchestrator_simple.py:152: error: Incompatible types in
+assignment (expression has type "dict[str, Any]", target has type
+"Sequence[str]")  [assignment]
+                workflow_result["final_data"] = current_data
+                                                ^~~~~~~~~~~~
+mahoun/agents/archive/dispute_agent_ultra.py:359: error: Need type annotation
+for "clauses" (hint: "clauses: list[<type>] = ...")  [var-annotated]
+            clauses = []
+            ^~~~~~~
+mahoun/pipelines/ingestion/enhanced_pipeline.py:224: error: "None" has no
+attribute "chunk_document"  [attr-defined]
+                    chunks = self.chunker.chunk_document(
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/enhanced_pipeline.py:249: error: "None" has no
+attribute "embed_texts"  [attr-defined]
+                embeddings = self.embedding_service.embed_texts(
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/enhanced_pipeline.py:283: error: "None" has no
+attribute "insert"  [attr-defined]
+                success = await self.vector_store.insert(
+                                ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/mcp/tools/ingest.py:33: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/mcp/tools/ingest.py:61: error: Need type annotation for "docs" (hint:
+"docs: list[<type>] = ...")  [var-annotated]
+            docs = []
+            ^~~~
+mahoun/mcp/tools/ingest.py:71: error: Dict entry 1 has incompatible type "str":
+"int"; expected "str": "list[dict[str, Any]]"  [dict-item]
+            return {"documents": docs, "count": len(docs)}
+                                       ^~~~~~~~~~~~~~~~~~
+mahoun/mcp/tools/ingest.py:150: error: Need type annotation for "files" (hint:
+"files: list[<type>] = ...")  [var-annotated]
+            files = []
+            ^~~~~
+mahoun/core/health_cache.py:178: error: Incompatible types in assignment
+(expression has type "ComponentHealth | None", variable has type
+"ComponentHealth")  [assignment]
+                health = refactored_health.get(component_name)
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/core/health_cache.py:183: error: Incompatible types in assignment
+(expression has type "ComponentHealth | None", variable has type
+"ComponentHealth")  [assignment]
+                health = databases_health.get(component_name)
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/core/health_cache.py:189: error: Incompatible types in assignment
+(expression has type "ComponentHealth | None", variable has type
+"ComponentHealth")  [assignment]
+                health = agents_health.get(agent_name)
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/orchestrator.py:270: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/agents/orchestrator.py:271: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/agents/orchestrator.py:272: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/agents/orchestrator.py:275: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/agents/doc_parser_agent.py:232: error: "AgentConfig" has no attribute
+"min_text_length"  [attr-defined]
+            if len(text) < self.config.min_text_length:
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/doc_parser_agent.py:233: error: "AgentConfig" has no attribute
+"min_text_length"  [attr-defined]
+    ...eError(f"Text too short ({len(text)} chars, min: {self.config.min_text...
+                                                        ^~~~~~~~~~~~~~~~~~~~~...
+mahoun/agents/doc_parser_agent.py:235: error: "AgentConfig" has no attribute
+"max_text_length"  [attr-defined]
+            if len(text) > self.config.max_text_length:
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/doc_parser_agent.py:236: error: "AgentConfig" has no attribute
+"max_text_length"  [attr-defined]
+    ...relation_id}] Text truncated from {len(text)} to {self.config.max_text...
+                                                        ^~~~~~~~~~~~~~~~~~~~~...
+mahoun/agents/doc_parser_agent.py:237: error: "AgentConfig" has no attribute
+"max_text_length"  [attr-defined]
+                text = text[:self.config.max_text_length]
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/doc_parser_agent.py:252: error: Need type annotation for
+"entities" (hint: "entities: dict[<type>, <type>] = ...")  [var-annotated]
+            entities = {}
+            ^~~~~~~~
+mahoun/agents/doc_parser_agent.py:281: error: Generator has incompatible item
+type "int"; expected "bool"  [misc]
+    ...  self._doc_metrics["entities_extracted"] += sum(len(v) for v in entit...
+                                                        ^~~~~~
+mahoun/agents/doc_parser_agent.py:325: error: "AgentConfig" has no attribute
+"chunk_size"  [attr-defined]
+            chunk_size = self.config.chunk_size
+                         ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/doc_parser_agent.py:326: error: Need type annotation for "chunks"
+(hint: "chunks: list[<type>] = ...")  [var-annotated]
+            chunks = []
+            ^~~~~~
+mahoun/agents/doc_parser_agent.py:454: error: "AgentConfig" has no attribute
+"chunk_size"  [attr-defined]
+            chunk_size = self.config.chunk_size
+                         ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/doc_parser_agent.py:455: error: "AgentConfig" has no attribute
+"chunk_overlap"  [attr-defined]
+            overlap = self.config.chunk_overlap
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/doc_parser_agent.py:456: error: Need type annotation for "chunks"
+(hint: "chunks: list[<type>] = ...")  [var-annotated]
+            chunks = []
+            ^~~~~~
+mahoun/agents/contract_agent.py:374: error: "AgentConfig" has no attribute
+"top_k"  [attr-defined]
+            top_k = input_data.get("top_k", self.config.top_k)
+                                            ^~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:375: error: "AgentConfig" has no attribute
+"reasoning_mode"  [attr-defined]
+    ...easoning_mode = input_data.get("reasoning_mode", self.config.reasoning...
+                                                        ^~~~~~~~~~~~~~~~~~~~~...
+mahoun/agents/contract_agent.py:379: error: Argument 2 to "_retrieve_documents"
+of "UltraContractAgent" has incompatible type "Any | None"; expected "int" 
+[arg-type]
+    ..._results = await self._retrieve_documents(query, top_k, correlation_id...
+                                                        ^~~~~
+mahoun/agents/contract_agent.py:447: error: "AgentConfig" has no attribute
+"enable_verification"  [attr-defined]
+                    "verification_enabled": self.config.enable_verificatio...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:580: error: "AgentConfig" has no attribute
+"rerank_top_k"  [attr-defined]
+    ...exts = [r["content"][:500] for r in rag_results[:self.config.rerank_to...
+                                                        ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:618: error: "AgentConfig" has no attribute
+"max_answer_length"  [attr-defined]
+            chain.final_answer = answer[:self.config.max_answer_length]
+                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:634: error: "AgentConfig" has no attribute
+"max_answer_length"  [attr-defined]
+            answer = top_result["content"][:self.config.max_answer_length]
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:686: error: "AgentConfig" has no attribute
+"include_citations"  [attr-defined]
+            if not self.config.include_citations:
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:1135: error: Argument "key" to "max" has
+incompatible type overloaded function; expected
+"Callable[[ClauseType], SupportsDunderLT[Any] | SupportsDunderGT[Any]]" 
+[arg-type]
+                return max(type_scores, key=type_scores.get)
+                                            ^~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:1194: error: "AgentConfig" has no attribute
+"risk_threshold_critical"  [attr-defined]
+            if score >= self.config.risk_threshold_critical:
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:1196: error: "AgentConfig" has no attribute
+"risk_threshold_high"  [attr-defined]
+            elif score >= self.config.risk_threshold_high:
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:1198: error: "AgentConfig" has no attribute
+"risk_threshold_medium"  [attr-defined]
+            elif score >= self.config.risk_threshold_medium:
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:1630: error: Incompatible types in assignment
+(expression has type "float", variable has type "int")  [assignment]
+                weighted_score += clause.risk_score * weight
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/contract_agent.py:1631: error: Incompatible types in assignment
+(expression has type "float", variable has type "int")  [assignment]
+                total_weight += weight
+                ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/claim_agent.py:342: error: "AgentConfig" has no attribute
+"max_arguments"  [attr-defined]
+            return arguments[:self.config.max_arguments]
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:843: error: Incompatible types in
+assignment (expression has type "ndarray[Any, dtype[Any]] | None", variable has
+type "ndarray[Any, dtype[Any]]")  [assignment]
+            X, y = self._validate_input(X, y, context="fit")
+                   ^
+mahoun/uncertainty/gaussian_process_v2.py:1136: error: Item "None" of
+"Any | None" has no attribute "parameters"  [union-attr]
+            device = next(self._model.parameters()).device
+                          ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1139: error: Item "None" of
+"Any | None" has no attribute "eval"  [union-attr]
+            self._model.eval()
+            ^~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1140: error: Item "None" of
+"Any | None" has no attribute "eval"  [union-attr]
+            self._likelihood.eval()
+            ^~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1143: error: "None" not callable 
+[misc]
+                pred = self._likelihood(self._model(X_tensor))
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1189: error: Unsupported operand
+types for * ("None" and "float")  [operator]
+                epistemic_std = total_std * 0.7
+                                ^
+mahoun/uncertainty/gaussian_process_v2.py:1189: note: Left operand is of type "ndarray[Any, dtype[Any]] | None"
+mahoun/uncertainty/gaussian_process_v2.py:1189: error: Incompatible types in
+assignment (expression has type "Any | float", variable has type
+"ndarray[Any, dtype[Any]]")  [assignment]
+                epistemic_std = total_std * 0.7
+                                ^~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1190: error: Unsupported operand
+types for * ("None" and "float")  [operator]
+                aleatoric_std = total_std * 0.3
+                                ^
+mahoun/uncertainty/gaussian_process_v2.py:1190: note: Left operand is of type "ndarray[Any, dtype[Any]] | None"
+mahoun/uncertainty/gaussian_process_v2.py:1190: error: Incompatible types in
+assignment (expression has type "Any | float", variable has type
+"ndarray[Any, dtype[Any]]")  [assignment]
+                aleatoric_std = total_std * 0.3
+                                ^~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1212: error: Incompatible types in
+assignment (expression has type "float", variable has type
+"ndarray[Any, dtype[Any]]")  [assignment]
+                mean = float(mean[0])
+                       ^~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1213: error: Incompatible types in
+assignment (expression has type "float", variable has type
+"ndarray[Any, dtype[Any]]")  [assignment]
+                epistemic_std = float(epistemic_std[0])
+                                ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1214: error: Incompatible types in
+assignment (expression has type "float", variable has type
+"ndarray[Any, dtype[Any]]")  [assignment]
+                aleatoric_std = float(aleatoric_std[0])
+                                ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1215: error: Incompatible types in
+assignment (expression has type "float", variable has type
+"ndarray[Any, dtype[Any]] | None")  [assignment]
+                total_std = float(total_std[0])
+                            ^~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1219: error: Incompatible types in
+assignment (expression has type "float", variable has type
+"ndarray[Any, dtype[Any]]")  [assignment]
+                mean = float(np.mean(mean))
+                       ^~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1220: error: Incompatible types in
+assignment (expression has type "float", variable has type
+"ndarray[Any, dtype[Any]]")  [assignment]
+                epistemic_std = float(np.mean(epistemic_std))
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1221: error: Incompatible types in
+assignment (expression has type "float", variable has type
+"ndarray[Any, dtype[Any]]")  [assignment]
+                aleatoric_std = float(np.mean(aleatoric_std))
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1222: error: Incompatible types in
+assignment (expression has type "float", variable has type
+"ndarray[Any, dtype[Any]] | None")  [assignment]
+                total_std = float(np.mean(total_std))
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1228: error: Argument "mean" to
+"UncertaintyEstimate" has incompatible type "ndarray[Any, dtype[Any]]"; expected
+"float"  [arg-type]
+                mean=mean,
+                     ^~~~
+mahoun/uncertainty/gaussian_process_v2.py:1229: error: Argument "epistemic_std"
+to "UncertaintyEstimate" has incompatible type "ndarray[Any, dtype[Any]]";
+expected "float"  [arg-type]
+                epistemic_std=epistemic_std,
+                              ^~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1230: error: Argument "aleatoric_std"
+to "UncertaintyEstimate" has incompatible type "ndarray[Any, dtype[Any]]";
+expected "float"  [arg-type]
+                aleatoric_std=aleatoric_std,
+                              ^~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1258: error: Item "None" of
+"Any | None" has no attribute "parameters"  [union-attr]
+            device = next(self._model.parameters()).device
+                          ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1261: error: Item "None" of
+"Any | None" has no attribute "eval"  [union-attr]
+            self._model.eval()
+            ^~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1262: error: Item "None" of
+"Any | None" has no attribute "eval"  [union-attr]
+            self._likelihood.eval()
+            ^~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1272: error: "None" not callable 
+[misc]
+                        pred = self._model(X_tensor)
+                               ^~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1291: error: Item "None" of
+"Any | None" has no attribute "noise"  [union-attr]
+            noise_var = self._likelihood.noise.item()
+                        ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1318: error: Incompatible types in
+assignment (expression has type "ndarray[Any, dtype[Any]] | None", variable has
+type "ndarray[Any, dtype[Any]]")  [assignment]
+            X_val, y_val = self._validate_input(X_val, y_val, context="cal...
+                           ^
+mahoun/uncertainty/gaussian_process_v2.py:1326: error: Argument 3 to
+"_compute_calibration_metrics" of "GaussianProcessUncertaintyV2" has
+incompatible type "ndarray[Any, dtype[Any]] | None"; expected
+"ndarray[Any, dtype[Any]]"  [arg-type]
+            metrics = self._compute_calibration_metrics(y_val, mean, std)
+                                                                     ^~~
+mahoun/uncertainty/gaussian_process_v2.py:1329: error: Argument 3 to
+"_optimize_temperature" of "GaussianProcessUncertaintyV2" has incompatible type
+"ndarray[Any, dtype[Any]] | None"; expected "ndarray[Any, dtype[Any]]" 
+[arg-type]
+    ...calibration_temperature = self._optimize_temperature(y_val, mean, std)
+                                                                         ^~~
+mahoun/uncertainty/gaussian_process_v2.py:1376: error: Need type annotation for
+"count"  [var-annotated]
+                count = np.sum(in_bin)
+                        ^~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1573: error: Item "None" of
+"Any | None" has no attribute "state_dict"  [union-attr]
+                state["model_state"] = self._model.state_dict()
+                                       ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process_v2.py:1574: error: Item "None" of
+"Any | None" has no attribute "state_dict"  [union-attr]
+                state["likelihood_state"] = self._likelihood.state_dict()
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:305: error: If x = b'abc' then f"{x}" or
+"{}".format(x) produces "b'abc'", not "abc". If this is desired behavior, use
+f"{x!r}" or "{!r}".format(x). Otherwise, decode the bytes  [str-bytes-safe]
+                cache_key = f"{X.tobytes()}_{return_std}_{return_cov}"
+                              ^~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:311: error: Item "None" of "Any | None"
+has no attribute "predict"  [union-attr]
+                mean, cov = self.model.predict(X, return_cov=True)
+                            ^~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:314: error: Item "None" of "Any | None"
+has no attribute "predict"  [union-attr]
+                mean, std = self.model.predict(X, return_std=True)
+                            ^~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:317: error: Item "None" of "Any | None"
+has no attribute "predict"  [union-attr]
+                mean = self.model.predict(X)
+                       ^~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:356: error: Incompatible return value
+type (got
+"tuple[ndarray[Any, dtype[Any]], ndarray[Any, dtype[Any]] | None, Any]",
+expected
+"tuple[ndarray[Any, dtype[Any]], ndarray[Any, dtype[Any]], ndarray[Any, dtype[Any]]]")
+ [return-value]
+            return mean, std, confidence_intervals
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:378: error: Item "None" of "Any | None"
+has no attribute "X_train_"  [union-attr]
+            X_train = self.model.X_train_
+                      ^~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:379: error: Item "None" of "Any | None"
+has no attribute "y_train_"  [union-attr]
+            y_train = self.model.y_train_
+                      ^~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:400: error: Item "None" of "Any | None"
+has no attribute "kernel_"  [union-attr]
+            kernel = self.model.kernel_
+                     ^~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:409: error: Item "None" of "Any | None"
+has no attribute "X_train_"  [union-attr]
+                return np.ones(self.model.X_train_.shape[1])
+                               ^~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:430: error: Item "None" of "Any | None"
+has no attribute "kernel_"  [union-attr]
+                "kernel": str(self.model.kernel_),
+                              ^~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:431: error: Item "None" of "Any | None"
+has no attribute "log_marginal_likelihood_value_"  [union-attr]
+                "log_marginal_likelihood": float(self.model.log_marginal_l...
+                                                 ^~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/uncertainty/gaussian_process.py:432: error: Item "None" of "Any | None"
+has no attribute "X_train_"  [union-attr]
+                "n_samples": int(self.model.X_train_.shape[0]),
+                                 ^~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:433: error: Item "None" of "Any | None"
+has no attribute "X_train_"  [union-attr]
+                "n_features": int(self.model.X_train_.shape[1]),
+                                  ^~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/gaussian_process.py:521: error: Item "None" of
+"ndarray[Any, dtype[Any]] | None" has no attribute "mean"  [union-attr]
+                uncertainties.append(std.mean())
+                                     ^~~~~~~~
+mahoun/uncertainty/calibration.py:200: error: Incompatible types in assignment
+(expression has type "floating[Any]", variable has type "None")  [assignment]
+            self.quantile = np.quantile(scores, q_level)
+                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/calibration.py:233: error: Unsupported operand types for *
+("int" and "None")  [operator]
+            return 2 * self.quantile
+                       ^~~~~~~~~~~~~
+mahoun/uncertainty/calibration.py:339: error: Need type annotation for
+"temp_uncertainty"  [var-annotated]
+                    temp_uncertainty = 1 - calibrated_conf
+                                       ^~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/calibration.py:340: error: Argument 1 to "append" of "list"
+has incompatible type "ndarray[Any, dtype[Any]]"; expected "float"  [arg-type]
+                    components.append(temp_uncertainty)
+                                      ^~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:146: error: Need type
+annotation for "prob_one"  [var-annotated]
+                    prob_one = self.quantum_population[i, j, 1] ** 2
+                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:195: error: Argument 2 to
+"_quantum_rotation" of "QuantumInspiredOptimizer" has incompatible type "None";
+expected "ndarray[Any, dtype[Any]]"  [arg-type]
+                        self._quantum_rotation(i, self.best_solution)
+                                                  ^~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:199: error: Incompatible
+return value type (got "tuple[None, float]", expected
+"tuple[ndarray[Any, dtype[Any]], float]")  [return-value]
+            return self.best_solution, self.best_fitness
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:379: error: Need type
+annotation for "domination_count"  [var-annotated]
+            domination_count = np.zeros(n, dtype=int)
+                               ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:380: error: Need type
+annotation for "dominated_solutions"  [var-annotated]
+            dominated_solutions = [[] for _ in range(n)]
+                                  ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:381: error: Need type
+annotation for "fronts"  [var-annotated]
+            fronts = [[]]
+                     ^~~~
+mahoun/self_improve/ultra_self_improvement_system.py:410: error: Incompatible
+return value type (got "numpy.bool[builtins.bool]", expected "builtins.bool") 
+[return-value]
+            return np.all(obj1 >= obj2) and np.any(obj1 > obj2)
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:429: error: Incompatible
+return value type (got "defaultdict[signedinteger[Any], list[int]]", expected
+"dict[int, list[int]]")  [return-value]
+            return associations
+                   ^~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:471: error: Need type
+annotation for "offspring" (hint: "offspring: list[<type>] = ...") 
+[var-annotated]
+                offspring = []
+                ^~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:504: error: Need type
+annotation for "next_population" (hint: "next_population: list[<type>] = ...") 
+[var-annotated]
+                next_population = []
+                ^~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:545: error: Need type
+annotation for "causal_graph" (hint: "causal_graph: dict[<type>, <type>] = ...")
+ [var-annotated]
+            self.causal_graph = {}
+            ^~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:546: error: Need type
+annotation for "intervention_history" (hint:
+"intervention_history: list[<type>] = ...")  [var-annotated]
+            self.intervention_history = []
+            ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:611: error: Need type
+annotation for "graph"  [var-annotated]
+            graph = {name: [] for name in variable_names}
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:666: error: Need type
+annotation for "graph"  [var-annotated]
+            graph = {name: [] for name in variable_names}
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:752: error: Incompatible
+return value type (got "tuple[floating[Any], floating[Any]]", expected
+"tuple[float, float]")  [return-value]
+            return effect, (ci_upper - ci_lower) / 2
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:790: error: Need type
+annotation for "task_history" (hint: "task_history: list[<type>] = ...") 
+[var-annotated]
+            self.task_history = []
+            ^~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:791: error: Need type
+annotation for "adaptation_history" (hint:
+"adaptation_history: list[<type>] = ...")  [var-annotated]
+            self.adaptation_history = []
+            ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:799: error: Need type
+annotation for "losses"  [var-annotated]
+            losses = {"meta_loss": [], "meta_meta_loss": []}
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:832: error: "float" has no
+attribute "backward"  [attr-defined]
+                meta_loss.backward()
+                ^~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:838: error: "float" has no
+attribute "backward"  [attr-defined]
+                meta_meta_loss.backward()
+                ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:841: error: "float" has no
+attribute "item"  [attr-defined]
+                losses["meta_loss"].append(meta_loss.item())
+                                           ^~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:842: error: "float" has no
+attribute "item"  [attr-defined]
+                losses["meta_meta_loss"].append(meta_meta_loss.item())
+                                                ^~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:925: error: Need type
+annotation for "client_data_sizes" (hint:
+"client_data_sizes: list[<type>] = ...")  [var-annotated]
+            self.client_data_sizes = []
+            ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:1327: error: Need type
+annotation for "performance_buffer"  [var-annotated]
+            self.performance_buffer = deque(maxlen=1000)
+                                      ^~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:1339: error: Need type
+annotation for "checkpoints" (hint: "checkpoints: dict[<type>, <type>] = ...") 
+[var-annotated]
+            self.checkpoints = {}
+            ^~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:1628: error: Need type
+annotation for "objectives"  [var-annotated]
+            objectives = [
+                         ^
+mahoun/self_improve/ultra_self_improvement_system.py:1864: error: Incompatible
+types in assignment (expression has type "str", variable has type "None") 
+[assignment]
+            self.current_checkpoint_id = checkpoint_id
+                                         ^~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:1944: error: Value of type
+"bool | list[dict[str, float | str]] | dict[str, float] | str" is not indexable 
+[index]
+            print(f"   Total adaptations: {report['metrics']['total_adapta...
+                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_self_improvement_system.py:1944: error: No overload
+variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+            print(f"   Total adaptations: {report['metrics']['total_adapta...
+                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_self_improvement_system.py:1944: note: Possible overload variants:
+mahoun/self_improve/ultra_self_improvement_system.py:1944: note:     def __getitem__(self, SupportsIndex, /) -> dict[str, float | str]
+mahoun/self_improve/ultra_self_improvement_system.py:1944: note:     def __getitem__(self, slice[Any, Any, Any], /) -> list[dict[str, float | str]]
+mahoun/self_improve/ultra_self_improvement_system.py:1944: error: Invalid index
+type "str" for "str"; expected type "SupportsIndex | slice[Any, Any, Any]" 
+[index]
+    ...print(f"   Total adaptations: {report['metrics']['total_adaptations']}...
+                                                        ^~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:1945: error: Unsupported
+operand types for / ("float" and "SupportsDunderLT[Any]")  [operator]
+            print(f"   Success rate: {report['metrics']['successful_adapta...
+                                     ^
+mahoun/self_improve/ultra_self_improvement_system.py:1945: error: Unsupported
+operand types for / ("float" and "SupportsDunderGT[Any]")  [operator]
+            print(f"   Success rate: {report['metrics']['successful_adapta...
+                                     ^
+mahoun/self_improve/ultra_self_improvement_system.py:1945: error: Unsupported
+operand types for / ("str" and "float")  [operator]
+            print(f"   Success rate: {report['metrics']['successful_adapta...
+                                     ^
+mahoun/self_improve/ultra_self_improvement_system.py:1945: error: Unsupported
+left operand type for / ("str")  [operator]
+            print(f"   Success rate: {report['metrics']['successful_adapta...
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_self_improvement_system.py:1945: note: Both left and right operands are unions
+mahoun/self_improve/ultra_self_improvement_system.py:1945: error: Value of type
+"bool | list[dict[str, float | str]] | dict[str, float] | str" is not indexable 
+[index]
+            print(f"   Success rate: {report['metrics']['successful_adapta...
+                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_self_improvement_system.py:1945: error: No overload
+variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+            print(f"   Success rate: {report['metrics']['successful_adapta...
+                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_self_improvement_system.py:1945: note: Possible overload variants:
+mahoun/self_improve/ultra_self_improvement_system.py:1945: note:     def __getitem__(self, SupportsIndex, /) -> dict[str, float | str]
+mahoun/self_improve/ultra_self_improvement_system.py:1945: note:     def __getitem__(self, slice[Any, Any, Any], /) -> list[dict[str, float | str]]
+mahoun/self_improve/ultra_self_improvement_system.py:1945: error: Invalid index
+type "str" for "str"; expected type "SupportsIndex | slice[Any, Any, Any]" 
+[index]
+    ...     print(f"   Success rate: {report['metrics']['successful_adaptatio...
+                                                        ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:1946: error: Value of type
+"bool | list[dict[str, float | str]] | dict[str, float] | str" is not indexable 
+[index]
+            print(f"   Average improvement: {report['metrics']['average_im...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_self_improvement_system.py:1946: error: No overload
+variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+            print(f"   Average improvement: {report['metrics']['average_im...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_self_improvement_system.py:1946: note: Possible overload variants:
+mahoun/self_improve/ultra_self_improvement_system.py:1946: note:     def __getitem__(self, SupportsIndex, /) -> dict[str, float | str]
+mahoun/self_improve/ultra_self_improvement_system.py:1946: note:     def __getitem__(self, slice[Any, Any, Any], /) -> list[dict[str, float | str]]
+mahoun/self_improve/ultra_self_improvement_system.py:1946: error: Invalid index
+type "str" for "str"; expected type "SupportsIndex | slice[Any, Any, Any]" 
+[index]
+    ...int(f"   Average improvement: {report['metrics']['average_improvement'...
+                                                        ^~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:1947: error: Value of type
+"bool | list[dict[str, float | str]] | dict[str, float] | str" is not indexable 
+[index]
+            print(f"   Rollbacks: {report['metrics']['rollbacks']}")
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:1947: error: No overload
+variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+            print(f"   Rollbacks: {report['metrics']['rollbacks']}")
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_self_improvement_system.py:1947: note: Possible overload variants:
+mahoun/self_improve/ultra_self_improvement_system.py:1947: note:     def __getitem__(self, SupportsIndex, /) -> dict[str, float | str]
+mahoun/self_improve/ultra_self_improvement_system.py:1947: note:     def __getitem__(self, slice[Any, Any, Any], /) -> list[dict[str, float | str]]
+mahoun/self_improve/ultra_self_improvement_system.py:1947: error: Invalid index
+type "str" for "str"; expected type "SupportsIndex | slice[Any, Any, Any]" 
+[index]
+            print(f"   Rollbacks: {report['metrics']['rollbacks']}")
+                                                     ^~~~~~~~~~~
+mahoun/self_improve/ultra_rl_agent.py:556: error: Need type annotation for
+"buffer" (hint: "buffer: list[<type>] = ...")  [var-annotated]
+            self.buffer = []
+            ^~~~~~~~~~~
+mahoun/self_improve/ultra_rl_agent.py:557: error: Need type annotation for
+"priorities"  [var-annotated]
+            self.priorities = np.zeros(capacity, dtype=np.float32)
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_orchestrator_complete.py:137: error: Unsupported
+operand types for - ("float" and "None")  [operator]
+                if time.time() - self.last_failure_time > self.recovery_ti...
+                                 ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_orchestrator_complete.py:146: error: Exception type
+must be derived from BaseException (or be a tuple of exception classes)  [misc]
+            except self.expected_exception as e:
+                   ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_orchestrator_complete.py:186: error: Incompatible
+types in assignment (expression has type "float", variable has type "int") 
+[assignment]
+                self.tokens = min(self.capacity, self.tokens + elapsed * s...
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_orchestrator_complete.py:217: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/self_improve/ultra_orchestrator_complete.py:218: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/self_improve/ultra_orchestrator_complete.py:262: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/self_improve/ultra_orchestrator_complete.py:263: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/self_improve/ultra_orchestrator_complete.py:323: error: Need type
+annotation for "task_queue"  [var-annotated]
+            self.task_queue = PriorityQueue()
+                              ^~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_orchestrator_complete.py:515: error: Unsupported
+operand types for + ("object" and "int")  [operator]
+                self.metrics["tasks_completed"] += 1
+                ^
+mahoun/self_improve/ultra_orchestrator_complete.py:516: error: Unsupported
+operand types for + ("object" and "float")  [operator]
+                self.metrics["total_latency_ms"] += latency
+                ^
+mahoun/self_improve/ultra_orchestrator_complete.py:549: error: Unsupported
+operand types for + ("object" and "int")  [operator]
+                self.metrics["tasks_failed"] += 1
+                ^
+mahoun/self_improve/ultra_orchestrator_complete.py:552: error: Value of type
+"object" is not indexable  [index]
+                self.metrics["component_failures"][component_name] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_orchestrator_complete.py:552: error: Unsupported
+target for indexed assignment ("object")  [index]
+                self.metrics["component_failures"][component_name] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_hyperparameter_optimization.py:179: error:
+Incompatible return value type (got "Any | None", expected
+"ndarray[Any, dtype[Any]]")  [return-value]
+            return best_x
+                   ^~~~~~
+mahoun/self_improve/ultra_hyperparameter_optimization.py:332: error:
+Incompatible return value type (got
+"tuple[signedinteger[Any], dict[str, Any], float]", expected
+"tuple[int, dict[str, float], float]")  [return-value]
+            return best_idx, self.population[best_idx], self.scores[best_i...
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_hyperparameter_optimization.py:429: error:
+Incompatible types in assignment (expression has type "PopulationBasedTraining",
+variable has type "BOHBOptimizer")  [assignment]
+                self.optimizer = PopulationBasedTraining(param_space)
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_hyperparameter_optimization.py:436: error:
+Incompatible types in assignment (expression has type
+"NeuralArchitectureSearch", variable has type "BOHBOptimizer")  [assignment]
+                self.optimizer = NeuralArchitectureSearch(search_space)
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_hyperparameter_optimization.py:450: error:
+"BOHBOptimizer" has no attribute "get_member_params"  [attr-defined]
+                return [self.optimizer.get_member_params(member_id)]
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_hyperparameter_optimization.py:452: error:
+"BOHBOptimizer" has no attribute "sample_architecture"  [attr-defined]
+                return [self.optimizer.sample_architecture()]
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_hyperparameter_optimization.py:464: error:
+"BOHBOptimizer" has no attribute "step"  [attr-defined]
+                self.optimizer.step(member_id, score, model)
+                ^~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_hyperparameter_optimization.py:466: error:
+"BOHBOptimizer" has no attribute "update_controller"  [attr-defined]
+                self.optimizer.update_controller(params, score)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_causal_ab_integration.py:402: error: Need type
+annotation for "test_history" (hint: "test_history: list[<type>] = ...") 
+[var-annotated]
+            self.test_history = []
+            ^~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_causal_ab_integration.py:457: error: Need type
+annotation for "experiments" (hint: "experiments: dict[<type>, <type>] = ...") 
+[var-annotated]
+            self.experiments = {}
+            ^~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_causal_ab_integration.py:458: error: Need type
+annotation for "results" (hint: "results: list[<type>] = ...")  [var-annotated]
+            self.results = []
+            ^~~~~~~~~~~~
+mahoun/self_improve/ultra_causal_ab_integration.py:503: error: Unsupported
+target for indexed assignment ("Collection[str]")  [index]
+                    results["ab_tests"][metric_name] = ab_result.to_dict()
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_causal_ab_integration.py:518: error: Unsupported
+target for indexed assignment ("Collection[str]")  [index]
+                    results["causal_effects"][metric_name] = causal_effect...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_causal_ab_integration.py:575: error: Incompatible
+types in assignment (expression has type "floating[Any]", target has type
+"float")  [assignment]
+                    (self.stats["avg_effect_size"] * (self.stats["experime...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_bandit_system.py:53: error: Incompatible return value
+type (got "signedinteger[Any]", expected "int")  [return-value]
+            return np.argmax(samples)
+                   ^~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:100: error: Incompatible return
+value type (got "signedinteger[Any]", expected "int")  [return-value]
+            return np.argmax(ucb_values)
+                   ^~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:152: error: Incompatible return
+value type (got "signedinteger[Any]", expected "int")  [return-value]
+            return np.argmax(ucb_values)
+                   ^~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:167: error: Incompatible return
+value type (got "dict[int, dict[str, ndarray[Any, dtype[float64]]]]", expected
+"dict[int, dict[str, float]]")  [return-value]
+            return stats
+                   ^~~~~
+mahoun/self_improve/ultra_bandit_system.py:234: error: Need type annotation for
+"buffer" (hint: "buffer: list[<type>] = ...")  [var-annotated]
+            self.buffer = []
+            ^~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:291: error: Incompatible return
+value type (got "dict[int, dict[str, ndarray[Any, dtype[float64]]]]", expected
+"dict[int, dict[str, float]]")  [return-value]
+            return stats
+                   ^~~~~
+mahoun/self_improve/ultra_bandit_system.py:339: error: Incompatible return
+value type (got "dict[int, dict[str, ndarray[Any, dtype[float64]]]]", expected
+"dict[int, dict[str, float]]")  [return-value]
+            return stats
+                   ^~~~~
+mahoun/self_improve/ultra_bandit_system.py:367: error: Incompatible types in
+assignment (expression has type "UCB", variable has type "ThompsonSampling") 
+[assignment]
+                self.bandit = UCB(n_arms)
+                              ^~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:370: error: Incompatible types in
+assignment (expression has type "LinUCB", variable has type "ThompsonSampling") 
+[assignment]
+                self.bandit = LinUCB(n_arms, context_dim)
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:373: error: Incompatible types in
+assignment (expression has type "NeuralThompsonSampling", variable has type
+"ThompsonSampling")  [assignment]
+                self.bandit = NeuralThompsonSampling(context_dim, n_arms, ...
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_bandit_system.py:375: error: Incompatible types in
+assignment (expression has type "EXP3", variable has type "ThompsonSampling") 
+[assignment]
+                self.bandit = EXP3(n_arms)
+                              ^~~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:382: error: Need type annotation for
+"regret_history" (hint: "regret_history: list[<type>] = ...")  [var-annotated]
+            self.regret_history = []
+            ^~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:387: error: Too many arguments for
+"select_arm" of "ThompsonSampling"  [call-arg]
+                return self.bandit.select_arm(context)
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:399: error: Too many arguments for
+"update" of "ThompsonSampling"  [call-arg]
+                self.bandit.update(arm, context, reward)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_bandit_system.py:399: error: Argument 2 to "update"
+of "ThompsonSampling" has incompatible type "ndarray[Any, dtype[Any]]"; expected
+"float"  [arg-type]
+                self.bandit.update(arm, context, reward)
+                                        ^~~~~~~
+mahoun/self_improve/ultra_active_learning_pipeline.py:107: error: Need type
+annotation for "queues"  [var-annotated]
+            self.queues = {
+                          ^
+mahoun/self_improve/ultra_active_learning_pipeline.py:328: error: Argument
+"uncertainty_score" to "UltraAnnotationRequest" has incompatible type
+"ndarray[Any, dtype[Any]]"; expected "float"  [arg-type]
+                    uncertainty_score=ensemble_scores[idx],
+                                      ^~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_active_learning_pipeline.py:331: error: Argument 1 to
+"_compute_priority" of "UltraActiveLearningPipeline" has incompatible type
+"ndarray[Any, dtype[Any]]"; expected "float"  [arg-type]
+                    priority=self._compute_priority(ensemble_scores[idx]),
+                                                    ^~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_active_learning_pipeline.py:461: error: Argument 1 to
+"remove" of "list" has incompatible type "signedinteger[Any]"; expected "int" 
+[arg-type]
+            remaining.remove(first_idx)
+                             ^~~~~~~~~
+mahoun/self_improve/ultra_active_learning_pipeline.py:500: error: Argument 1 to
+"append" of "list" has incompatible type "int"; expected "signedinteger[Any]" 
+[arg-type]
+                selected.append(selected_idx)
+                                ^~~~~~~~~~~~
+mahoun/self_improve/ultra_active_learning_pipeline.py:506: error: Incompatible
+return value type (got "list[signedinteger[Any]]", expected "list[int]") 
+[return-value]
+            return selected
+                   ^~~~~~~~
+mahoun/self_improve/ultra_active_learning_pipeline.py:598: error: Unsupported
+operand types for + ("object" and "int")  [operator]
+            self.metrics["total_updates"] += 1
+            ^
+mahoun/self_improve/ultra_active_learning.py:241: error: Need type annotation
+for "labeled_pool" (hint: "labeled_pool: list[<type>] = ...")  [var-annotated]
+            self.labeled_pool = []
+            ^~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_active_learning.py:242: error: Need type annotation
+for "unlabeled_pool" (hint: "unlabeled_pool: list[<type>] = ...") 
+[var-annotated]
+            self.unlabeled_pool = []
+            ^~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_active_learning.py:243: error: Need type annotation
+for "query_history" (hint: "query_history: list[<type>] = ...")  [var-annotated]
+            self.query_history = []
+            ^~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_active_learning.py:259: error: Incompatible return
+value type (got "None", expected "AcquisitionFunction")  [return-value]
+                return None  # Created separately
+                       ^~~~
+mahoun/self_improve/ultra_active_learning.py:261: error: Incompatible return
+value type (got "None", expected "AcquisitionFunction")  [return-value]
+                return None  # Created on-the-fly with labeled data
+                       ^~~~
+mahoun/self_improve/ultra_active_learning.py:263: error: Incompatible return
+value type (got "None", expected "AcquisitionFunction")  [return-value]
+                return None  # Created separately
+                       ^~~~
+mahoun/self_improve/ultra_active_learning.py:323: error: Incompatible types in
+assignment (expression has type "CoreSetAcquisition", variable has type
+"QueryByCommittee")  [assignment]
+                acquisition_fn = CoreSetAcquisition(self.model, labeled_da...
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/self_improve/ultra_active_learning.py:326: error: Incompatible types in
+assignment (expression has type "LearningLossAcquisition", variable has type
+"QueryByCommittee")  [assignment]
+                acquisition_fn = LearningLossAcquisition(
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_active_learning.py:350: error: Unsupported operand
+types for + ("object" and "int")  [operator]
+            self.metrics["queries"] += 1
+            ^
+mahoun/self_improve/ultra_active_learning.py:351: error: Unsupported operand
+types for + ("object" and "int")  [operator]
+            self.metrics["labeled_samples"] += budget
+            ^
+mahoun/self_improve/ultra_active_learning.py:368: error: Argument 1 to "remove"
+of "list" has incompatible type "signedinteger[Any]"; expected "int"  [arg-type]
+            remaining.remove(first_idx)
+                             ^~~~~~~~~
+mahoun/self_improve/ultra_active_learning.py:392: error: Argument 1 to "append"
+of "list" has incompatible type "int"; expected "signedinteger[Any]"  [arg-type]
+                selected.append(remaining[best_idx])
+                                ^~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_active_learning.py:513: error: "object" has no
+attribute "append"  [attr-defined]
+            self.metrics["accuracy_history"].append(accuracy)
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/ultra_active_learning.py:523: error: Value of type "object"
+is not indexable  [index]
+                "current_accuracy": self.metrics["accuracy_history"][-1] i...
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/self_improvement_system_v2.py:152: error: Incompatible
+return value type (got "numpy.bool[builtins.bool]", expected "builtins.bool") 
+[return-value]
+                np.all(self.fitness_values >= other.fitness_values) and
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/self_improvement_system_v2.py:281: error: Need type
+annotation for "domination_count"  [var-annotated]
+            domination_count = np.zeros(n, dtype=int)
+                               ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/self_improvement_system_v2.py:282: error: Need type
+annotation for "dominated_solutions"  [var-annotated]
+            dominated_solutions = [[] for _ in range(n)]
+                                  ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/self_improvement_system_v2.py:283: error: Need type
+annotation for "fronts"  [var-annotated]
+            fronts = [[]]
+                     ^~~~
+mahoun/self_improve/self_improvement_system_v2.py:403: error: Need type
+annotation for "offspring" (hint: "offspring: list[<type>] = ...") 
+[var-annotated]
+            offspring = []
+            ^~~~~~~~~
+mahoun/self_improve/self_improvement_system_v2.py:439: error: Need type
+annotation for "next_population" (hint: "next_population: list[<type>] = ...") 
+[var-annotated]
+            next_population = []
+            ^~~~~~~~~~~~~~~
+mahoun/self_improve/self_improvement_system_v2.py:750: error: Item "None" of
+"Any | None" has no attribute "predict"  [union-attr]
+            prediction = self._model.predict(features)[0]
+                         ^~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/self_improvement_system_v2.py:751: error: Item "None" of
+"Any | None" has no attribute "score_samples"  [union-attr]
+            score = -self._model.score_samples(features)[0]  # Higher = mo...
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/self_improvement_system_v2.py:820: error: Incompatible
+return value type (got "tuple[Any, dict[str, Any] | None]", expected
+"tuple[str, dict[str, Any]] | None")  [return-value]
+                return latest_id, self._checkpoints.get(latest_id)
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/self_improve/self_improvement_system_v2.py:843: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/retrieval/ultra_hybrid_search.py:124: error: Need type annotation for
+"documents" (hint: "documents: list[<type>] = ...")  [var-annotated]
+            self.documents = []
+            ^~~~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:125: error: Need type annotation for
+"doc_lengths" (hint: "doc_lengths: list[<type>] = ...")  [var-annotated]
+            self.doc_lengths = []
+            ^~~~~~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:127: error: Need type annotation for
+"idf" (hint: "idf: dict[<type>, <type>] = ...")  [var-annotated]
+            self.idf = {}
+            ^~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:134: error: Incompatible types in
+assignment (expression has type "floating[Any] | int", variable has type "int") 
+[assignment]
+            self.avg_doc_length = np.mean(self.doc_lengths) if self.doc_le...
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/retrieval/ultra_hybrid_search.py:288: error: Need type annotation for
+"fused_scores"  [var-annotated]
+            fused_scores = defaultdict(float)
+            ^~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:304: error: Need type annotation for
+"fused_scores"  [var-annotated]
+            fused_scores = defaultdict(float)
+            ^~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:316: error: Need type annotation for
+"fused_scores"  [var-annotated]
+            fused_scores = defaultdict(float)
+            ^~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:327: error: Need type annotation for
+"fused_scores"  [var-annotated]
+            fused_scores = defaultdict(float)
+            ^~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:433: error: Incompatible return value
+type (got "list[tuple[Any | None, float]]", expected "list[tuple[str, float]]") 
+[return-value]
+            return selected
+                   ^~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:464: error: Need type annotation for
+"documents" (hint: "documents: list[<type>] = ...")  [var-annotated]
+            self.documents = []
+            ^~~~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:529: error: Value of type "object" is
+not indexable  [index]
+                self.stats["method_usage"]['bm25'] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:529: error: Unsupported target for
+indexed assignment ("object")  [index]
+                self.stats["method_usage"]['bm25'] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:534: error: Value of type "object" is
+not indexable  [index]
+                self.stats["method_usage"]['dense'] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:534: error: Unsupported target for
+indexed assignment ("object")  [index]
+                self.stats["method_usage"]['dense'] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:592: error: Unsupported operand types
+for + ("object" and "int")  [operator]
+            self.stats["total_searches"] += 1
+            ^
+mahoun/retrieval/ultra_hybrid_search.py:594: error: Unsupported operand types
+for * ("object" and "int")  [operator]
+                (self.stats["avg_search_time"] * (self.stats["total_search...
+                 ^
+mahoun/retrieval/ultra_hybrid_search.py:594: error: Unsupported operand types
+for - ("object" and "int")  [operator]
+                (self.stats["avg_search_time"] * (self.stats["total_search...
+                                                  ^
+mahoun/retrieval/ultra_hybrid_search.py:595: error: Unsupported operand types
+for / ("float" and "object")  [operator]
+                / self.stats["total_searches"]
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:601: error: No overload variant of
+"dict" matches argument type "object"  [call-overload]
+            stats["method_usage"] = dict(stats["method_usage"])
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/ultra_hybrid_search.py:601: note: Possible overload variants:
+mahoun/retrieval/ultra_hybrid_search.py:601: note:     def [_KT, _VT] __init__(self) -> dict[_KT, _VT]
+mahoun/retrieval/ultra_hybrid_search.py:601: note:     def [_KT, _VT] __init__(self, **kwargs: _VT) -> dict[str, _VT]
+mahoun/retrieval/ultra_hybrid_search.py:601: note:     def [_KT, _VT] __init__(self, SupportsKeysAndGetItem[_KT, _VT], /) -> dict[_KT, _VT]
+mahoun/retrieval/ultra_hybrid_search.py:601: note:     def [_KT, _VT] __init__(self, SupportsKeysAndGetItem[str, _VT], /, **kwargs: _VT) -> dict[str, _VT]
+mahoun/retrieval/ultra_hybrid_search.py:601: note:     def [_KT, _VT] __init__(self, Iterable[tuple[_KT, _VT]], /) -> dict[_KT, _VT]
+mahoun/retrieval/ultra_hybrid_search.py:601: note:     def [_KT, _VT] __init__(self, Iterable[tuple[str, _VT]], /, **kwargs: _VT) -> dict[str, _VT]
+mahoun/retrieval/ultra_hybrid_search.py:601: note:     def [_KT, _VT] __init__(self, Iterable[list[str]], /) -> dict[str, str]
+mahoun/retrieval/ultra_hybrid_search.py:601: note:     def [_KT, _VT] __init__(self, Iterable[list[bytes]], /) -> dict[bytes, bytes]
+mahoun/retrieval/hybrid_search_v2.py:76: error: Incompatible types in
+assignment (expression has type "None", variable has type Module)  [assignment]
+        np = None
+             ^~~~
+mahoun/retrieval/hybrid_search_v2.py:153: error: Need type annotation for
+"_cache"  [var-annotated]
+            self._cache = OrderedDict()
+            ^~~~~~~~~~~
+mahoun/retrieval/hybrid_search_v2.py:154: error: Need type annotation for
+"_timestamps" (hint: "_timestamps: dict[<type>, <type>] = ...")  [var-annotated]
+            self._timestamps = {}
+            ^~~~~~~~~~~~~~~~
+mahoun/retrieval/hybrid_search_v2.py:257: error: Need type annotation for
+"documents" (hint: "documents: list[<type>] = ...")  [var-annotated]
+            self.documents = []
+            ^~~~~~~~~~~~~~
+mahoun/retrieval/hybrid_search_v2.py:258: error: Need type annotation for
+"doc_ids" (hint: "doc_ids: list[<type>] = ...")  [var-annotated]
+            self.doc_ids = []
+            ^~~~~~~~~~~~
+mahoun/retrieval/hybrid_search_v2.py:260: error: Need type annotation for
+"stop_words" (hint: "stop_words: set[<type>] = ...")  [var-annotated]
+            self.stop_words = set()
+            ^~~~~~~~~~~~~~~
+mahoun/retrieval/hybrid_search_v2.py:952: error: Need type annotation for
+"sparse_task"  [var-annotated]
+            sparse_task = None
+            ^~~~~~~~~~~
+mahoun/retrieval/hybrid_search_v2.py:955: error: Argument 1 to "create_task"
+has incompatible type "Future[list[tuple[str, str, float]]]"; expected
+"Coroutine[Any, Any, Never]"  [arg-type]
+                    asyncio.get_event_loop().run_in_executor(
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/hybrid_search_v2.py:1340: error: Incompatible types in
+assignment (expression has type "dict[str, Any]", target has type "float") 
+[assignment]
+            stats["dense_retriever"] = self.dense_retriever.get_stats()
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/hybrid_search_v2.py:1343: error: Incompatible types in
+assignment (expression has type "dict[str, Any]", target has type "float") 
+[assignment]
+                stats["sparse_retriever"] = self.sparse_retriever.get_stat...
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/retrieval/hybrid_search_v2.py:1345: error: Incompatible types in
+assignment (expression has type "dict[str, Any]", target has type "float") 
+[assignment]
+            stats["cache"] = self.cache.get_stats()
+                             ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/reranking_cot.py:142: error: Incompatible types in assignment
+(expression has type "list[str]", variable has type "set[str]")  [assignment]
+            matching_terms = [t for t in matching_terms if len(t) > 2][:5]...
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/reranking_cot.py:157: error: Value of type "set[str]" is not
+indexable  [index]
+    ...         reasoning += f"واژگان مشترک: {', '.join(matching_terms[:3])}"
+                                                                   ^~~~~~~~~~
+mahoun/reasoning/reranking_cot.py:174: error: Value of type "set[str]" is not
+indexable  [index]
+    ...       reasoning += f"Matching terms: {', '.join(matching_terms[:3])}"
+                                                        ^~~~~~~~~~~~~~~~~~
+mahoun/reasoning/reranking_cot.py:276: error: Need type annotation for
+"entity_types" (hint: "entity_types: dict[<type>, <type>] = ...") 
+[var-annotated]
+            entity_types = {}
+            ^~~~~~~~~~~~
+mahoun/reasoning/causal_inference.py:38: error: Need type annotation for
+"mechanisms" (hint: "mechanisms: dict[<type>, <type>] = ...")  [var-annotated]
+            self.mechanisms = {}  # Causal mechanisms f_i
+            ^~~~~~~~~~~~~~~
+mahoun/reasoning/causal_inference.py:39: error: Need type annotation for
+"noise" (hint: "noise: dict[<type>, <type>] = ...")  [var-annotated]
+            self.noise = {}  # Exogenous variables U_i
+            ^~~~~~~~~~
+mahoun/reasoning/causal_inference.py:43: error: Function "builtins.callable" is
+not valid as a type  [valid-type]
+        def set_mechanism(self, variable: str, mechanism: callable):
+                                                          ^
+mahoun/reasoning/causal_inference.py:43: note: Perhaps you meant "typing.Callable" instead of "callable"?
+mahoun/reasoning/causal_inference.py:178: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/reasoning/causal_inference.py:179: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/reasoning/causal_effects.py:86: error: Need type annotation for "y1_hat"
+ [var-annotated]
+            y1_hat = np.sum(weights_treated * outcome) / np.sum(weights_tr...
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/reasoning/causal_effects.py:87: error: Need type annotation for "y0_hat"
+ [var-annotated]
+            y0_hat = np.sum(weights_control * outcome) / np.sum(weights_co...
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/reasoning/causal_effects.py:227: error: Incompatible return value type
+(got "tuple[floating[Any], Any]", expected "tuple[float, float]") 
+[return-value]
+            return att, se
+                   ^~~~~~~
+mahoun/reasoning/causal_effects.py:306: error: Incompatible return value type
+(got "tuple[floating[Any], Any]", expected "tuple[float, float]") 
+[return-value]
+            return ate, se
+                   ^~~~~~~
+mahoun/reasoning/causal_effects.py:379: error: Incompatible return value type
+(got "tuple[Any, floating[Any], floating[Any]]", expected
+"tuple[float, float, float]")  [return-value]
+            return point_estimate, lower, upper
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/causal_effects.py:400: error: Incompatible types in assignment
+(expression has type "PropensityScoreMatching", variable has type
+"IPWEstimator")  [assignment]
+                self.estimator = PropensityScoreMatching(**kwargs)
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/causal_effects.py:402: error: Incompatible types in assignment
+(expression has type "DoublyRobustEstimator", variable has type "IPWEstimator") 
+[assignment]
+                self.estimator = DoublyRobustEstimator(**kwargs)
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/causal_effects.py:437: error: Dict entry 3 has incompatible
+type "str": "str"; expected "str": "float"  [dict-item]
+                    'method': self.method
+                    ^~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/causal_effects.py:441: error: "IPWEstimator" has no attribute
+"estimate_att"; maybe "estimate_ate"?  [attr-defined]
+                    estimate, se = self.estimator.estimate_att(X, treatmen...
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_indexing_system.py:354: error: "None" has no attribute
+"encode"  [attr-defined]
+                embeddings = self.model.encode(
+                             ^~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_indexing_system.py:368: error: "None" has no attribute
+"embeddings"  [attr-defined]
+                response = self.model.embeddings.create(
+                           ^~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_indexing_system.py:376: error: "None" has no attribute "embed"
+ [attr-defined]
+                response = self.model.embed(
+                           ^~~~~~~~~~~~~~~~
+mahoun/rag/ultra_indexing_system.py:474: error: Need type annotation for
+"metadata_store" (hint: "metadata_store: dict[<type>, <type>] = ...") 
+[var-annotated]
+            self.metadata_store = {}
+            ^~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_indexing_system.py:604: error: "None" has no attribute "add" 
+[attr-defined]
+                self.index.add(vectors)
+                ^~~~~~~~~~~~~~
+mahoun/rag/ultra_indexing_system.py:623: error: "None" has no attribute
+"upsert"  [attr-defined]
+                self.index.upsert(collection_name="vectors", points=points...
+                ^~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_indexing_system.py:641: error: "None" has no attribute
+"search"  [attr-defined]
+                distances, indices = self.index.search(
+                                     ^~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_indexing_system.py:647: error: "None" has no attribute
+"search"  [attr-defined]
+                results = self.index.search(
+                          ^~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_graph_rag.py:308: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/rag/ultra_evaluation_system.py:197: error: Incompatible return value
+type (got "floating[Any] | float", expected "float")  [return-value]
+            return np.mean(scores) if scores else 0.0
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:221: error: Incompatible return value
+type (got "floating[Any] | float", expected "float")  [return-value]
+            return np.mean(scores) if scores else 0.0
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:250: error: Incompatible return value
+type (got "floating[Any] | float", expected "float")  [return-value]
+            return np.mean(scores) if scores else 0.0
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:271: error: Incompatible return value
+type (got "floating[Any] | float", expected "float")  [return-value]
+            return np.mean(scores) if scores else 0.0
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:297: error: Incompatible return value
+type (got "floating[Any] | float", expected "float")  [return-value]
+            return np.mean(scores) if scores else 0.0
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:328: error: Item "None" of "str | None"
+has no attribute "lower"  [union-attr]
+            answer_tokens = set(sample.generated_answer.lower().split())
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:343: error: Incompatible return value
+type (got "floating[Any] | float", expected "float")  [return-value]
+            return np.mean(scores) if scores else 0.0
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:361: error: Incompatible return value
+type (got "floating[Any] | float", expected "float")  [return-value]
+            return np.mean(scores) if scores else 0.0
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:474: error: Incompatible types in
+assignment (expression has type "floating[Any]", target has type "float") 
+[assignment]
+    ...               report.metrics[f"{metric_name}_mean"] = np.mean(scores)
+                                                              ^~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:477: error: Incompatible types in
+assignment (expression has type "floating[Any]", target has type "float") 
+[assignment]
+                    report.metrics[f"{metric_name}_std"] = np.std(scores)
+                                                           ^~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:480: error: Incompatible types in
+assignment (expression has type "floating[Any]", target has type "float") 
+[assignment]
+    ...           report.metrics[f"{metric_name}_median"] = np.median(scores)
+                                                            ^~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:650: error: "Collection[str]" has no
+attribute "append"  [attr-defined]
+                analysis["comparisons"].append(comparison)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:654: error: Generator has incompatible
+item type "int"; expected "bool"  [misc]
+                1 for c in analysis["comparisons"]
+                ^
+mahoun/rag/ultra_evaluation_system.py:655: error: Invalid index type "str" for
+"str"; expected type "SupportsIndex | slice[Any, Any, Any]"  [index]
+                if c["is_significant"] and c["difference"] > 0
+                     ^~~~~~~~~~~~~~~~
+mahoun/rag/ultra_evaluation_system.py:655: error: Unsupported operand types for
+> ("str" and "int")  [operator]
+                if c["is_significant"] and c["difference"] > 0
+                                                             ^
+mahoun/rag/training/trainer.py:326: error: Item "None" of "Any | None" has no
+attribute "eval"  [union-attr]
+            self.model.eval()
+            ^~~~~~~~~~~~~~~
+mahoun/rag/training/trainer.py:338: error: "None" not callable  [misc]
+                    outputs = self.model(**batch)
+                              ^~~~~~~~~~~~~~~~~~~
+mahoun/rag/training/trainer.py:343: error: Item "None" of "Any | None" has no
+attribute "train"  [union-attr]
+            self.model.train()
+            ^~~~~~~~~~~~~~~~
+mahoun/pipelines/embed_index.py:287: error: Argument "model_name" to
+"EmbeddingConfig" has incompatible type "str | None"; expected "str"  [arg-type]
+                model_name=model_name,
+                           ^~~~~~~~~~
+mahoun/pipelines/embed_index.py:310: error: Unsupported operand types for +
+("None" and "int")  [operator]
+            self._stats["calls"] += 1
+            ^
+mahoun/pipelines/embed_index.py:310: note: Left operand is of type "float | None"
+mahoun/pipelines/embed_index.py:311: error: Unsupported operand types for +
+("None" and "int")  [operator]
+            self._stats["texts_embedded"] += len(texts)
+            ^
+mahoun/pipelines/embed_index.py:311: note: Left operand is of type "float | None"
+mahoun/pipelines/embed_index.py:318: error: Incompatible types in assignment
+(expression has type "str", target has type "float | None")  [assignment]
+                self._stats["last_error"] = str(e)
+                                            ^~~~~~
+mahoun/pipelines/embed_index.py:381: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/pipelines/vector_store/manager_v2.py:61: error: Incompatible types in
+assignment (expression has type "None", variable has type Module)  [assignment]
+        np = None
+             ^~~~
+mahoun/pipelines/vector_store/manager_v2.py:96: error: Need type annotation for
+"_cache"  [var-annotated]
+            self._cache = OrderedDict()
+            ^~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:97: error: Need type annotation for
+"_timestamps" (hint: "_timestamps: dict[<type>, <type>] = ...")  [var-annotated]
+            self._timestamps = {}
+            ^~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:299: error: Incompatible types in
+assignment (expression has type "ThreadPoolExecutor", variable has type "None") 
+[assignment]
+                self.executor = ThreadPoolExecutor(
+                                ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:330: error: "None" has no attribute
+"get_collection"  [attr-defined]
+                    self.collection = self.client.get_collection(
+                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:336: error: "None" has no attribute
+"create_collection"  [attr-defined]
+                    self.collection = self.client.create_collection(
+                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:443: error: "None" has no attribute
+"add"  [attr-defined]
+            self.collection.add(
+            ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:506: error: "object" has no
+attribute "append"  [attr-defined]
+                    query_params["include"].append("distances")
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:564: error: "None" has no attribute
+"query"  [attr-defined]
+            return self.collection.query(**query_params)
+                   ^~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:690: error: "None" has no attribute
+"get"  [attr-defined]
+            return self.collection.get(**query_params)
+                   ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:745: error: "None" has no attribute
+"delete"  [attr-defined]
+            self.collection.delete(ids=ids)
+            ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:761: error: "None" has no attribute
+"count"  [attr-defined]
+                    self.collection.count
+                    ^~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:844: error: Dict entry 0 has
+incompatible type "str": "int | float"; expected "str": "str"  [dict-item]
+                    where_conditions.append({key: {"$eq": value}})
+                                                   ^~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:847: error: Dict entry 0 has
+incompatible type "str": "list[Any]"; expected "str": "str"  [dict-item]
+                    where_conditions.append({key: {"$in": value}})
+                                                   ^~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:886: error: Need type annotation
+for "results" (hint: "results: list[<type>] = ...")  [var-annotated]
+            results = []
+            ^~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:920: error: Need type annotation
+for "results" (hint: "results: list[<type>] = ...")  [var-annotated]
+            results = []
+            ^~~~~~~
+mahoun/pipelines/vector_store/manager_v2.py:949: error: Incompatible types in
+assignment (expression has type "dict[str, Any]", target has type "float") 
+[assignment]
+            stats["cache"] = self.cache.get_stats()
+                             ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager.py:259: error: "None" has no attribute
+"add"  [attr-defined]
+                    self._backend.add(
+                    ^~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager.py:325: error: "None" has no attribute
+"query"  [attr-defined]
+                    query_result = self._backend.query(
+                                   ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/vector_store/manager.py:419: error: "None" has no attribute
+"delete"  [attr-defined]
+                    self._backend.delete(ids=ids)
+                    ^~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/orchestrator.py:147: error: Unsupported operand types for -
+("float" and "None")  [operator]
+                if time.time() - self.last_failure_time > self.recovery_ti...
+                                 ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/orchestrator.py:156: error: Exception type must be derived
+from BaseException (or be a tuple of exception classes)  [misc]
+            except self.expected_exception as e:
+                   ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/orchestrator.py:196: error: Incompatible types in
+assignment (expression has type "float", variable has type "int")  [assignment]
+                self.tokens = min(self.capacity, self.tokens + elapsed * s...
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+mahoun/orchestrator/orchestrator.py:227: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/orchestrator/orchestrator.py:228: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/orchestrator/orchestrator.py:272: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/orchestrator/orchestrator.py:273: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/orchestrator/orchestrator.py:333: error: Need type annotation for
+"task_queue"  [var-annotated]
+            self.task_queue = PriorityQueue()
+                              ^~~~~~~~~~~~~~~
+mahoun/orchestrator/orchestrator.py:525: error: Unsupported operand types for +
+("object" and "int")  [operator]
+                self.metrics["tasks_completed"] += 1
+                ^
+mahoun/orchestrator/orchestrator.py:526: error: Unsupported operand types for +
+("object" and "float")  [operator]
+                self.metrics["total_latency_ms"] += latency
+                ^
+mahoun/orchestrator/orchestrator.py:559: error: Unsupported operand types for +
+("object" and "int")  [operator]
+                self.metrics["tasks_failed"] += 1
+                ^
+mahoun/orchestrator/orchestrator.py:562: error: Value of type "object" is not
+indexable  [index]
+                self.metrics["component_failures"][component_name] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/orchestrator/orchestrator.py:562: error: Unsupported target for indexed
+assignment ("object")  [index]
+                self.metrics["component_failures"][component_name] += 1
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/ultra_graph_builder.py:134: error: Need type annotation for
+"degree_count"  [var-annotated]
+                degree_count = defaultdict(int)
+                ^~~~~~~~~~~~
+mahoun/graph/ultra_graph_builder.py:361: error: Need type annotation for
+"node_index" (hint: "node_index: dict[<type>, <type>] = ...")  [var-annotated]
+            self.node_index = {}  # For fast lookup
+            ^~~~~~~~~~~~~~~
+mahoun/graph/ultra_graph_builder.py:362: error: Need type annotation for
+"edge_index"  [var-annotated]
+            self.edge_index = defaultdict(list)  # Adjacency list
+            ^~~~~~~~~~~~~~~
+mahoun/graph/ultra_graph_builder.py:365: error: Need type annotation for
+"update_queue"  [var-annotated]
+            self.update_queue = deque()
+                                ^~~~~~~
+mahoun/graph/ultra_gat_trainer.py:477: error: Name "GATLayer" already defined
+on line 162  [no-redef]
+        class GATLayer(_TorchRequiredStub):
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/ultra_gat_trainer.py:481: error: Name "UltraGAT" already defined
+on line 250  [no-redef]
+        class UltraGAT(_TorchRequiredStub):
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/ultra_gat_trainer.py:485: error: Name "UltraGATTrainer" already
+defined on line 300  [no-redef]
+        class UltraGATTrainer(_TorchRequiredStub):
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/relation_extractor.py:78: error: Need type annotation for
+"adj_matrix"  [var-annotated]
+            adj_matrix = np.zeros((n_entities, n_entities), dtype=np.float...
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/relation_extractor.py:130: error: Argument "key" to "sort" of
+"list" has incompatible type "Callable[[dict[str, object]], object]"; expected
+"Callable[[dict[str, object]], SupportsDunderLT[Any] | SupportsDunderGT[Any]]" 
+[arg-type]
+            relations.sort(key=lambda x: x["confidence"], reverse=True)
+                               ^
+mahoun/graph/relation_extractor.py:130: error: Incompatible return value type
+(got "object", expected "SupportsDunderLT[Any] | SupportsDunderGT[Any]") 
+[return-value]
+            relations.sort(key=lambda x: x["confidence"], reverse=True)
+                                         ^~~~~~~~~~~~~~~
+mahoun/graph/relation_extractor.py:301: error: Cannot assign to a type  [misc]
+        RelationExtractor = RelationExtractorBase
+        ^~~~~~~~~~~~~~~~~
+mahoun/graph/relation_extractor.py:301: error: Incompatible types in assignment
+(expression has type "type[RelationExtractorBase]", variable has type
+"type[RelationExtractor]")  [assignment]
+        RelationExtractor = RelationExtractorBase
+                            ^~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/graph_reranker.py:83: error: Need type annotation for "adj_matrix"
+ [var-annotated]
+            adj_matrix = np.zeros((n_docs, n_docs), dtype=np.float32)
+                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/graph_reranker.py:194: error: Need type annotation for
+"adj_matrix"  [var-annotated]
+                adj_matrix = np.zeros((n_docs, n_docs), dtype=np.float32)
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/graph_reranker.py:273: error: Cannot assign to a type  [misc]
+        GraphReranker = GraphRerankerBase
+        ^~~~~~~~~~~~~
+mahoun/graph/graph_reranker.py:273: error: Incompatible types in assignment
+(expression has type "type[GraphRerankerBase]", variable has type
+"type[GraphReranker]")  [assignment]
+        GraphReranker = GraphRerankerBase
+                        ^~~~~~~~~~~~~~~~~
+mahoun/graph/graph_query_service.py:351: error: Cannot determine type of
+"_initialized"  [has-type]
+            if self._initialized:
+               ^~~~~~~~~~~~~~~~~
+mahoun/graph/graph_query_service.py:423: error: Exception must be derived from
+BaseException  [misc]
+            raise last_error
+            ^~~~~~~~~~~~~~~~
+mahoun/graph/graph_query_service.py:511: error: Incompatible types in
+assignment (expression has type "None", variable has type
+"Neo4jConnectionManager")  [assignment]
+                self._connection = None
+                                   ^~~~
+mahoun/graph/graph_query_service.py:805: error: Incompatible types in
+assignment (expression has type "str", variable has type
+"dict[str, dict[str, str]]")  [assignment]
+                rel_projection = "*"
+                                 ^~~
+mahoun/graph/neo4j/monitoring.py:18: error: Incompatible types in assignment
+(expression has type "None", variable has type Module)  [assignment]
+        np = None
+             ^~~~
+mahoun/graph/neo4j/monitoring.py:65: error: Incompatible types in assignment
+(expression has type "floating[Any]", target has type "float | int") 
+[assignment]
+                result["mean_time"] = np.mean(self.query_times)
+                                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/monitoring.py:66: error: Incompatible types in assignment
+(expression has type "floating[Any]", target has type "float | int") 
+[assignment]
+                result["median_time"] = np.median(self.query_times)
+                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/monitoring.py:67: error: Incompatible types in assignment
+(expression has type "floating[Any]", target has type "float | int") 
+[assignment]
+                result["p95_time"] = np.percentile(self.query_times, 95)
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/graph/neo4j/monitoring.py:68: error: Incompatible types in assignment
+(expression has type "floating[Any]", target has type "float | int") 
+[assignment]
+                result["p99_time"] = np.percentile(self.query_times, 99)
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/ultra_risk_assessment_agent.py:213: error: Need type
+annotation for "results" (hint: "results: list[<type>] = ...")  [var-annotated]
+            results = []
+            ^~~~~~~
+mahoun/agents/archive/ultra_risk_assessment_agent.py:297: error: Argument
+"roi_ratio" to "FinancialRisk" has incompatible type "floating[Any]"; expected
+"float"  [arg-type]
+                roi_ratio=np.mean(sims) / estimated_cost,
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/ultra_risk_assessment_agent.py:298: error: Argument
+"worst_case_loss" to "FinancialRisk" has incompatible type "floating[Any]";
+expected "float"  [arg-type]
+                worst_case_loss=abs(np.percentile(sims, 5)), # 5th percent...
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/ultra_risk_assessment_agent.py:299: error: Argument
+"best_case_gain" to "FinancialRisk" has incompatible type "floating[Any]";
+expected "float"  [arg-type]
+                best_case_gain=np.percentile(sims, 95),      # 95th percen...
+                               ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/agents/archive/ultra_risk_assessment_agent.py:300: error: Argument
+"break_even_probability" to "FinancialRisk" has incompatible type
+"floating[Any]"; expected "float"  [arg-type]
+                break_even_probability=np.mean(sims > 0)
+                                       ^~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/__init__.py:23: error: Incompatible types in
+assignment (expression has type "None", variable has type
+"Callable[[str], dict[str, list[dict[str, Any]]]]")  [assignment]
+        extract_entities = None
+                           ^~~~
+mahoun/pipelines/ingestion/__init__.py:24: error: Cannot assign to a type 
+[misc]
+        LegalNEREngine = None
+        ^~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/__init__.py:24: error: Incompatible types in
+assignment (expression has type "None", variable has type
+"type[LegalNEREngine]")  [assignment]
+        LegalNEREngine = None
+                         ^~~~
+mahoun/pipelines/ingestion/__init__.py:37: error: Cannot assign to a type 
+[misc]
+        LegalStorageService = None
+        ^~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/__init__.py:37: error: Incompatible types in
+assignment (expression has type "None", variable has type
+"type[LegalStorageService]")  [assignment]
+        LegalStorageService = None
+                              ^~~~
+mahoun/pipelines/ingestion/__init__.py:38: error: Cannot assign to a type 
+[misc]
+        StorageResult = None
+        ^~~~~~~~~~~~~
+mahoun/pipelines/ingestion/__init__.py:38: error: Incompatible types in
+assignment (expression has type "None", variable has type "type[StorageResult]")
+ [assignment]
+        StorageResult = None
+                        ^~~~
+mahoun/pipelines/ingestion/__init__.py:39: error: Incompatible types in
+assignment (expression has type "None", variable has type
+"Callable[[str, dict[str, Any], list[dict[str, Any]] | None, list[list[float]] | None, str | None], Coroutine[Any, Any, StorageResult]]")
+ [assignment]
+        store_verdict_to_legal_schema = None
+                                        ^~~~
+mahoun/pipelines/ingestion/__init__.py:40: error: Incompatible types in
+assignment (expression has type "None", variable has type
+"Callable[[], Coroutine[Any, Any, LegalStorageService]]")  [assignment]
+        get_legal_storage = None
+                            ^~~~
+mahoun/pipelines/ingestion/__init__.py:74: error: Cannot assign to a type 
+[misc]
+        EnhancedIngestionPipeline = None
+        ^~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/__init__.py:74: error: Incompatible types in
+assignment (expression has type "None", variable has type
+"type[EnhancedIngestionPipeline]")  [assignment]
+        EnhancedIngestionPipeline = None
+                                    ^~~~
+mahoun/pipelines/ingestion/__init__.py:75: error: Cannot assign to a type 
+[misc]
+        EnhancedIngestionResult = None
+        ^~~~~~~~~~~~~~~~~~~~~~~
+mahoun/pipelines/ingestion/__init__.py:75: error: Incompatible types in
+assignment (expression has type "None", variable has type
+"type[EnhancedIngestionResult]")  [assignment]
+        EnhancedIngestionResult = None
+                                  ^~~~
+mahoun/agents/factory.py:175: error: Argument 2 to "issubclass" has
+incompatible type "<typing special form>"; expected "_ClassInfo"  [arg-type]
+            if not issubclass(agent_class, BaseAgent):
+                                           ^~~~~~~~~
+mahoun/uncertainty/service.py:62: error: Incompatible types in assignment
+(expression has type "None", variable has type "dict[str, Any]")  [assignment]
+        metadata: Dict[str, Any] = None
+                                   ^~~~
+mahoun/uncertainty/__init__.py:26: error: Cannot assign to a type  [misc]
+        TemperatureScaling = None
+        ^~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/__init__.py:26: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[TemperatureScaling]") 
+[assignment]
+        TemperatureScaling = None
+                             ^~~~
+mahoun/uncertainty/__init__.py:27: error: Cannot assign to a type  [misc]
+        ConformalPrediction = None
+        ^~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/__init__.py:27: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[ConformalPrediction]") 
+[assignment]
+        ConformalPrediction = None
+                              ^~~~
+mahoun/uncertainty/__init__.py:28: error: Cannot assign to a type  [misc]
+        UncertaintyCalibrator = None
+        ^~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/__init__.py:28: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[UncertaintyCalibrator]") 
+[assignment]
+        UncertaintyCalibrator = None
+                                ^~~~
+mahoun/uncertainty/__init__.py:29: error: Cannot assign to a type  [misc]
+        CalibrationResult = None
+        ^~~~~~~~~~~~~~~~~
+mahoun/uncertainty/__init__.py:29: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[CalibrationResult]") 
+[assignment]
+        CalibrationResult = None
+                            ^~~~
+mahoun/uncertainty/__init__.py:30: error: Incompatible types in assignment
+(expression has type "None", variable has type
+"Callable[[ndarray[Any, dtype[Any]], ndarray[Any, dtype[Any]], ndarray[Any, dtype[Any]], int], float]")
+ [assignment]
+        compute_ece = None
+                      ^~~~
+mahoun/uncertainty/__init__.py:46: error: Cannot assign to a type  [misc]
+        GaussianProcessUncertaintyV2 = None
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/__init__.py:46: error: Incompatible types in assignment
+(expression has type "None", variable has type
+"type[GaussianProcessUncertaintyV2]")  [assignment]
+        GaussianProcessUncertaintyV2 = None
+                                       ^~~~
+mahoun/uncertainty/__init__.py:47: error: Cannot assign to a type  [misc]
+        GPConfig = None
+        ^~~~~~~~
+mahoun/uncertainty/__init__.py:47: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[GPConfig]")  [assignment]
+        GPConfig = None
+                   ^~~~
+mahoun/uncertainty/__init__.py:48: error: Cannot assign to a type  [misc]
+        KernelType = None
+        ^~~~~~~~~~
+mahoun/uncertainty/__init__.py:48: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[KernelType]")  [assignment]
+        KernelType = None
+                     ^~~~
+mahoun/uncertainty/__init__.py:49: error: Cannot assign to a type  [misc]
+        UncertaintyEstimate = None
+        ^~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/__init__.py:49: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[UncertaintyEstimate]") 
+[assignment]
+        UncertaintyEstimate = None
+                              ^~~~
+mahoun/uncertainty/__init__.py:50: error: Cannot assign to a type  [misc]
+        CalibrationMetrics = None
+        ^~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/__init__.py:50: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[CalibrationMetrics]") 
+[assignment]
+        CalibrationMetrics = None
+                             ^~~~
+mahoun/uncertainty/__init__.py:51: error: Cannot assign to a type  [misc]
+        LatencyMetrics = None
+        ^~~~~~~~~~~~~~
+mahoun/uncertainty/__init__.py:51: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[LatencyMetrics]") 
+[assignment]
+        LatencyMetrics = None
+                         ^~~~
+mahoun/uncertainty/__init__.py:52: error: Incompatible types in assignment
+(expression has type "None", variable has type
+"def create_gp_uncertainty(kernel_type: str = ..., num_inducing_points: int = ..., use_cuda: bool = ..., **kwargs: Any) -> GaussianProcessUncertaintyV2")
+ [assignment]
+        create_gp_uncertainty = None
+                                ^~~~
+mahoun/uncertainty/__init__.py:53: error: Incompatible types in assignment
+(expression has type "None", variable has type
+"Callable[[ndarray[Any, dtype[Any]], ndarray[Any, dtype[Any]] | None, bool, bool], ndarray[Any, dtype[Any]]]")
+ [assignment]
+        create_features_from_scores = None
+                                      ^~~~
+mahoun/uncertainty/__init__.py:59: error: Cannot assign to a type  [misc]
+        GaussianProcessUncertainty = None
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/uncertainty/__init__.py:59: error: Incompatible types in assignment
+(expression has type "None", variable has type
+"type[GaussianProcessUncertainty]")  [assignment]
+        GaussianProcessUncertainty = None
+                                     ^~~~
+mahoun/retrieval/__init__.py:20: error: Cannot assign to a type  [misc]
+        UltraHybridSearch = None
+        ^~~~~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:20: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[UltraHybridSearch]") 
+[assignment]
+        UltraHybridSearch = None
+                            ^~~~
+mahoun/retrieval/__init__.py:21: error: Cannot assign to a type  [misc]
+        BM25Retriever = None
+        ^~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:21: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[BM25Retriever]") 
+[assignment]
+        BM25Retriever = None
+                        ^~~~
+mahoun/retrieval/__init__.py:22: error: Cannot assign to a type  [misc]
+        DenseRetriever = None
+        ^~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:22: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[DenseRetriever]") 
+[assignment]
+        DenseRetriever = None
+                         ^~~~
+mahoun/retrieval/__init__.py:23: error: Cannot assign multiple types to name
+"HybridRetriever" without an explicit "type[...]" annotation  [misc]
+        HybridRetriever = None
+        ^~~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:23: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[UltraHybridSearch]") 
+[assignment]
+        HybridRetriever = None
+                          ^~~~
+mahoun/retrieval/__init__.py:24: error: Cannot assign to a type  [misc]
+        RetrievalMethod = None
+        ^~~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:24: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[RetrievalMethod]") 
+[assignment]
+        RetrievalMethod = None
+                          ^~~~
+mahoun/retrieval/__init__.py:25: error: Cannot assign to a type  [misc]
+        FusionMethod = None
+        ^~~~~~~~~~~~
+mahoun/retrieval/__init__.py:25: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[FusionMethod]") 
+[assignment]
+        FusionMethod = None
+                       ^~~~
+mahoun/retrieval/__init__.py:40: error: Cannot assign to a type  [misc]
+        HybridSearchV2 = None
+        ^~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:40: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[HybridSearchV2]") 
+[assignment]
+        HybridSearchV2 = None
+                         ^~~~
+mahoun/retrieval/__init__.py:41: error: Cannot assign to a type  [misc]
+        BM25RetrieverV2 = None
+        ^~~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:41: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[BM25Retriever]") 
+[assignment]
+        BM25RetrieverV2 = None
+                          ^~~~
+mahoun/retrieval/__init__.py:42: error: Cannot assign to a type  [misc]
+        DenseRetrieverV2 = None
+        ^~~~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:42: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[DenseRetriever]") 
+[assignment]
+        DenseRetrieverV2 = None
+                           ^~~~
+mahoun/retrieval/__init__.py:43: error: Cannot assign to a type  [misc]
+        RetrievalMethodV2 = None
+        ^~~~~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:43: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[RetrievalMethod]") 
+[assignment]
+        RetrievalMethodV2 = None
+                            ^~~~
+mahoun/retrieval/__init__.py:44: error: Cannot assign to a type  [misc]
+        FusionMethodV2 = None
+        ^~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:44: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[FusionMethod]") 
+[assignment]
+        FusionMethodV2 = None
+                         ^~~~
+mahoun/retrieval/__init__.py:45: error: Cannot assign to a type  [misc]
+        SearchResultV2 = None
+        ^~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:45: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[SearchResult]") 
+[assignment]
+        SearchResultV2 = None
+                         ^~~~
+mahoun/retrieval/__init__.py:46: error: Cannot assign to a type  [misc]
+        HybridSearchResult = None
+        ^~~~~~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:46: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[HybridSearchResult]") 
+[assignment]
+        HybridSearchResult = None
+                             ^~~~
+mahoun/retrieval/__init__.py:47: error: Incompatible types in assignment
+(expression has type "None", variable has type
+"Callable[[Any, float, float], Coroutine[Any, Any, HybridSearchV2]]") 
+[assignment]
+        create_hybrid_search_v2 = None
+                                  ^~~~
+mahoun/retrieval/__init__.py:57: error: Cannot assign to a type  [misc]
+        GraphHopRetriever = None
+        ^~~~~~~~~~~~~~~~~
+mahoun/retrieval/__init__.py:57: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[GraphHopRetriever]") 
+[assignment]
+        GraphHopRetriever = None
+                            ^~~~
+mahoun/retrieval/__init__.py:58: error: Cannot assign to a type  [misc]
+        HopResult = None
+        ^~~~~~~~~
+mahoun/retrieval/__init__.py:58: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[HopResult]")  [assignment]
+        HopResult = None
+                    ^~~~
+mahoun/retrieval/__init__.py:59: error: Incompatible types in assignment
+(expression has type "None", variable has type
+"Callable[[list[dict[str, Any]], DiGraph?, int, int], list[HopResult]]") 
+[assignment]
+        expand_with_graph_hops = None
+                                 ^~~~
+mahoun/reasoning/__init__.py:12: error: Module
+"HAJIX.mahoun.reasoning.reasoning_engine" has no attribute "ReasoningEngine";
+maybe "DeepLegalReasoningEngine"?  [attr-defined]
+        from .reasoning_engine import ReasoningEngine, ReasoningResult
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:18: error: Module
+"HAJIX.mahoun.reasoning.policies" has no attribute "PolicyEngine" 
+[attr-defined]
+        from .policies import PolicyEngine, PolicyDecision
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:18: error: Module
+"HAJIX.mahoun.reasoning.policies" has no attribute "PolicyDecision" 
+[attr-defined]
+        from .policies import PolicyEngine, PolicyDecision
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:26: error: Cannot assign to a type  [misc]
+        ChainOfThoughtReasoner = None
+        ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:26: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[ChainOfThoughtReasoner]") 
+[assignment]
+        ChainOfThoughtReasoner = None
+                                 ^~~~
+mahoun/reasoning/__init__.py:31: error: Cannot assign to a type  [misc]
+        CausalInferenceEngine = None
+        ^~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:31: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[CausalInferenceEngine]") 
+[assignment]
+        CausalInferenceEngine = None
+                                ^~~~
+mahoun/reasoning/__init__.py:36: error: Cannot assign to a type  [misc]
+        LegalKnowledgeGraph = None
+        ^~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:36: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[LegalKnowledgeGraph]") 
+[assignment]
+        LegalKnowledgeGraph = None
+                              ^~~~
+mahoun/reasoning/__init__.py:41: error: Cannot assign to a type  [misc]
+        UltraReasoningService = None
+        ^~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:41: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[UltraReasoningService]") 
+[assignment]
+        UltraReasoningService = None
+                                ^~~~
+mahoun/reasoning/__init__.py:55: error: Function "ChainOfThoughtReasoner" could
+always be true in boolean context  [truthy-function]
+    if ChainOfThoughtReasoner:
+       ^~~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:57: error: Function "CausalInferenceEngine" could
+always be true in boolean context  [truthy-function]
+    if CausalInferenceEngine:
+       ^~~~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:59: error: Function "LegalKnowledgeGraph" could
+always be true in boolean context  [truthy-function]
+    if LegalKnowledgeGraph:
+       ^~~~~~~~~~~~~~~~~~~
+mahoun/reasoning/__init__.py:61: error: Function "UltraReasoningService" could
+always be true in boolean context  [truthy-function]
+    if UltraReasoningService:
+       ^~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/__init__.py:14: error: Cannot assign to a type  [misc]
+        UltraGraphRAG = None
+        ^~~~~~~~~~~~~
+mahoun/rag/__init__.py:14: error: Incompatible types in assignment (expression
+has type "None", variable has type "type[UltraGraphRAG]")  [assignment]
+        UltraGraphRAG = None
+                        ^~~~
+mahoun/rag/__init__.py:17: error: Module
+"HAJIX.mahoun.rag.ultra_evaluation_system" has no attribute
+"UltraEvaluationSystem"  [attr-defined]
+        from .ultra_evaluation_system import UltraEvaluationSystem
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/rag/__init__.py:24: error: Cannot assign to a type  [misc]
+        UltraIndexingSystem = None
+        ^~~~~~~~~~~~~~~~~~~
+mahoun/rag/__init__.py:24: error: Incompatible types in assignment (expression
+has type "None", variable has type "type[UltraIndexingSystem]")  [assignment]
+        UltraIndexingSystem = None
+                              ^~~~
+mahoun/rag/__init__.py:29: error: Cannot assign to a type  [misc]
+        UltraTrainingSystem = None
+        ^~~~~~~~~~~~~~~~~~~
+mahoun/rag/__init__.py:29: error: Incompatible types in assignment (expression
+has type "None", variable has type "type[UltraTrainingSystem]")  [assignment]
+        UltraTrainingSystem = None
+                              ^~~~
+mahoun/rag/__init__.py:62: error: Function "UltraGraphRAG" could always be true
+in boolean context  [truthy-function]
+    if UltraGraphRAG:
+       ^~~~~~~~~~~~~
+mahoun/rag/__init__.py:66: error: Function "UltraIndexingSystem" could always
+be true in boolean context  [truthy-function]
+    if UltraIndexingSystem:
+       ^~~~~~~~~~~~~~~~~~~
+mahoun/rag/__init__.py:68: error: Function "UltraTrainingSystem" could always
+be true in boolean context  [truthy-function]
+    if UltraTrainingSystem:
+       ^~~~~~~~~~~~~~~~~~~
+mahoun/mcp/tools/rag.py:33: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/mcp/tools/rag.py:34: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+mahoun/guardrails/__init__.py:25: error: Cannot assign to a type  [misc]
+        UltraNLIVerifier = None
+        ^~~~~~~~~~~~~~~~
+mahoun/guardrails/__init__.py:25: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[UltraNLIVerifier]") 
+[assignment]
+        UltraNLIVerifier = None
+                           ^~~~
+mahoun/guardrails/__init__.py:26: error: Cannot assign to a type  [misc]
+        UltraNLIResult = None
+        ^~~~~~~~~~~~~~
+mahoun/guardrails/__init__.py:26: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[UltraNLIResult]") 
+[assignment]
+        UltraNLIResult = None
+                         ^~~~
+mahoun/guardrails/__init__.py:32: error: Cannot assign to a type  [misc]
+        UltraCitationAuditor = None
+        ^~~~~~~~~~~~~~~~~~~~
+mahoun/guardrails/__init__.py:32: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[UltraCitationAuditor]") 
+[assignment]
+        UltraCitationAuditor = None
+                               ^~~~
+mahoun/guardrails/__init__.py:33: error: Cannot assign to a type  [misc]
+        UltraCitationAuditResult = None
+        ^~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/guardrails/__init__.py:33: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[UltraCitationAuditResult]")
+ [assignment]
+        UltraCitationAuditResult = None
+                                   ^~~~
+mahoun/graph/__init__.py:30: error: Cannot assign to a type  [misc]
+        GraphQueryService = None
+        ^~~~~~~~~~~~~~~~~
+mahoun/graph/__init__.py:30: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[GraphQueryService]") 
+[assignment]
+        GraphQueryService = None
+                            ^~~~
+mahoun/graph/__init__.py:31: error: Cannot assign to a type  [misc]
+        GraphQueryConfig = None
+        ^~~~~~~~~~~~~~~~
+mahoun/graph/__init__.py:31: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[GraphQueryConfig]") 
+[assignment]
+        GraphQueryConfig = None
+                           ^~~~
+mahoun/graph/__init__.py:32: error: Cannot assign to a type  [misc]
+        QueryResult = None
+        ^~~~~~~~~~~
+mahoun/graph/__init__.py:32: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[QueryResult]") 
+[assignment]
+        QueryResult = None
+                      ^~~~
+mahoun/graph/__init__.py:33: error: Cannot assign to a type  [misc]
+        TraversalPath = None
+        ^~~~~~~~~~~~~
+mahoun/graph/__init__.py:33: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[TraversalPath]") 
+[assignment]
+        TraversalPath = None
+                        ^~~~
+mahoun/graph/__init__.py:34: error: Cannot assign to a type  [misc]
+        TraversalStrategy = None
+        ^~~~~~~~~~~~~~~~~
+mahoun/graph/__init__.py:34: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[TraversalStrategy]") 
+[assignment]
+        TraversalStrategy = None
+                            ^~~~
+mahoun/graph/__init__.py:43: error: Cannot assign to a type  [misc]
+        RelationExtractor = None
+        ^~~~~~~~~~~~~~~~~
+mahoun/graph/__init__.py:43: error: Incompatible types in assignment
+(expression has type "None", variable has type "type[RelationExtractor]") 
+[assignment]
+        RelationExtractor = None
+                            ^~~~
+mahoun/graph/__init__.py:44: error: Incompatible types in assignment
+(expression has type "None", variable has type
+"def get_relation_extractor(input_dim: int = ..., **kwargs: Any) -> Any") 
+[assignment]
+        get_relation_extractor = None
+                                 ^~~~
+mahoun/agents/archive/ultra_delay_agent.py:123: error: "None" has no attribute
+"process"  [attr-defined]
+            timeline_result = await self.timeline_agent.process(input_data...
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+mahoun/mcp/__init__.py:17: error: Cannot assign to a type  [misc]
+        MCPRequest = None
+        ^~~~~~~~~~
+mahoun/mcp/__init__.py:17: error: Incompatible types in assignment (expression
+has type "None", variable has type "type[MCPRequest]")  [assignment]
+        MCPRequest = None
+                     ^~~~
+Found 763 errors in 114 files (checked 215 source files)

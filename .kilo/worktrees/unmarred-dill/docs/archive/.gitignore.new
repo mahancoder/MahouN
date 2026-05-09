@@ -1,0 +1,124 @@
+# ============================================================================
+# MAHOUN Platform - .gitignore
+# ============================================================================
+# Comprehensive ignore patterns for clean repository
+# ============================================================================
+
+# Python build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Testing
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+coverage.xml
+*.cover
+.basedpyright/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+pip-wheel-metadata/
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+venv*/
+.venv*/
+env*/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-*
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Environment files (NEVER commit secrets!)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Project-specific runtime directories
+uploads/
+vector_store_data/
+neo4j_data/
+data/
+output/
+runtime/
+models/
+reports/
+proof_pack/
+
+# Database files
+*.sqlite3
+*.sqlite
+*.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Jupyter
+*.ipynb_checkpoints/
+.ipynb_checkpoints/
+
+# Secrets & keys
+*.key
+*.pem
+*.crt
+*.csr
+secrets/
+.secrets/
+
+# Backup files
+*.bak
+*.backup
+*.tmp
+*.temp
+
+# Build artifacts
+*.tar.gz
+*.zip
+
+# Monitoring data
+monitoring/data/
+prometheus_data/
+grafana_data/
+
+# Project-specific
+/net-commander
+

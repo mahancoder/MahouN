@@ -1,0 +1,252 @@
+"""
+Blockchain Block for Immutable Ledger
+======================================
+
+Provides tamper-evident blocks for audit trail.
+
+Properties:
+- Immutable once created
+- Cryptographically linked to previous block
+- Contains hash of own data
+- Enables chain integrity verification
+"""
+
+import hashlib
+import json
+from dataclasses import dataclass, field, asdict
+from datetime import datetime, timezone
+from typing import Optional, Dict, Any
+
+from mahoun.ledger.models import LedgerEntry
+
+
+@dataclass
+class Block:
+    """
+    Immutable block in ledger blockchain
+    
+    Structure:
+    - index: Position in chain (0 = genesis)
+    - timestamp: When block was created
+    - data: LedgerEntry (None for genesis)
+    - prev_hash: Hash of previous block
+    - hash: Hash of this block
+    
+    Guarantees:
+    - Tamper-evident: Changing data invalidates hash
+    - Chain-linked: Changing prev_hash breaks chain
+    - Timestamped: Proves temporal ordering
+    - Deterministic: Same input = same hash
+    """
+    
+    index: int
+    timestamp: datetime
+    data: Optional[LedgerEntry]
+    prev_hash: str
+    hash: str = field(default="", init=False)
+    
+    def __post_init__(self):
+        """Compute hash after initialization"""
+        if not self.hash:
+            self.hash = self.compute_hash()
+    
+    def compute_hash(self) -> str:
+        """
+        Compute SHA-256 hash of block
+        
+        Returns:
+            Hex-encoded SHA-256 hash
+        
+        Note:
+            Hash includes: index, timestamp, data, prev_hash
+            Uses sorted JSON for determinism
+        """
+        # Prepare block data
+        block_data: Dict[str, Any] = {
+            "index": self.index,
+            "timestamp": self.timestamp.isoformat(),
+            "prev_hash": self.prev_hash
+        }
+        
+        # Add ledger entry data (if not genesis)
+        if self.data is not None:
+            # LedgerEntry is a dataclass, use asdict() instead of model_dump()
+            entry_dict = asdict(self.data)
+            # Convert datetime to ISO format for JSON serialization
+            if isinstance(entry_dict.get('created_at'), datetime):
+                entry_dict['created_at'] = entry_dict['created_at'].isoformat()
+            block_data["data"] = entry_dict
+        else:
+            block_data["data"] = None
+        
+        # Convert to deterministic JSON
+        block_string = json.dumps(block_data, sort_keys=True, ensure_ascii=False)
+        
+        # Hash
+        return hashlib.sha256(block_string.encode('utf-8')).hexdigest()
+    
+    def verify_integrity(self) -> bool:
+        """
+        Verify block integrity
+        
+        Returns:
+            True if block hash is valid, False otherwise
+        
+        Checks:
+        - Stored hash matches computed hash
+        """
+        return self.hash == self.compute_hash()
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert block to dictionary for serialization
+        
+        Returns:
+            Dictionary representation
+        """
+        data_dict = None
+        if self.data is not None:
+            data_dict = asdict(self.data)
+            # Convert datetime to ISO format
+            if isinstance(data_dict.get('created_at'), datetime):
+                data_dict['created_at'] = data_dict['created_at'].isoformat()
+        
+        return {
+            "index": self.index,
+            "timestamp": self.timestamp.isoformat(),
+            "data": data_dict,
+            "prev_hash": self.prev_hash,
+            "hash": self.hash
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Block':
+        """
+        Create block from dictionary
+        
+        Args:
+            data: Dictionary representation
+        
+        Returns:
+            Block instance
+        """
+        # Parse timestamp
+        timestamp = datetime.fromisoformat(data["timestamp"].replace('Z', '+00:00'))
+        
+        # Parse ledger entry (if present)
+        ledger_data = None
+        if data["data"] is not None:
+            ledger_data = LedgerEntry(**data["data"])
+        
+        # Create block
+        block = cls(
+            index=data["index"],
+            timestamp=timestamp,
+            data=ledger_data,
+            prev_hash=data["prev_hash"]
+        )
+        
+        # Verify hash matches
+        if "hash" in data and data["hash"] != block.hash:
+            raise ValueError(
+                f"Block hash mismatch: stored={data['hash'][:16]}..., "
+                f"computed={block.hash[:16]}..."
+            )
+        
+        return block
+    
+    def __repr__(self) -> str:
+        """String representation"""
+        data_str = "genesis" if self.data is None else f"verdict={self.data.verdict_id[:8]}..."
+        return (
+            f"Block("
+            f"index={self.index}, "
+            f"data={data_str}, "
+            f"hash={self.hash[:16]}...)"
+        )
+    
+    def __eq__(self, other: object) -> bool:
+        """Equality comparison"""
+        if not isinstance(other, Block):
+            return False
+        return self.hash == other.hash
+    
+    def __hash__(self) -> int:
+        """Hash for use in sets/dicts"""
+        return int(self.hash[:16], 16)
+
+
+def create_genesis_block() -> Block:
+    """
+    Create genesis block (first block in chain)
+    
+    Returns:
+        Genesis block with index=0, no data, prev_hash="0"
+    """
+    return Block(
+        index=0,
+        timestamp=datetime.now(timezone.utc),
+        data=None,
+        prev_hash="0" * 64  # 64 hex chars = 256 bits
+    )
+
+
+# Example usage
+if __name__ == "__main__":
+    from mahoun.ledger.models import LedgerEntry
+    from datetime import datetime, timezone
+    
+    print("🔗 Blockchain Block Test")
+    print("=" * 60)
+    
+    # Create genesis block
+    genesis = create_genesis_block()
+    print(f"✓ Genesis block: {genesis}")
+    print(f"  Hash: {genesis.hash[:32]}...")
+    print(f"  Integrity: {genesis.verify_integrity()}")
+    
+    # Create first data block
+    entry = LedgerEntry(
+        verdict_id="verdict_123",
+        case_id="case_456",
+        referenced_ltm_nodes=["rule_219"],
+        referenced_facts=["fact_0"],
+        confidence=0.92,
+        invariant_version="v2.1.0",
+        guard_mode="STRICT",
+        created_at=datetime.now(timezone.utc)
+    )
+    
+    block1 = Block(
+        index=1,
+        timestamp=datetime.now(timezone.utc),
+        data=entry,
+        prev_hash=genesis.hash
+    )
+    
+    print(f"\n✓ Block 1: {block1}")
+    print(f"  Hash: {block1.hash[:32]}...")
+    print(f"  Prev hash: {block1.prev_hash[:32]}...")
+    print(f"  Integrity: {block1.verify_integrity()}")
+    
+    # Verify chain link
+    chain_valid = block1.prev_hash == genesis.hash
+    print(f"  Chain link valid: {chain_valid}")
+    
+    # Try tampering
+    print("\n🔒 Tamper Detection Test")
+    original_hash = block1.hash
+    block1.data.confidence = 0.99  # Tamper with data
+    block1.hash = ""  # Force recompute
+    block1.hash = block1.compute_hash()
+    tampered_hash = block1.hash
+    
+    print(f"  Original hash: {original_hash[:32]}...")
+    print(f"  Tampered hash: {tampered_hash[:32]}...")
+    print(f"  Hashes match: {original_hash == tampered_hash}")
+    
+    # Serialization test
+    print("\n💾 Serialization Test")
+    block_dict = block1.to_dict()
+    block1_restored = Block.from_dict(block_dict)
+    print(f"  Serialization successful: {block1_restored.hash == block1.hash}")

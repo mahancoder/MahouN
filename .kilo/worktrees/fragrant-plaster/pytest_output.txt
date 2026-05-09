@@ -1,0 +1,54 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0 -- /home/haji/Desktop/Platform/venv/bin/python
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: /home/haji/Desktop/Platform
+configfile: pyproject.toml
+plugins: asyncio-1.3.0, timeout-2.4.0, anyio-4.12.0, cov-7.0.0, hypothesis-6.148.9
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=session, asyncio_default_test_loop_scope=function
+timeout: 90.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 1 item
+
+tests/integration/test_unified_observability.py::test_unified_metrics_collection_after_verdict ERROR [100%]
+
+==================================== ERRORS ====================================
+_______ ERROR at setup of test_unified_metrics_collection_after_verdict ________
+
+    @pytest.fixture
+    def collector():
+        # Make sure we start with a clean slate
+        c = get_metrics_collector()
+>       c.reset_all()
+        ^^^^^^^^^^^
+E       AttributeError: 'MetricsCollector' object has no attribute 'reset_all'
+
+tests/integration/test_unified_observability.py:15: AttributeError
+---------------------------- Captured stdout setup -----------------------------
+
+================================================================================
+🧪 TEST ENVIRONMENT BOOTSTRAP (PR-2.5)
+================================================================================
+✓ Test-only secrets configured for pytest
+✓ Runtime security (PR-2) remains intact
+✓ Collection-time ValidationErrors resolved
+================================================================================
+
+=============================== warnings summary ===============================
+venv/lib/python3.12/site-packages/_hypothesis_pytestplugin.py:469
+  /home/haji/Desktop/Platform/venv/lib/python3.12/site-packages/_hypothesis_pytestplugin.py:469: UserWarning: Skipping collection of '.hypothesis' directory - this usually means you've explicitly set the `norecursedirs` pytest config option, replacing rather than extending the default ignores.
+    warnings.warn(
+
+mahoun/monitoring/legal_metrics.py:237
+  /home/haji/Desktop/Platform/mahoun/monitoring/legal_metrics.py:237: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    self.start_time = datetime.utcnow()
+
+mahoun/monitoring/legal_metrics.py:238
+  /home/haji/Desktop/Platform/mahoun/monitoring/legal_metrics.py:238: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    self.last_reset = datetime.utcnow()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/integration/test_unified_observability.py::test_unified_metrics_collection_after_verdict
+========================= 3 warnings, 1 error in 4.48s =========================
