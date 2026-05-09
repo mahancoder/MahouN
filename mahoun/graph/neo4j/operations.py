@@ -168,9 +168,9 @@ class GraphOperations:
                 query = f"""
                 UNWIND $rows AS row
                 MERGE (n:{label} {{id: row.id}})
+                ON CREATE SET n.created_at = datetime()
                 SET n += row
                 SET n.updated_at = datetime()
-                ON CREATE SET n.created_at = datetime()
                 """
             else:
                 query = f"""
@@ -310,9 +310,9 @@ class GraphOperations:
                                 MATCH (a:{from_label} {{id: row.from_id}})
                                 MATCH (b:{to_label} {{id: row.to_id}})
                                 MERGE (a)-[r:{rel_type}]->(b)
+                                ON CREATE SET r.created_at = datetime()
                                 SET r += row.props
                                 SET r.updated_at = datetime()
-                                ON CREATE SET r.created_at = datetime()
                                 """
                             else:
                                 query = f"""
@@ -588,13 +588,13 @@ def upsert_verdict_struct(verdict_struct: Dict[str, Any]) -> str:
     try:
         query_verdict = """
         MERGE (v:Verdict {verdict_id: $verdict_id})
+        ON CREATE SET v.created_at = datetime()
         SET v.court_level = $court_level,
             v.procedure_stage = $procedure_stage,
             v.case_type = $case_type,
             v.is_final = $is_final,
             v.finality_basis = $finality_basis,
             v.updated_at = datetime()
-        ON CREATE SET v.created_at = datetime()
         RETURN v.verdict_id as verdict_id
         """
         
@@ -622,10 +622,10 @@ def upsert_verdict_struct(verdict_struct: Dict[str, Any]) -> str:
             
             query_article = """
             MERGE (a:LawArticle {label: $label})
+            ON CREATE SET a.created_at = datetime()
             SET a.code = $code,
                 a.article_no = $article_no,
                 a.updated_at = datetime()
-            ON CREATE SET a.created_at = datetime()
             WITH a
             MATCH (v:Verdict {verdict_id: $verdict_id})
             MERGE (v)-[r:REFERS_TO]->(a)

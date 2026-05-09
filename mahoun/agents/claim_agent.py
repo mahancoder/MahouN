@@ -159,6 +159,16 @@ class UltraClaimAgent(UltraBaseAgent):
         except Exception as e:
             self.logger.warning(f"⚠️ Reasoning Service not available: {e}")
     
+        # Initialize Ledger Write Gate
+        try:
+            from mahoun.ledger.ledger_writer import LedgerWriter
+            ledger_writer = LedgerWriter()
+            self._write_gate = get_ledger_write_gate(ledger_writer)
+            self.logger.info("✅ Ledger Write Gate initialized")
+        except Exception as e:
+            self.logger.error(f"⚠️ Ledger Write Gate initialization failed: {e}")
+            raise RuntimeError("Ledger Write Gate initialization failed. B3 persistence boundary requires write_gate configuration.")
+    
     async def _process_impl(
         self,
         input_data: Dict[str, Any],
@@ -307,44 +317,32 @@ class UltraClaimAgent(UltraBaseAgent):
         )
         
         # Attempt ledger persistence
-        if self._write_gate:
-            try:
-                write_result = self._write_gate.write_claim(
-                    claim_data=result["claim"],
-                    evidence_package=evidence_package,
-                    metadata={
-                        "correlation_id": correlation_id,
-                        "request_id": boundary_result.input_id,
-                    }
-                )
-                
-                if write_result.success:
-                    self._claim_metrics["claims_persisted"] += 1
-                    result["metadata"]["ledger_entry_id"] = write_result.entry_id
-                    result["metadata"]["ledger_entry_hash"] = write_result.entry_hash
-                    self.logger.info(
-                        f"[{correlation_id}] B3 PERSISTENCE SUCCESS: "
-                        f"entry_id={write_result.entry_id}"
-                    )
-                else:
-                    self._claim_metrics["persistence_failures"] += 1
-                    self.logger.error(
-                        f"[{correlation_id}] B3 PERSISTENCE FAILED: "
-                        f"{write_result.error_code} - {write_result.error_message}"
-                    )
-                    # Don't fail the claim, but flag it
-                    result["metadata"]["persistence_failed"] = True
-                    result["metadata"]["persistence_error"] = write_result.error_message
-                    
-            except Exception as e:
-                self._claim_metrics["persistence_failures"] += 1
-                self.logger.error(f"[{correlation_id}] B3 persistence exception: {e}")
-                result["metadata"]["persistence_exception"] = str(e)
-        else:
-            self.logger.warning(
-                f"[{correlation_id}] B3 SKIPPED: No write_gate configured"
+        if self._write_gate is None:
+            raise RuntimeError("WriteGate not configured. B3 persistence boundary requires write_gate configuration.")
+        
+        try:
+            write_result = self._write_gate.write_claim(
+                claim_data=result["claim"],
+                evidence_package=evidence_package,
+                metadata={
+                    "correlation_id": correlation_id,
+                    "request_id": boundary_result.input_id,
+                }
             )
-            result["metadata"]["persistence_skipped"] = True
+        
+            if not write_result.success:
+                raise RuntimeError(f"Ledger write failed: {write_result.error_message}")
+        
+            self._claim_metrics["claims_persisted"] += 1
+            result["metadata"]["ledger_entry_id"] = write_result.entry_id
+            result["metadata"]["ledger_entry_hash"] = write_result.entry_hash
+            self.logger.info(
+                f"[{correlation_id}] B3 PERSISTENCE SUCCESS: "
+                f"entry_id={write_result.entry_id}"
+            )
+        
+        except Exception as e:
+            raise RuntimeError(f"Ledger persistence exception: {str(e)}")
         
         return result
     
