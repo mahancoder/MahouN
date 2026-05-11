@@ -16,6 +16,19 @@ Security Note:
 """
 
 import os
+import sys
+from pathlib import Path
+
+# =============================================================================
+# Python Path Setup (CRITICAL for module imports)
+# =============================================================================
+# Add project root to Python path so that all modules can be imported
+# regardless of where the repository is located on the filesystem.
+# This fixes "ModuleNotFoundError" when repository location changes.
+
+PROJECT_ROOT = Path(__file__).parent.parent.absolute()
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 # =============================================================================
 # Test-Only Environment Variables (Collection-Time Setup)
