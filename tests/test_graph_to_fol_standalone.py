@@ -15,11 +15,10 @@ from mahoun.graph.reasoning.graph_to_fol import (
     FOLNormalizer,
     GraphToFOLConverter,
     ConversionMode,
-    PropertyHandling,
-    GraphNode,
-    GraphEdge
+    PropertyHandling
 )
-from mahoun.reasoning.first_order_logic import Predicate, Constant
+from mahoun.graph.ultra_graph_builder import GraphNode, GraphEdge
+from mahoun.reasoning.first_order_logic import Atom, Term, TermType
 
 
 def test_fol_normalizer():
@@ -39,6 +38,7 @@ def test_fol_normalizer():
     result2 = normalizer.normalize("Case #123")
     print(f"✓ Special chars: 'Case #123' → '{result2}'")
     assert "123" in result2
+    assert "hash" in result2
     
     # Test 3: Starts with digit
     result3 = normalizer.normalize("123abc")

@@ -102,6 +102,11 @@ class Atom:
     """
     predicate: str
     terms: Tuple[Term, ...] = field(default_factory=tuple)
+
+    @property
+    def name(self) -> str:
+        """Alias for predicate to maintain compatibility with Predicate interface."""
+        return self.predicate
     
     def is_ground(self) -> bool:
         """Check if atom contains no variables"""
