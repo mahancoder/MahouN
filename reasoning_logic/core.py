@@ -122,6 +122,12 @@ class Fact:
     """
     __slots__ = ('predicate', 'terms', 'metadata', 'confidence')
     
+    # Type annotations for static type checkers (required with __slots__)
+    predicate: str
+    terms: Tuple[Term, ...]
+    metadata: Dict[str, Any]
+    confidence: float
+    
     def __init__(self, predicate, terms=None, metadata=None, confidence=1.0):
         """
         Initialize Fact with Expression support (backward compatibility)
@@ -159,7 +165,7 @@ class Fact:
                 f"Got: {self}. Variables: {variables}"
             )
     
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any) -> None:
         """Prevent attribute modification (immutability)"""
         raise AttributeError(f"Cannot modify immutable Fact attribute '{name}'")
     
@@ -304,3 +310,10 @@ class Expression:
     def to_atom(self) -> Atom:
         """Convert to immutable Atom"""
         return Atom(self.predicate, tuple(self.terms))
+    
+    def get_variables(self) -> Set[Term]:
+        """Extract all variables from expression"""
+        variables = set()
+        for term in self.terms:
+            variables.update(term.get_variables())
+        return variables

@@ -405,7 +405,9 @@ class BackwardChaining:
                     
                     for premise in rule.premise:
                         premise_atom = self._to_atom(premise)
-                        child_node = self._prove_recursive(premise_atom, current_bindings, depth + 1)
+                        # Apply current bindings to premise before proving
+                        instantiated_premise = UnificationEngine.apply_bindings(premise_atom, current_bindings)
+                        child_node = self._prove_recursive(instantiated_premise, current_bindings, depth + 1)
                         child_nodes.append(child_node)
                         
                         if child_node.status != ProofStatus.SUCCESS:

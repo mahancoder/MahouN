@@ -17,8 +17,8 @@ Algorithm Complexity:
 Author: MAHOUN Team
 """
 
-from typing import List, Dict, Any, Optional, Set, TYPE_CHECKING
-from dataclasses import dataclass, field
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
+from dataclasses import dataclass
 import logging
 import time
 import signal
@@ -27,10 +27,6 @@ from contextlib import contextmanager
 from reasoning_logic.core import Fact, Rule, Atom, Term
 from reasoning_logic.knowledge_base import KnowledgeBase
 from reasoning_logic.unification import UnificationEngine
-
-# Avoid circular import by using TYPE_CHECKING
-if TYPE_CHECKING:
-    from reasoning_logic.rete import ReteForwardChaining
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +52,7 @@ def timeout_context(seconds: int, operation_name: str = "Operation"):
         yield
         return
     
-    def timeout_handler(signum, frame):
+    def timeout_handler(signum: int, frame: Any) -> None:
         raise TimeoutError(f"{operation_name} exceeded {seconds} seconds timeout")
     
     old_handler = signal.signal(signal.SIGALRM, timeout_handler)
@@ -345,9 +341,10 @@ class ForwardChaining:
         
         # Unify terms pairwise
         for term1, term2 in zip(atom1.terms, atom2.terms):
-            bindings = UnificationEngine.unify(term1, term2, bindings)
-            if bindings is None:
+            new_bindings = UnificationEngine.unify(term1, term2, bindings)
+            if new_bindings is None:
                 return None
+            bindings = new_bindings
         
         return bindings
     
@@ -375,7 +372,7 @@ class ForwardChaining:
         # Convert to Fact
         return Fact(
             predicate=instantiated.predicate,
-            terms=list(instantiated.terms),
+            terms=tuple(instantiated.terms),  # Must be tuple, not list
             metadata=metadata.copy()
         )
     
@@ -416,10 +413,10 @@ class ForwardChaining:
         report.append("=" * 80)
         report.append(f"Total iterations: {self.stats.iterations}")
         report.append(f"Total facts derived: {self.stats.facts_derived}")
-        report.append(f"Total execution time: {self.stats.execution_time_ms:.2f}ms")
-        report.append(f"Rules fired: {self.stats.rules_fired}")
-        report.append(f"Unifications attempted: {self.stats.unifications_attempted}")
-        report.append(f"Unifications succeeded: {self.stats.unifications_succeeded}")
+        report.append(f"Total execution time: {self.stats.execution_time_ms:.2f}ms")  # type: ignore[arg-type]
+        report.append(f"Rules fired: {self.stats.rules_fired}")  # type: ignore[arg-type]
+        report.append(f"Unifications attempted: {self.stats.unifications_attempted}")  # type: ignore[arg-type]
+        report.append(f"Unifications succeeded: {self.stats.unifications_succeeded}")  # type: ignore[arg-type]
         report.append("")
         report.append("Rule Performance:")
         report.append("-" * 80)

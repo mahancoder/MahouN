@@ -411,18 +411,36 @@ class FOLConverter:
         return Term(content, TermType.CONSTANT)
     
     def _is_variable(self, term_str: str) -> bool:
-        """Check if term string represents a variable"""
+        """
+        Check if term string represents a variable
+        
+        Variable rules (hybrid Prolog/FOL style):
+        1. Starts with variable prefix (e.g., ?X)
+        2. Single uppercase letter (X, Y, Z, W)
+        3. All uppercase letters and underscores (POL, CL, PERSON_A)
+        4. Underscore (_) is anonymous variable
+        
+        Constants:
+        - Mixed case (PersonA, LiabilityJ, ContractD)
+        - Lowercase (person, liability)
+        - Quoted strings
+        """
         # Starts with variable prefix
         if term_str.startswith(self.variable_prefix):
+            return True
+        
+        # Underscore is anonymous variable
+        if term_str == '_':
             return True
         
         # Single uppercase letter (X, Y, Z)
         if len(term_str) == 1 and term_str.isupper():
             return True
         
-        # All uppercase and alphabetic (but not mixed case like PersonA)
-        # Only consider it a variable if it's a single letter or explicitly marked
-        # This prevents PersonA, EntityB from being treated as variables
+        # All uppercase letters and underscores (POL, CL, PERSON_A)
+        # But NOT mixed case (PersonA, LiabilityJ)
+        if term_str.replace('_', '').isalpha() and term_str.replace('_', '').isupper():
+            return True
         
         return False
     

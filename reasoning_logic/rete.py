@@ -78,19 +78,22 @@ class AlphaNode(ReteNode):
     """
     Alpha node: Tests single fact
     
-    Performs constant tests on individual facts
+    Performs constant tests on individual facts and extracts variable bindings
     """
     
-    def __init__(self, predicate: str, tests: Optional[List[Tuple[int, Any]]] = None):
+    def __init__(self, predicate: str, pattern: Optional[Any] = None, 
+                 tests: Optional[List[Tuple[int, Any]]] = None):
         """
         Initialize alpha node
         
         Args:
             predicate: Predicate to match
+            pattern: Premise pattern for extracting variable bindings
             tests: List of (term_index, expected_value) tests
         """
         super().__init__()
         self.predicate = predicate
+        self.pattern = pattern  # Store premise pattern for binding extraction
         self.tests = tests if tests is not None else []
         self.memory: Set[Fact] = set()
     
@@ -113,12 +116,42 @@ class AlphaNode(ReteNode):
             if term.is_constant() and term.name != expected_value:
                 return
         
+        # Extract variable bindings by unifying fact with pattern
+        new_bindings = token.bindings.copy()
+        if self.pattern is not None:
+            # Convert pattern to atom
+            if hasattr(self.pattern, 'to_atom'):
+                pattern_atom = self.pattern.to_atom()
+            elif hasattr(self.pattern, 'predicate') and hasattr(self.pattern, 'terms'):
+                pattern_atom = Atom(self.pattern.predicate, tuple(self.pattern.terms))
+            else:
+                pattern_atom = None
+            
+            if pattern_atom is not None:
+                # Unify fact with pattern to extract bindings
+                fact_atom = fact.to_atom()
+                for fact_term, pattern_term in zip(fact_atom.terms, pattern_atom.terms):
+                    unified = UnificationEngine.unify(fact_term, pattern_term, new_bindings)
+                    if unified is None:
+                        return  # Unification failed
+                    new_bindings = unified
+        
         # Store in memory
         self.memory.add(fact)
         
+        # Create new token with updated bindings
+        new_token = Token(facts=token.facts, bindings=new_bindings)
+        
         # Propagate to children
         for child in self.children:
-            child.activate(token)
+            # Check if child is a BetaNode and if we're the right parent
+            if isinstance(child, BetaNode):
+                if child.right_parent == self:
+                    child.activate_right(new_token)
+                else:
+                    child.activate_left(new_token)
+            else:
+                child.activate(new_token)
 
 
 class BetaNode(ReteNode):
@@ -139,6 +172,16 @@ class BetaNode(ReteNode):
         self.join_tests = join_tests if join_tests is not None else []
         self.left_memory: Set[Token] = set()
         self.right_memory: Set[Token] = set()
+        self.left_parent: Optional[ReteNode] = None
+        self.right_parent: Optional[ReteNode] = None
+    
+    def set_left_parent(self, parent: ReteNode):
+        """Set left parent node"""
+        self.left_parent = parent
+    
+    def set_right_parent(self, parent: ReteNode):
+        """Set right parent node"""
+        self.right_parent = parent
     
     def activate_left(self, token: Token):
         """Activate from left parent"""
@@ -163,7 +206,13 @@ class BetaNode(ReteNode):
                     child.activate(joined)
     
     def activate(self, token: Token):
-        """Default activation (treat as left)"""
+        """
+        Default activation - determine if left or right based on parent
+        
+        This is called by parent nodes that don't know about left/right distinction
+        """
+        # For now, treat all activations as left
+        # This is a simplification - proper implementation would track which parent called
         self.activate_left(token)
     
     def _try_join(self, left: Token, right: Token) -> Optional[Token]:
@@ -280,8 +329,13 @@ class ReteNetwork:
         else:
             # Multiple premises - build join network
             current_node = alpha_nodes[0]
-            for alpha_node in alpha_nodes[1:]:
-                beta_node = BetaNode()
+            for i, alpha_node in enumerate(alpha_nodes[1:], start=1):
+                # Compute join tests (shared variables between premises)
+                join_tests = self._compute_join_tests(rule.premise[:i], rule.premise[i])
+                
+                beta_node = BetaNode(join_tests=join_tests)
+                beta_node.set_left_parent(current_node)
+                beta_node.set_right_parent(alpha_node)
                 current_node.add_child(beta_node)
                 alpha_node.add_child(beta_node)
                 current_node = beta_node
@@ -316,13 +370,29 @@ class ReteNetwork:
                 if term.is_constant():
                     tests.append((i, term.name))
         
-        # Check if alpha node already exists
+        # Check if alpha node already exists with EXACT SAME pattern
+        # We need to compare the full pattern, not just predicate and constant tests
         for alpha_node in self.alpha_nodes[predicate]:
             if alpha_node.tests == tests:
-                return alpha_node
+                # Check if patterns are structurally identical
+                if alpha_node.pattern is not None and hasattr(premise, 'terms') and hasattr(alpha_node.pattern, 'terms'):
+                    # Compare variable positions
+                    if len(premise.terms) == len(alpha_node.pattern.terms):
+                        pattern_match = True
+                        for p_term, a_term in zip(premise.terms, alpha_node.pattern.terms):
+                            # Both must be same type (variable/constant) with same name
+                            if p_term.term_type != a_term.term_type or p_term.name != a_term.name:
+                                pattern_match = False
+                                break
+                        if pattern_match:
+                            return alpha_node
+                elif alpha_node.pattern is None:
+                    # No pattern set yet, update it
+                    alpha_node.pattern = premise
+                    return alpha_node
         
-        # Create new alpha node
-        alpha_node = AlphaNode(predicate, tests)
+        # Create new alpha node with premise pattern
+        alpha_node = AlphaNode(predicate, pattern=premise, tests=tests)
         self.root.add_child(alpha_node)
         self.alpha_nodes[predicate].append(alpha_node)
         self.stats['alpha_nodes'] += 1
@@ -437,6 +507,83 @@ class ReteNetwork:
             count += self._count_beta_memories(child)
         
         return count
+    
+    def _compute_join_tests(self, left_premises: List[Any], right_premise: Any) -> List[Tuple[int, int, int, int]]:
+        """
+        Compute join tests for beta node
+        
+        Finds shared variables between left premises and right premise to enable
+        variable unification during join operations.
+        
+        Args:
+            left_premises: List of premises already joined (left side of beta node)
+            right_premise: New premise to join (right side of beta node)
+        
+        Returns:
+            List of join test tuples: (left_fact_idx, left_term_idx, right_fact_idx, right_term_idx)
+            where:
+            - left_fact_idx: Index of fact in left token (0 to len(left_premises)-1)
+            - left_term_idx: Index of term in left fact
+            - right_fact_idx: Always 0 (right token has only 1 fact)
+            - right_term_idx: Index of term in right fact
+        
+        Example:
+            left_premises = [is_proxy(X, Y)]
+            right_premise = has_obligation(Y, Z)
+            
+            Shared variable: Y
+            - In left_premises[0]: Y is at term index 1
+            - In right_premise: Y is at term index 0
+            
+            Returns: [(0, 1, 0, 0)]  # Join left[0].terms[1] with right[0].terms[0]
+        """
+        join_tests = []
+        
+        # Extract terms from right premise
+        if not hasattr(right_premise, 'terms'):
+            logger.warning(f"Right premise has no terms attribute: {right_premise}")
+            return join_tests
+        
+        right_terms = right_premise.terms
+        
+        # For each term in right premise
+        for right_term_idx, right_term in enumerate(right_terms):
+            # Only join on variables
+            if not right_term.is_variable():
+                continue
+            
+            right_var_name = right_term.name
+            
+            # Search for this variable in left premises
+            for left_fact_idx, left_premise in enumerate(left_premises):
+                if not hasattr(left_premise, 'terms'):
+                    continue
+                
+                left_terms = left_premise.terms
+                
+                # Search for matching variable in left premise terms
+                for left_term_idx, left_term in enumerate(left_terms):
+                    if left_term.is_variable() and left_term.name == right_var_name:
+                        # Found shared variable!
+                        # left_fact_idx: which fact in left token
+                        # left_term_idx: which term in that fact
+                        # 0: right token always has 1 fact (the new fact being joined)
+                        # right_term_idx: which term in right fact
+                        join_test = (left_fact_idx, left_term_idx, 0, right_term_idx)
+                        join_tests.append(join_test)
+                        
+                        logger.debug(
+                            f"Join test: left[{left_fact_idx}].terms[{left_term_idx}] "
+                            f"== right[0].terms[{right_term_idx}] (variable: {right_var_name})"
+                        )
+        
+        if not join_tests:
+            logger.warning(
+                f"No join tests computed between {len(left_premises)} left premises "
+                f"and right premise {right_premise}. This may indicate no shared variables."
+            )
+        
+        return join_tests
 
 
 class ReteForwardChaining:
@@ -555,4 +702,4 @@ class ReteForwardChaining:
         if not instantiated.is_ground():
             return None
         
-        return Fact(predicate=instantiated.predicate, terms=list(instantiated.terms))
+        return Fact(predicate=instantiated.predicate, terms=tuple(instantiated.terms))
