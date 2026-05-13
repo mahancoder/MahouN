@@ -3,10 +3,28 @@ Reasoning Module
 ================
 
 Multi-stage reasoning and knowledge graph integration for MAHOUN.
+
+Version 2.1.0: Added Unified Reasoning Service combining symbolic FOL and neural reasoning.
 """
 from typing import Any, List, Optional
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
+
+# Import unified reasoning service (always available)
+try:
+    from .unified_reasoning_service import (
+        UnifiedReasoningService,
+        ReasoningMode,
+        ReasoningTask,
+        ReasoningRequest,
+        ReasoningResponse,
+        forward_inference,
+        prove_goal,
+        answer_question,
+    )
+    UNIFIED_AVAILABLE = True
+except ImportError:
+    UNIFIED_AVAILABLE = False
 
 # Conditional imports to avoid dependency issues
 try:
@@ -84,5 +102,15 @@ if ForwardChainingEngine:
     __all__.extend(["ForwardChainingEngine", "ForwardChainingResult"])
 if BackwardChainingEngine:
     __all__.extend(["BackwardChainingEngine", "BackwardChainingResult"])
-if SymbolicReasoningEngine:
-    __all__.extend(["SymbolicReasoningEngine", "KnowledgeBase", "SymbolicReasoningMode"])
+# Add unified reasoning exports
+if UNIFIED_AVAILABLE:
+    __all__.extend([
+        "UnifiedReasoningService",
+        "ReasoningMode", 
+        "ReasoningTask",
+        "ReasoningRequest",
+        "ReasoningResponse",
+        "forward_inference",
+        "prove_goal", 
+        "answer_question"
+    ])
