@@ -57,7 +57,7 @@ Comprehensive cleanup of the MAHOUN repository root directory to improve organiz
 - `STARTUP_FIX.patch`
 
 ### Swap Files (1)
-- `.گزارش_ماهون_برای_غیرفنی‌ها.md.kate-swp`
+- `.گزارش_ماحون_برای_غیرفنی‌ها.md.kate-swp`
 
 ### Miscellaneous (2)
 - `__init__.py` (root level - shouldn't be there)

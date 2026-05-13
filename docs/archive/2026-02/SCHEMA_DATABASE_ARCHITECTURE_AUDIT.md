@@ -9,7 +9,7 @@
 
 ## 📊 EXECUTIVE SUMMARY
 
-سیستم ماهون از یک معماری **3-Layer Schema** استفاده می‌کنه:
+سیستم ماحون از یک معماری **3-Layer Schema** استفاده می‌کنه:
 
 1. **L0 (Raw)**: فایل‌های خام (PDF, TXT, DOCX)
 2. **L1 (TextDocument)**: متن نرمال‌شده برای RAG/Vector Store

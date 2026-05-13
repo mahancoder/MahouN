@@ -1,4 +1,4 @@
-# برنامه بهینه‌سازی سیستم ماهون برای لپتاپ
+# برنامه بهینه‌سازی سیستم ماحون برای لپتاپ
 # Mahoun System Optimization Plan for Laptop
 
 **Hardware:** 8GB RAM, 5-core CPU  

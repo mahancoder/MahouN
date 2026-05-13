@@ -69,7 +69,7 @@ export default function AppLayout() {
       >
         {/* Sidebar header */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-slate-700">
-          <h1 className="text-xl font-bold text-slate-100">ماهون</h1>
+          <h1 className="text-xl font-bold text-slate-100">ماحون</h1>
           <button
             onClick={() => setSidebarOpen(false)}
             className="lg:hidden p-2 rounded-lg hover:bg-slate-800 transition-colors"
@@ -117,7 +117,7 @@ export default function AppLayout() {
       <div className="lg:mr-64">
         {/* Mobile header */}
         <header className="lg:hidden sticky top-0 z-30 flex items-center justify-between h-16 px-4 bg-slate-900/95 backdrop-blur border-b border-slate-700">
-          <h1 className="text-lg font-bold text-slate-100">ماهون</h1>
+          <h1 className="text-lg font-bold text-slate-100">ماحون</h1>
           <button
             onClick={() => setSidebarOpen(true)}
             className="p-2 rounded-lg hover:bg-slate-800 transition-colors"

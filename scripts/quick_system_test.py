@@ -322,7 +322,7 @@ async def run_quick_test(text_size: str = "short"):
     
     print("\n" + "🚀" * 35)
     print("  MAHOUN PLATFORM - QUICK SYSTEM TEST")
-    print("  تست سریع سیستم ماهون")
+    print("  تست سریع سیستم ماحون")
     print("🚀" * 35)
     
     # Select text based on size

@@ -8,7 +8,7 @@
 
 ## خلاصه
 
-یک **Model Registry** حرفه‌ای و سبک‌وزن برای پایپلاین fine-tuning سیستم ماهون پیاده‌سازی شد. این registry با امنیت thread-safe، تمام مدل‌های fine-tuned شده را با metadata کامل، مسیرهای GGUF، معیارها و دسته‌بندی domain ردیابی می‌کند.
+یک **Model Registry** حرفه‌ای و سبک‌وزن برای پایپلاین fine-tuning سیستم ماحون پیاده‌سازی شد. این registry با امنیت thread-safe، تمام مدل‌های fine-tuned شده را با metadata کامل، مسیرهای GGUF، معیارها و دسته‌بندی domain ردیابی می‌کند.
 
 ---
 

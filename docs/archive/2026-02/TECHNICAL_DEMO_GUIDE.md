@@ -199,7 +199,7 @@ ls mahoun/domain/
 
 - `MAHOUN_ZERO_HALLUCINATION_EXECUTIVE_REPORT.md` - Executive summary
 - `MAHOUN_ARCHITECTURE_EXPERT_REVIEW.md` - Technical deep dive
-- `گزارش_ماهون_برای_غیرفنی‌ها.md` - برای مدیران غیرفنی
+- `گزارش_ماحون_برای_غیرفنی‌ها.md` - برای مدیران غیرفنی
 - `DEPLOYMENT_GUIDE.md` - برای سوالات deployment
 
 ### Questions متداول:

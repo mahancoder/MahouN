@@ -4,6 +4,7 @@
 
 > [!IMPORTANT]
 > This project is the exclusive property of **Mohammad Hossein Safari** and **Zahra Shojaei**.
+> It is officially registered at the **Intellectual Property Center**.
 
 <div align="center">
 
