@@ -1,5 +1,10 @@
 # MAHOUN Platform 🧠⚖️
 
+**[فارسی (Persian)](README_FA.md)**
+
+> [!IMPORTANT]
+> This project is the exclusive property of **Mohammad Hossein Safari** and **Zahra Shojaei**.
+
 <div align="center">
 
 ![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
