@@ -215,6 +215,11 @@ poetry.lock.local
 !.kiro/specs/
 .kilo/
 
+# DeepSeek / AI Caches
+.deepseek/
+.aider/
+.copilot/
+
 # ============================================================================
 # OPERATING SYSTEM FILES
 # ============================================================================
@@ -560,6 +565,9 @@ internal_reports/
 reasoning_tests.log
 test_results_*.log
 test_output_*.txt
+*.report.md
+ENVIRONMENT_CANONICALIZATION_REPORT.md
+SECURITY_GOVERNANCE_REPORT.md
 
 # ============================================================================
 # PROJECT-SPECIFIC EXCLUSIONS
