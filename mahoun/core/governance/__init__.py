@@ -41,9 +41,10 @@ from mahoun.core.governance.provenance_tracker import (
 )
 from mahoun.core.governance.ontology_enforcer import OntologyEnforcer
 from mahoun.core.governance.deterministic_resolver import DeterministicResolver
-from mahoun.core.governance.governed_writer import (
-    GovernedGraphWriter,
-    GovernedTransaction,
+from mahoun.core.governance.mutation_boundary import (
+    MutationAuthorizationBoundary,
+    GovernedNeo4jSession,
+    GovernedWriteTransaction,
     MutationReceipt,
     MutationType,
 )
@@ -64,8 +65,9 @@ __all__ = [
     "OntologyEnforcer",
     "DeterministicResolver",
     # Governed Persistence Layer
-    "GovernedGraphWriter",
-    "GovernedTransaction",
+    "MutationAuthorizationBoundary",
+    "GovernedNeo4jSession",
+    "GovernedWriteTransaction",
     "MutationReceipt",
     "MutationType",
 ]
