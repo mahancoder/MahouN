@@ -589,20 +589,7 @@ class Neo4jConnectionManager:
             result = session.run(query, params, timeout=timeout)
             return [dict(record) for record in result]
     
-    def execute_write(
-        self,
-        query: str,
-        params: Optional[Dict[str, Any]] = None
-    ) -> List[Dict[str, Any]]:
-        """اجرای write query"""
-        params = params or {}
-        
-        def write_tx(tx):
-            result = tx.run(query, params)
-            return [dict(record) for record in result]
-        
-        with self.driver.session(database=self.config.database) as session:
-            return session.execute_write(write_tx)
+
     
     def health_check(self) -> Dict[str, Any]:
         """بررسی سلامت اتصال با circuit breaker state"""
@@ -1275,7 +1262,7 @@ class GraphQueryService:
                 return batch_results
             
             with self._connection.driver.session(database=self.config.database) as session:
-                raw_results = session.execute_write(batch_tx)
+                raw_results = session.execute_read(batch_tx)
             
             for raw in raw_results:
                 results.append(QueryResult(
