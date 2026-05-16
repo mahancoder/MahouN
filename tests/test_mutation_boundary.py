@@ -87,22 +87,22 @@ class TestMutationAuthorizationBoundary:
     ])
     def test_mutation_outside_context_raises(self, mutation_cypher: str):
         # Ensure no stale auth context
-        _authorized_write_ctx.active = False
+        _authorized_write_ctx.set(False)
         with pytest.raises(GovernanceViolationError, match="ARCHITECTURAL VIOLATION"):
             MutationAuthorizationBoundary.inspect(mutation_cypher)
 
     def test_mutation_inside_auth_context_passes(self):
-        _authorized_write_ctx.active = True
+        token = _authorized_write_ctx.set(True)
         try:
             # Must not raise inside authorized context
             MutationAuthorizationBoundary.inspect("MERGE (n:Document {id: $id})")
         finally:
-            _authorized_write_ctx.active = False
+            _authorized_write_ctx.set(False)
 
     def test_auth_token_is_not_set_globally(self):
         """Token starts False — cannot be globally pre-set."""
-        _authorized_write_ctx.active = False
-        assert not getattr(_authorized_write_ctx, "active", False)
+        _authorized_write_ctx.set(False)
+        assert not _authorized_write_ctx.get()
 
 
 # ======================================================================
@@ -206,7 +206,7 @@ class TestGovernedNeo4jSession:
             )
 
         # Token must be cleared — it cannot leak
-        assert not getattr(_authorized_write_ctx, "active", False)
+        assert not _authorized_write_ctx.get()
 
     def test_ledger_grows_with_receipts(self):
         executor = _mock_executor()

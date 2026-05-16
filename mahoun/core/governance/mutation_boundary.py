@@ -35,7 +35,7 @@ import hashlib
 import json
 import logging
 import re
-import threading
+import contextvars
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -122,8 +122,9 @@ def _make_receipt(
     ts = datetime.now(timezone.utc).isoformat()
     canonical = json.dumps(payload, sort_keys=True, default=str)
     content_hash = hashlib.sha256(canonical.encode()).hexdigest()
+    # Structural hash ONLY. Timestamp is recorded but NOT part of the execution identity.
     receipt_id = hashlib.sha256(
-        f"{ts}:{entity_id}:{content_hash}".encode()
+        f"{entity_id}:{content_hash}".encode()
     ).hexdigest()[:24]
     return MutationReceipt(
         receipt_id=receipt_id,
@@ -141,13 +142,15 @@ def _make_receipt(
 # Mutation Authorization Boundary (constitutional checkpoint)
 # ---------------------------------------------------------------------------
 
-# Thread-local flag: set ONLY while inside GovernedNeo4jSession.write()
-_authorized_write_ctx = threading.local()
+# ContextVar: safe for asyncio, completely isolates coroutines even on the same OS thread.
+_authorized_write_ctx: contextvars.ContextVar[bool] = contextvars.ContextVar(
+    "_authorized_write_ctx", default=False
+)
 
 
 def _is_authorized() -> bool:
     """True only when executing inside GovernedNeo4jSession."""
-    return getattr(_authorized_write_ctx, "active", False)
+    return _authorized_write_ctx.get()
 
 
 class MutationAuthorizationBoundary:
@@ -393,14 +396,14 @@ class GovernedNeo4jSession:
     def _execute_authorized(self, query: str, params: Dict[str, Any]) -> List[Any]:
         """Execute mutation Cypher under the authorization token.
 
-        Sets thread-local flag → executes → clears flag.
-        The flag is cleared in a finally block — it cannot leak.
+        Sets contextvar flag → executes → resets flag.
+        The token is managed contextually — it cannot leak across async boundaries.
         """
-        _authorized_write_ctx.active = True
+        token = _authorized_write_ctx.set(True)
         try:
             return self._raw_executor(query, params)
         finally:
-            _authorized_write_ctx.active = False
+            _authorized_write_ctx.reset(token)
 
 
 # ---------------------------------------------------------------------------
