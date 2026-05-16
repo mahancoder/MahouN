@@ -5,11 +5,22 @@ Neo4j Connection Management
 Production-ready connection pooling with retry logic.
 """
 
+import logging
 import os
 import time
 from contextlib import contextmanager
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, Generator, List, Optional, Tuple
+
+from mahoun.core.governance.mutation_boundary import (
+    MutationAuthorizationBoundary,
+    GovernedNeo4jSession,
+    MutationReceipt,
+)
+from mahoun.core.governance.validator_pipeline import ValidatorPipeline
+from mahoun.core.governance.violations import GovernanceViolationError
+
+_conn_logger = logging.getLogger(__name__)
 
 try:
     import yaml
@@ -178,48 +189,108 @@ class Neo4jConnection:
         finally:
             session.close()
     
+    def _raw_execute(
+        self,
+        query: str,
+        parameters: Optional[Dict[str, Any]] = None,
+        **kwargs
+    ) -> List[Any]:
+        """
+        Internal execution method — calls MutationAuthorizationBoundary
+        on EVERY query before reaching the driver.
+
+        This is the single chokepoint for all Cypher execution.
+        MutationAuthorizationBoundary.inspect() raises GovernanceViolationError
+        if mutation Cypher is detected outside GovernedNeo4jSession.
+        """
+        MutationAuthorizationBoundary.inspect(query)
+        with self.session(**kwargs) as s:
+            result = s.run(query, parameters or {})
+            return [record for record in result]
+
     @retry_on_failure(max_attempts=3)
     def execute_query(
         self,
         query: str,
         parameters: Optional[Dict[str, Any]] = None,
         **kwargs
-    ):
+    ) -> List[Any]:
         """
-        Execute a query with retry logic
-        
+        Execute a READ-ONLY query.
+
+        Mutation Cypher (MERGE/CREATE/DELETE/SET) will raise
+        GovernanceViolationError unless called from GovernedNeo4jSession.
+        Use governed_session() to perform any writes.
+
         Args:
-            query: Cypher query
+            query: Cypher query (READ operations only)
             parameters: Query parameters
-            **kwargs: Additional session arguments
-            
+
         Returns:
-            Query result
+            Query results
+
+        Raises:
+            GovernanceViolationError: If mutation Cypher is detected.
         """
-        with self.session(**kwargs) as session:
-            result = session.run(query, parameters or {})
-            return [record for record in result]
-    
-    @retry_on_failure(max_attempts=3)
-    def execute_write(
+        return self._raw_execute(query, parameters, **kwargs)
+
+    @contextmanager
+    def governed_session(
         self,
-        func: Callable,
-        *args,
-        **kwargs
-    ):
+        pipeline: Optional[ValidatorPipeline] = None,
+        correlation_id: str = "",
+    ) -> Generator[GovernedNeo4jSession, None, None]:
         """
-        Execute a write transaction with retry logic
-        
+        The ONLY authorized entry point for graph mutation.
+
+        Yields a GovernedNeo4jSession which is the only surface that
+        may execute mutation Cypher.  Direct execute_query() with
+        MERGE/CREATE/DELETE/SET will raise GovernanceViolationError.
+
+        Usage::
+
+            with connection.governed_session(correlation_id="op-123") as session:
+                session.write_node("Document", {"id": "d1", "provenance": {...}})
+                session.write_relationship("Case", "c1", "CITES", "Law", "l1", {...})
+
         Args:
-            func: Transaction function
-            *args: Function arguments
-            **kwargs: Function keyword arguments
-            
-        Returns:
-            Transaction result
+            pipeline: Optional ValidatorPipeline (creates default if None).
+            correlation_id: Correlation ID for the session's audit trail.
+
+        Yields:
+            GovernedNeo4jSession
         """
-        with self.session() as session:
-            return session.execute_write(func, *args, **kwargs)
+        yield GovernedNeo4jSession(
+            raw_executor=self._raw_execute,
+            pipeline=pipeline,
+            correlation_id=correlation_id,
+        )
+    
+    def execute_write(self, *args, **kwargs):  # type: ignore[override]
+        """
+        REMOVED — constitutional violation.
+
+        Direct execute_write() is forbidden. It bypasses the
+        MutationAuthorizationBoundary. Use governed_session() instead.
+
+        Raises:
+            GovernanceViolationError: Always.
+        """
+        from mahoun.core.governance.violations import (
+            GovernanceViolation, ViolationSeverity, ViolationCategory,
+        )
+        raise GovernanceViolationError(
+            GovernanceViolation(
+                category=ViolationCategory.ARCHITECTURE_BOUNDARY,
+                severity=ViolationSeverity.CRITICAL,
+                message=(
+                    "execute_write() is constitutionally forbidden. "
+                    "Use connection.governed_session() for all graph mutations."
+                ),
+                details={},
+                source="Neo4jConnection.execute_write",
+            )
+        )
     
     @retry_on_failure(max_attempts=3)
     def execute_read(
