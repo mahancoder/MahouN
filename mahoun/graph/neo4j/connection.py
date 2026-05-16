@@ -552,4 +552,3 @@ def get_connection(
 
 
 # Alias for backward compatibility
-get_neo4j_driver = get_connection

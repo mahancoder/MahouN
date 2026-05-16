@@ -38,7 +38,6 @@ def _raise():
 
 if _NEO4J_AVAILABLE:
     try:
-        from mahoun.graph.neo4j.connection import Neo4jConnection, get_neo4j_driver, get_connection
         from mahoun.graph.neo4j.query_builder import CypherQueryBuilder
         from mahoun.graph.neo4j.operations import GraphOperations
         from mahoun.graph.neo4j.schema import SchemaManager, Constraint, Index
@@ -50,7 +49,6 @@ if _NEO4J_AVAILABLE:
         class Neo4jConnection:
             def __init__(self, *a, **kw): _raise()
 
-        def get_neo4j_driver(*a, **kw): _raise()
         
         def get_connection(*a, **kw): _raise()
 
@@ -73,7 +71,6 @@ else:
     class Neo4jConnection:
         def __init__(self, *a, **kw): _raise()
 
-    def get_neo4j_driver(*a, **kw): _raise()
     
     def get_connection(*a, **kw): _raise()
 
@@ -97,7 +94,6 @@ QueryBuilder = CypherQueryBuilder
 
 __all__ = [
     "Neo4jConnection",
-    "get_neo4j_driver",
     "get_connection",
     "QueryBuilder",
     "CypherQueryBuilder",
