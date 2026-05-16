@@ -78,12 +78,7 @@ services:
       - DETERMINISTIC_ID_ONLY=true
       - MAHOUN_ALLOW_EXPERIMENTAL=false
       - STOCHASTIC_THRESHOLD=0.0
-
-      # Phase 7 Strict Mode Hardening
-      - MAHOUN_GUARD_MODE=STRICT
-      - DETERMINISTIC_ID_ONLY=true
-      - MAHOUN_ALLOW_EXPERIMENTAL=false
-      - STOCHASTIC_THRESHOLD=0.0
+      - MAHOUN_ENFORCE_PROOF_CARRYING_CONTRACT=true
 
     volumes:
       # Persistent data

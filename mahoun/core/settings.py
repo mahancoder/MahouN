@@ -18,9 +18,15 @@ def _csv(name: str) -> list[str]:
 
 
 def load_security_settings() -> SecuritySettings:
-    env = os.getenv("MAHOUN_ENV", "dev").strip().lower()
-    if env not in ("dev", "staging", "prod"):
-        raise RuntimeError(f"Invalid MAHOUN_ENV={env}. Expected dev|staging|prod")
+    from mahoun.core.environment import get_current_environment
+    env_context = get_current_environment()
+    
+    if env_context.is_production():
+        env = "prod"
+    elif env_context.is_staging():
+        env = "staging"
+    else:
+        env = "dev"
 
     api_key = os.getenv("MAHOUN_API_KEY")
     allowed_origins = _csv("MAHOUN_ALLOWED_ORIGINS")

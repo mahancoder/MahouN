@@ -1,0 +1,24 @@
+name: "Phase 3: Architecture Compliance"
+
+on:
+  push:
+    branches: [ "main", "production" ]
+  pull_request:
+    branches: [ "main", "production" ]
+
+jobs:
+  layer-integrity:
+    name: "Verify Architecture Layers"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          
+      - name: Check Import Boundaries & Layering
+        run: |
+          chmod +x ci/scripts/architecture_compliance.py
+          ./ci/scripts/architecture_compliance.py

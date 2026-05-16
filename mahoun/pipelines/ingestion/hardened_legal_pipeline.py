@@ -275,9 +275,8 @@ class HardenedLegalPipeline:
             return await self.refiner.validate_entity(entity, text)
         
         # HARDENING: Refiner unavailable — fail-closed behavior
-        import os
-        _env = os.getenv("MAHOUN_ENV", "development").lower()
-        if _env == "production":
+        from mahoun.core.environment import is_production
+        if is_production():
             raise LLMRefinementFailure(
                 "FATAL: LLM Refiner is not available in PRODUCTION mode. "
                 "Entity validation cannot be bypassed. Halting pipeline."

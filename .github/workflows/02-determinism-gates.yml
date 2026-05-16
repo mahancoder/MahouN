@@ -1,0 +1,41 @@
+name: "Phase 2: Determinism Gates"
+
+on:
+  push:
+    branches: [ "main", "production" ]
+  pull_request:
+    branches: [ "main", "production" ]
+
+jobs:
+  determinism-checks:
+    name: "Strict Determinism Validation"
+    runs-on: ubuntu-latest
+    env:
+      MAHOUN_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,full]"
+          
+      - name: Run Determinism Suite (Blocking)
+        run: |
+          # Fails the build if any non-deterministic behavior is found
+          # --count requires pytest-repeat
+          pip install pytest-repeat
+          pytest tests/determinism/ -v --count=3 --fail-on-flaky
+          
+      - name: Upload Determinism Evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: determinism-evidence
+          path: .pytest_cache/v/cache/nodeids
+          retention-days: 90

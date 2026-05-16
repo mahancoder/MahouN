@@ -109,57 +109,17 @@ class HardenedGuardrailsImporter:
     
     def _detect_environment(self) -> EnvironmentLevel:
         """
-        Detect environment with multiple validation layers.
-        
-        Uses multiple environment variables and system indicators
-        to determine the actual environment level.
+        Detect environment using the canonical environment authority.
         """
-        # Primary environment detection
-        env_primary = os.getenv("MAHOUN_ENV", "development").lower()
+        from mahoun.core.environment import get_current_environment
         
-        # Secondary validation sources
-        env_secondary = os.getenv("ENVIRONMENT", "").lower()
-        env_stage = os.getenv("STAGE", "").lower()
-        env_deploy = os.getenv("DEPLOYMENT_ENV", "").lower()
+        env_context = get_current_environment()
         
-        # System indicators
-        is_container = os.path.exists("/.dockerenv")
-        is_k8s = os.getenv("KUBERNETES_SERVICE_HOST") is not None
-        is_ci = any(ci_var in os.environ for ci_var in ["CI", "CONTINUOUS_INTEGRATION", "GITHUB_ACTIONS"])
-        
-        # Production indicators
-        production_indicators = [
-            env_primary == "production",
-            env_secondary == "production", 
-            env_stage == "prod",
-            env_deploy == "production",
-            is_k8s and not is_ci,
-            os.getenv("NODE_ENV") == "production"
-        ]
-        
-        # Staging indicators
-        staging_indicators = [
-            env_primary == "staging",
-            env_secondary == "staging",
-            env_stage == "staging",
-            env_deploy == "staging"
-        ]
-        
-        # Testing indicators
-        testing_indicators = [
-            env_primary == "test",
-            env_secondary == "test",
-            is_ci,
-            "pytest" in sys.modules,
-            "unittest" in sys.modules
-        ]
-        
-        # Determine environment with precedence
-        if any(production_indicators):
+        if env_context.is_production():
             detected_env = EnvironmentLevel.PRODUCTION
-        elif any(staging_indicators):
+        elif env_context.is_staging():
             detected_env = EnvironmentLevel.STAGING
-        elif any(testing_indicators):
+        elif env_context.is_test():
             detected_env = EnvironmentLevel.TESTING
         else:
             detected_env = EnvironmentLevel.DEVELOPMENT
@@ -168,13 +128,7 @@ class HardenedGuardrailsImporter:
             "Environment detection completed",
             extra={
                 "detected_environment": detected_env.value,
-                "primary_env": env_primary,
-                "production_indicators": sum(production_indicators),
-                "staging_indicators": sum(staging_indicators),
-                "testing_indicators": sum(testing_indicators),
-                "is_container": is_container,
-                "is_k8s": is_k8s,
-                "is_ci": is_ci
+                "primary_env": env_context.environment.value,
             }
         )
         

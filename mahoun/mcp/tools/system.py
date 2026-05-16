@@ -79,11 +79,12 @@ class SystemTool:
         """
         Get detailed version and environment info.
         """
+        from mahoun.core.environment import get_environment_name
         return {
             "version": "1.0.4",
             "codename": "Hyperion",
             "build_date": "2025-12-19",
-            "environment": os.getenv("MAHOUN_ENV", "production"),
+            "environment": get_environment_name(),
             "python_version": platform.python_version()
         }
 

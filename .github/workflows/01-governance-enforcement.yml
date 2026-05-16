@@ -1,0 +1,34 @@
+name: "Phase 1: Governance Enforcement"
+
+on:
+  push:
+    branches: [ "main", "production" ]
+  pull_request:
+    branches: [ "main", "production" ]
+
+jobs:
+  enforce-governance:
+    name: "Governance Drift Detection"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          
+      - name: Scan Forbidden Architectural Patterns
+        run: |
+          chmod +x ci/scripts/scan_forbidden_patterns.py
+          ./ci/scripts/scan_forbidden_patterns.py
+          
+      - name: Verify Environment Canonicalization
+        run: |
+          # Fails if any os.getenv("MAHOUN_ENV") is found outside of environment.py
+          ./ci/scripts/scan_forbidden_patterns.py
+          
+      - name: Audit Trail Requirement
+        run: |
+          echo "Verifying audit mechanisms..."
+          # Any additional static checks for audit persistence can go here

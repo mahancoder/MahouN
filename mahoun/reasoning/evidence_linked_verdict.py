@@ -62,8 +62,10 @@ try:
     log.info("Guardrails enforcement ENABLED - zero-hallucination guarantee active")
 except ImportError as e:
     # FAIL-FAST in production: guards are non-negotiable
-    _env = __import__('os').getenv("MAHOUN_ENV", "development").lower()
-    if _env == "production":
+    from mahoun.core.environment import get_current_environment
+    _env_context = get_current_environment()
+    
+    if _env_context.is_production():
         raise ImportError(
             f"FATAL: Guardrails module failed to import in PRODUCTION mode. "
             f"The system CANNOT operate without invariant enforcement. "
@@ -71,9 +73,10 @@ except ImportError as e:
         ) from e
     
     # In development/staging: allow degraded mode with explicit warning
+    _env_name = _env_context.environment.value
     log.critical(
         f"CRITICAL: Guardrails unavailable - zero-hallucination guarantee COMPROMISED: {e}. "
-        f"This is ONLY acceptable in development mode (current: {_env})."
+        f"This is ONLY acceptable in development mode (current: {_env_name})."
     )
     GUARDRAILS_AVAILABLE = False
     
@@ -511,9 +514,8 @@ class EvidenceLinkedVerdictEngine:
                     log.info(f"Ledger entry written successfully: verdict_id={verdict_id}, hash={ledger_hash[:16] if ledger_hash else 'N/A'}...")
                 else:
                     # No evidence references — this is a structural problem
-                    import os
-                    _env = os.getenv("MAHOUN_ENV", "development").lower()
-                    if _env == "production":
+                    from mahoun.core.environment import is_production
+                    if is_production():
                         raise RuntimeError(
                             "EL-I3 VIOLATION: Verdict has no evidence references "
                             "(no LTM nodes and no facts). Cannot create audit trail. "

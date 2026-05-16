@@ -1,0 +1,37 @@
+name: "Phase 6: Performance & Stability"
+
+on:
+  push:
+    branches: [ "production" ]
+  pull_request:
+    branches: [ "production" ]
+
+jobs:
+  performance-stress:
+    name: "Stress Testing & Benchmarking"
+    runs-on: ubuntu-latest
+    env:
+      MAHOUN_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,full]"
+          
+      - name: Retry-Storm Benchmarking
+        run: |
+          # Verify system stability under repeated concurrent stress
+          pytest tests/determinism/test_retry_storm.py -v
+          
+      - name: Concurrent Async Stress Test
+        run: |
+          # Force extreme concurrent load to detect async race-condition symptoms
+          pip install pytest-xdist
+          pytest tests/determinism/test_concurrent_async.py -n 4 -v

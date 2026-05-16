@@ -130,9 +130,8 @@ class LLMRefinementService:
         """
         if not self.enable_refinement or not self.reasoning_service:
             # HARDENING PATCH P03b: Fail-closed when refinement is disabled
-            import os
-            _env = os.getenv("MAHOUN_ENV", "development").lower()
-            if _env == "production":
+            from mahoun.core.environment import is_production
+            if is_production():
                 logger.error(
                     "PRODUCTION: LLM refinement is disabled but entity validation was requested. "
                     "Rejecting entity to maintain zero-hallucination guarantee."

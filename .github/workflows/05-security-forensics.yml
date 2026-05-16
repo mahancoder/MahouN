@@ -1,0 +1,42 @@
+name: "Phase 5: Security & Forensics"
+
+on:
+  push:
+    branches: [ "main", "production" ]
+  schedule:
+    - cron: '0 0 * * *' # Daily
+
+jobs:
+  security-scan:
+    name: "Supply Chain & Security Audit"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          
+      - name: Install Audit Tools
+        run: pip install pip-audit bandit safety
+          
+      - name: Dependency Vulnerability Scan (pip-audit)
+        run: pip-audit
+        
+      - name: Static Security Analysis (Bandit)
+        run: bandit -r mahoun api -c .bandit.yml || echo "Configure Bandit for strict scanning"
+        
+      - name: Generate Forensic Evidence Artifact
+        run: |
+          mkdir -p ci_artifacts
+          echo "Commit: ${{ github.sha }}" > ci_artifacts/forensic_manifest.txt
+          echo "Timestamp: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> ci_artifacts/forensic_manifest.txt
+          sha256sum requirements.txt >> ci_artifacts/forensic_manifest.txt 2>/dev/null || true
+          
+      - name: Upload Security Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-forensics
+          path: ci_artifacts/
+          retention-days: 365

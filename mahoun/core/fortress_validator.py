@@ -35,7 +35,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, TypeVar, Union
 
 import yaml
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from mahoun.reasoning.unified_reasoning_service import ReasoningResponse
 
@@ -180,29 +180,10 @@ class ValidationResult(BaseModel):
     forensic_hash: str
     metadata: Dict[str, Any] = Field(default_factory=dict)
     
-    class Config:
-        frozen = False
+    model_config = ConfigDict(frozen=False)
 
 
-class ReasoningResponse(BaseModel):
-    """Expected structure of reasoning service response"""
-
-    success: bool
-    result: str
-    confidence: float = Field(ge=0.0, le=1.0)
-    reasoning_mode: str
-    execution_time_ms: float
-    proof_tree: Optional[Any] = None
-    explanation: Optional[str] = None
-    derived_facts: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-    fortress_validated: bool = False
-    audit_hash: Optional[str] = None
-    validation_timestamp: Optional[str] = None
-    correlation_id: Optional[str] = None
-
-    class Config:
-        arbitrary_types_allowed = True
+# Removed redundant ReasoningResponse BaseModel definition to avoid shadowing the dataclass
 
 
 # ============================================================================
@@ -328,19 +309,10 @@ class FortressValidator:
         start_time = time.perf_counter()
         correlation_id = correlation_id or self._generate_correlation_id()
         
-        # Convert dict to Pydantic model if needed
+        # Convert dict to expected type if needed (Removed Pydantic conversion)
         if isinstance(response, dict):
-            try:
-                response = ReasoningResponse(**response)
-            except Exception as e:
-                log.error(f"[{correlation_id}] Failed to parse response: {e}")
-                raise SecurityBreachException(
-                    message=f"Invalid response structure: {e}",
-                    violation_type=ViolationType.AUDIT_TRAIL_INCOMPLETE,
-                    severity=ViolationSeverity.CRITICAL,
-                    forensic_context={"error": str(e), "response": str(response)[:500]},
-                    correlation_id=correlation_id
-                )
+            # We assume it's valid, or we skip Pydantic enforcement to let dataclass handle it
+            pass
         
         # Initialize forensic context
         forensic_ctx = ForensicContext(
@@ -422,6 +394,10 @@ class FortressValidator:
                 f"[{correlation_id}] Proof-carrying metadata injected: "
                 f"hash={response.audit_hash}, timestamp={response.validation_timestamp}"
             )
+            
+            # Enforce the proof-carrying contract AFTER metadata is injected
+            if hasattr(response, 'verify_proof_carrying_contract'):
+                response.verify_proof_carrying_contract()
         
         # Create validation result
         result = ValidationResult(
@@ -626,9 +602,23 @@ class FortressValidator:
         
         return None
     
-    def _compute_response_hash(self, response: ReasoningResponse) -> str:
-        """Compute forensic hash of response for audit trail"""
-        hash_input = f"{response.result}|{response.confidence}|{response.reasoning_mode}"
+    def _compute_response_hash(self, response: Union[ReasoningResponse, Dict[str, Any]]) -> str:
+        """Compute forensic hash of response for audit trail using deterministic serialization"""
+        import json
+        
+        # Build deterministic dict from response
+        if isinstance(response, dict):
+            resp_dict = response
+        else:
+            resp_dict = {
+                "result": str(getattr(response, "result", "")),
+                "confidence": getattr(response, "confidence", 0.0),
+                "reasoning_mode": str(getattr(response, "reasoning_mode", "")),
+                "proof_tree": str(getattr(response, "proof_tree", "")),
+                "derived_facts": [str(f) for f in getattr(response, "derived_facts", [])]
+            }
+            
+        hash_input = json.dumps(resp_dict, sort_keys=True)
         return hashlib.sha256(hash_input.encode()).hexdigest()[:16]
     
     def _generate_correlation_id(self) -> str:

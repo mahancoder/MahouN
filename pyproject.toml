@@ -100,6 +100,7 @@ asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "session"
 addopts = "-m \"not integration and not slow\""
 markers = [
+  "benchmark: Performance and throughput benchmarks for country-scale load.",
   "graph_native: Tests that enforce Mahoun's graph-native reasoning contract",
   "unit: Fast unit tests with no external dependencies",
   "integration: Tests that require external services (databases, APIs, etc.)",

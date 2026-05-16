@@ -41,22 +41,17 @@ class EnforcementLevel(Enum):
 
 def get_enforcement_level() -> EnforcementLevel:
     """
-    Get current enforcement level from environment
-    
-    Returns:
-        EnforcementLevel based on MAHOUN_ENV
-    
-    Environment variable:
-        MAHOUN_ENV: development|staging|production
-    
-    Default: development
+    Get current enforcement level from canonical environment.
     """
-    env = os.getenv("MAHOUN_ENV", "development").lower()
+    from mahoun.core.environment import get_current_environment
     
-    try:
-        return EnforcementLevel(env)
-    except ValueError:
-        log.warning(f"Invalid MAHOUN_ENV='{env}', defaulting to development")
+    env_context = get_current_environment()
+    
+    if env_context.is_production():
+        return EnforcementLevel.PRODUCTION
+    elif env_context.is_staging():
+        return EnforcementLevel.STAGING
+    else:
         return EnforcementLevel.DEVELOPMENT
 
 

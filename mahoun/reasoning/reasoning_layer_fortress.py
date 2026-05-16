@@ -533,8 +533,9 @@ class ReasoningLayerFortress:
             )
         
         # Type validation for reasoning results
-        if component_name.startswith("reasoning_") or component_name.startswith("symbolic_"):
-            if not isinstance(result, (dict, list, str, bool, int, float, type(None))):
+        if component_name.startswith("reasoning_") or component_name.startswith("symbolic_") or component_name.startswith("neural_") or component_name.startswith("hybrid_") or component_name.startswith("unified_"):
+            from mahoun.reasoning.unified_reasoning_service import ReasoningResponse
+            if not isinstance(result, (dict, list, str, bool, int, float, type(None), ReasoningResponse)):
                 logger.warning(
                     f"⚠️ UNEXPECTED RESULT TYPE: {component_name} returned {type(result)}",
                     extra={

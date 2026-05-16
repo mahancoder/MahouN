@@ -64,11 +64,9 @@ def enforce(
     Guards always use STRICT enforcement in production to prevent
     the dual-mode inconsistency where @guard enforces but enforce() skips.
     """
-    import os
-    _env = os.getenv("MAHOUN_ENV", "development").lower()
-    
     # HARDENING: Production always uses STRICT, ignoring MAHOUN_GUARD_MODE
-    if _env == "production":
+    from mahoun.core.environment import is_production
+    if is_production():
         mode = GuardMode.STRICT
     else:
         mode = get_guard_mode()

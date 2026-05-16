@@ -54,18 +54,27 @@ _DEV_DEFAULTS = {
 
 def get_env() -> str:
     """Get current environment (dev/staging/prod)"""
-    return os.getenv("MAHOUN_ENV", "dev").lower()
+    from mahoun.core.environment import get_current_environment
+    env_context = get_current_environment()
+    if env_context.is_production():
+        return "prod"
+    elif env_context.is_staging():
+        return "staging"
+    elif env_context.is_test():
+        return "test"
+    return "dev"
 
 
 def is_dev() -> bool:
     """Check if running in development mode"""
-    return get_env() in ("dev", "development")
+    from mahoun.core.environment import is_development
+    return is_development()
 
 
 def is_production() -> bool:
     """Check if running in production or staging (strict mode)"""
-    env = get_env()
-    return env in ("prod", "production", "staging")
+    from mahoun.core.environment import is_production, is_staging
+    return is_production() or is_staging()
 
 
 def _is_dev_placeholder(value: str) -> bool:

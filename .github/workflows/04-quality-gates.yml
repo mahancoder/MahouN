@@ -1,0 +1,47 @@
+name: "Phase 4: Quality Gates"
+
+on:
+  push:
+    branches: [ "main", "production" ]
+  pull_request:
+    branches: [ "main", "production" ]
+
+jobs:
+  quality-checks:
+    name: "Code Quality & Correctness"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,full]"
+          
+      - name: Check Formatting (Black)
+        run: |
+          pip install black
+          black --check mahoun tests api
+          
+      - name: Linting (Ruff)
+        run: ruff check mahoun tests api
+          
+      - name: Type Checking (Mypy)
+        run: mypy mahoun api
+          
+      - name: Run Unit Tests
+        run: |
+          # Exclude slow/integration, test logic only
+          pytest -m "not integration and not slow and not benchmark" --cov=mahoun --cov-fail-under=80
+          
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: .coverage
+          retention-days: 14

@@ -233,13 +233,14 @@ RUN pip install --no-cache-dir \
     pytest-xdist==3.6.1 \
     httpx==0.28.1
 
-# Copy test files
+# Copy test files and CI scripts
 COPY tests/ ./tests/
+COPY ci/ ./ci/
 
 # Note: pytest configuration is in pyproject.toml (already copied in development stage)
 
-# Run tests by default
-CMD ["pytest", "tests/", "-v", "--tb=short"]
+# Run CI checks followed by tests by default
+CMD ["sh", "-c", "python3 ci/scripts/scan_forbidden_patterns.py && python3 ci/scripts/architecture_compliance.py && pytest tests/ -v --tb=short"]
 
 # ============================================================================
 # Default stage selection

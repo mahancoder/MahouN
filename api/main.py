@@ -406,8 +406,8 @@ async def reset_metrics():
         Confirmation of reset or error if in production
     """
     # Block in production
-    env = os.getenv("MAHOUN_ENV", "dev")
-    if env in ["staging", "prod", "production"]:
+    from mahoun.core.environment import is_production, is_staging
+    if is_production() or is_staging():
         return JSONResponse(
             status_code=403,
             content={

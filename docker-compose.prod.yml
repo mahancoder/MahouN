@@ -7,7 +7,6 @@
 #   docker-compose -f docker-compose.prod.yml --profile monitoring up -d
 # ============================================================================
 
-version: '3.9'
 
 x-common-env: &common-env
   MAHOUN_ENV: production
@@ -53,6 +52,7 @@ services:
       DETERMINISTIC_ID_ONLY: "true"
       MAHOUN_ALLOW_EXPERIMENTAL: "false"
       STOCHASTIC_THRESHOLD: "0.0"
+      MAHOUN_ENFORCE_PROOF_CARRYING_CONTRACT: "true"
       
       # Workers
       UNIFIED_LOADER_WORKERS: ${UNIFIED_LOADER_WORKERS:-4}
@@ -217,7 +217,7 @@ services:
   # Neo4j - Graph Database
   # ==========================================================================
   neo4j:
-    image: neo4j:5.27.0-community
+    image: neo4j:5-community
     container_name: mahoun-neo4j-prod
     <<: *restart-policy
     profiles:

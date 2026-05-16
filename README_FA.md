@@ -45,9 +45,4 @@
 
 ---
 
-## 📞 ارتباط با ما
 
-- **وب‌سایت**: [mahoun.ai](https://mahoun.ai)
-- **ایمیل**: [info@mahoun.ai](mailto:info@mahoun.ai)
-
-</div>

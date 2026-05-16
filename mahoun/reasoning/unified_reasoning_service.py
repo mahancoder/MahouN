@@ -148,9 +148,9 @@ class ReasoningResponse:
     correlation_id: Optional[str] = None
     """Unique correlation ID for distributed tracing"""
     
-    def __post_init__(self):
+    def verify_proof_carrying_contract(self):
         """
-        Validate proof-carrying contract on initialization.
+        Validate proof-carrying contract AFTER validation injection.
         
         ENFORCEMENT: If success=True, all proof-carrying fields MUST be present.
         """
@@ -177,7 +177,6 @@ class ReasoningResponse:
                 violations.append("correlation_id is required for successful responses")
             
             # STRICT MODE: Raise exception if contract violated
-            # NOTE: Can be disabled for backward compatibility during migration
             if violations and self._enforce_contract():
                 from mahoun.core.fortress_validator import SecurityBreachException, ViolationType, ViolationSeverity
                 raise SecurityBreachException(
@@ -205,8 +204,11 @@ class ReasoningResponse:
         
         Returns True unless explicitly disabled via environment variable.
         """
-        import os
-        return os.getenv("MAHOUN_ENFORCE_PROOF_CARRYING_CONTRACT", "true").lower() != "false"
+        from mahoun.core.environment import get_current_environment
+        env_context = get_current_environment()
+        # In strict environments, we always enforce. 
+        # In others, we could optionally allow bypassing via a flag, but for now we enforce it.
+        return True
 
 
 class UnifiedReasoningService:

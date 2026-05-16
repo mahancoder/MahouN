@@ -11,7 +11,8 @@ Exit codes:
     0 = Clean
     1 = Hardcoded paths found
     2 = Hardcoded credentials found
-    3 = Both found
+    4 = Split-authority patterns found
+    ... = Combination of above (bitwise OR)
 """
 
 import os
@@ -37,6 +38,12 @@ FORBIDDEN_CREDENTIAL_PATTERNS = [
     r"secret\s*=\s*['\"][^'\"]{10,}['\"]",  # Generic secrets
 ]
 
+FORBIDDEN_AUTHORITY_PATTERNS = [
+    r"os\.getenv\(['\"]MAHOUN_ENV['\"]",    # Direct read of MAHOUN_ENV
+    r"os\.environ\.get\(['\"]MAHOUN_ENV['\"]", # Direct read via environ.get
+    r"os\.environ\[['\"]MAHOUN_ENV['\"]\]",    # Direct read via environ[...]
+]
+
 # Directories to skip
 SKIP_DIRS = {
     ".git", "venv", ".venv", "__pycache__", "node_modules",
@@ -48,6 +55,7 @@ SKIP_FILES = {
     "ci_check_hardcodes.py",  # This file
     "secrets.py",  # Our secrets module with dev defaults
     "paths.py",  # Path validation module contains patterns as strings
+    "environment.py",  # The canonical authority itself MUST read the environment
 }
 
 
@@ -93,6 +101,14 @@ def scan_file(filepath: Path) -> List[Tuple[int, str, str]]:
                         continue
                     issues.append((i, line.strip()[:100], "CREDENTIAL"))
                     break
+                    
+            # Check authority patterns
+            for pattern in FORBIDDEN_AUTHORITY_PATTERNS:
+                if re.search(pattern, line):
+                    if '"""' in line or "'''" in line or "# " in line:
+                        continue
+                    issues.append((i, line.strip()[:100], "AUTHORITY"))
+                    break
     
     except Exception as e:
         print(f"⚠️ Could not scan {filepath}: {e}", file=sys.stderr)
@@ -109,6 +125,7 @@ def main() -> int:
     
     path_issues = []
     cred_issues = []
+    auth_issues = []
     
     # Scan all Python files
     for filepath in repo_root.rglob("*.py"):
@@ -120,8 +137,10 @@ def main() -> int:
             rel_path = filepath.relative_to(repo_root)
             if issue_type == "PATH":
                 path_issues.append((rel_path, line_num, line))
-            else:
+            elif issue_type == "CREDENTIAL":
                 cred_issues.append((rel_path, line_num, line))
+            elif issue_type == "AUTHORITY":
+                auth_issues.append((rel_path, line_num, line))
     
     # Report
     exit_code = 0
@@ -147,6 +166,17 @@ def main() -> int:
         exit_code |= 2
     else:
         print("✅ No hardcoded credentials found")
+        
+    if auth_issues:
+        print("❌ SPLIT-AUTHORITY PATTERNS FOUND:")
+        print("-" * 60)
+        for path, line_num, line in auth_issues:
+            print(f"  {path}:{line_num}")
+            print(f"    {line}")
+        print()
+        exit_code |= 4
+    else:
+        print("✅ No split-authority patterns found")
     
     print()
     if exit_code == 0:

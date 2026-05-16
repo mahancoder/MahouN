@@ -42,6 +42,7 @@ Unlike traditional AI systems (GPT-4, Claude, etc.) that generate probabilistic 
 
 **Major Architectural Improvements** (May 2026):
 - ✅ **Complete Forensic Analysis**: 19/19 critical issues resolved
+- ✅ **Enterprise-Grade CI/CD Governance**: Automated AST scanners and determinism gates
 - ✅ **Dual-Mode Architecture**: DESKTOP_MINIMAL & ENTERPRISE_FULL modes
 - ✅ **Advanced Reasoning Engine**: Rete algorithm with O(1) rule matching
 - ✅ **Enhanced Type Safety**: 100% type-safe with frozen dataclasses
@@ -539,6 +540,16 @@ Mahoun now implements a **Fortress Governance Layer** that acts as the final gat
 | **Min Confidence** | 0.70 | Block & Log |
 | **Max Reasoning Time** | 30s | Timeout & Error |
 | **Proof Tree** | Required | Block & Log |
+
+### 🛡️ Enterprise CI/CD Governance & Active Immune System (NEW)
+
+Mahoun now features a heavily hardened **Governance CI System** designed to proactively prevent architectural corruption and enforce the Protocol-Based Architecture.
+
+**Key CI/CD Enforcements:**
+- 🧱 **Architecture Compliance:** Dynamic AST scanning against `core_manifest.yaml` enforces absolute layer boundary integrity.
+- 🚫 **Forbidden Patterns Scanner:** Instantly blocks silent fallbacks (`except Exception: pass`), unsafe non-deterministic operations (`random`/`uuid`), and direct environment bypasses.
+- ⏱️ **Strict Determinism Gates:** Blocking test pipelines that enforce 100% hash stability and non-flaky execution.
+- 🔍 **Audit & Forensics:** Automated generation of indelible security and forensic artifacts retained for up to 365 days.
 
 Report security issues to: security@mahoun.ai
 
