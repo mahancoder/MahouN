@@ -41,6 +41,12 @@ from mahoun.core.governance.provenance_tracker import (
 )
 from mahoun.core.governance.ontology_enforcer import OntologyEnforcer
 from mahoun.core.governance.deterministic_resolver import DeterministicResolver
+from mahoun.core.governance.governed_writer import (
+    GovernedGraphWriter,
+    GovernedTransaction,
+    MutationReceipt,
+    MutationType,
+)
 
 __all__ = [
     # Violations
@@ -57,4 +63,9 @@ __all__ = [
     "ProvenanceMetadata",
     "OntologyEnforcer",
     "DeterministicResolver",
+    # Governed Persistence Layer
+    "GovernedGraphWriter",
+    "GovernedTransaction",
+    "MutationReceipt",
+    "MutationType",
 ]

@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MAHOUN_ENV: test
+      PYTHONHASHSEED: "0"
     steps:
       - uses: actions/checkout@v4
       

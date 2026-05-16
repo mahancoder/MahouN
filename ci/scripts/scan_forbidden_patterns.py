@@ -85,6 +85,41 @@ def check_env_vars(content: str, rel_path: str) -> list:
             })
     return violations
 
+def check_ungoverned_mutations(content: str, rel_path: str) -> list:
+    """Detect raw graph mutation queries outside governed paths."""
+    violations = []
+
+    # Files that are ALLOWED to contain raw mutations (infrastructure/schema ops only)
+    allowed_raw_mutation_paths = [
+        "mahoun/graph/neo4j/schema.py",       # Schema DDL only
+        "mahoun/graph/neo4j/connection.py",    # Health check queries
+        "mahoun/graph/gnn/",                   # Experimental/training
+        "mahoun/graph/optimizer/",             # Graph optimization
+        "tests/",                             # Test code
+        "scripts/",                           # Utility scripts
+    ]
+    if any(rel_path.startswith(p) or p in rel_path for p in allowed_raw_mutation_paths):
+        return violations
+
+    # Detect raw MERGE / CREATE ( patterns in Cypher strings
+    mutation_pattern = re.compile(
+        r'(?:MERGE|CREATE)\s*\(',
+        re.IGNORECASE,
+    )
+    for match in mutation_pattern.finditer(content):
+        line_no = content.count('\n', 0, match.start()) + 1
+        violations.append({
+            "rule": "Ungoverned Graph Mutation",
+            "line": line_no,
+            "file": rel_path,
+            "message": (
+                f"Raw graph mutation (MERGE/CREATE) detected outside governed path. "
+                f"All graph writes MUST go through ValidatorPipeline via GraphOperations."
+            ),
+        })
+    return violations
+
+
 def scan_file(file_path: Path) -> list:
     violations = []
     try:
@@ -93,6 +128,9 @@ def scan_file(file_path: Path) -> list:
         
         # Regex based checks
         violations.extend(check_env_vars(content, rel_path))
+
+        # Ungoverned mutation check
+        violations.extend(check_ungoverned_mutations(content, rel_path))
         
         # AST based checks
         tree = ast.parse(content, filename=str(file_path))
@@ -142,3 +180,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

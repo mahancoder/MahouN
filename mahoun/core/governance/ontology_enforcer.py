@@ -79,6 +79,16 @@ _DEFAULT_ONTOLOGY_RULES: Tuple[OntologyRule, ...] = (
     OntologyRule("Evidence", "SUPPORTS", "Verdict", "Evidence supports a verdict"),
     OntologyRule("Evidence", "CONTRADICTS", "Verdict", "Evidence contradicts a verdict"),
     OntologyRule("Evidence", "EXTRACTED_FROM", "Document", "Evidence extracted from a document"),
+    # Verdict ingestion relationships (used by upsert_verdict_struct)
+    OntologyRule("Verdict", "REFERS_TO", "LawArticle", "A verdict refers to a law article"),
+    OntologyRule("Verdict", "HAS_PARTY", "Person", "A verdict has a party"),
+    OntologyRule("Verdict", "HAS_TAG", "Tag", "A verdict has a tag"),
+    # Graph builder relationships (used by UltraGraphBuilder.export_to_neo4j)
+    OntologyRule("GraphNode", "RELATED", "GraphNode", "Generic graph node relationship"),
+    # Document-LawArticle linkage
+    OntologyRule("Document", "REFERENCES", "LawArticle", "A document references a law article"),
+    # Person reverse lookup
+    OntologyRule("Person", "PARTY_TO", "Verdict", "A person is party to a verdict"),
 )
 
 

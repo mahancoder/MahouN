@@ -3,76 +3,101 @@ Neo4j Graph Operations
 =======================
 
 High-level operations for graph manipulation.
+
+All write operations delegate to GovernedGraphWriter — the single
+mutation authorization boundary.  Direct Cypher MERGE/CREATE is
+forbidden outside of the governance layer.
 """
 
 
+import logging
 from typing import Any, Dict, List, Optional, Tuple
 
 from mahoun.graph.neo4j.connection import Neo4jConnection, get_connection
 from mahoun.graph.neo4j.monitoring import Neo4jMetrics
+from mahoun.core.governance.governed_writer import (
+    GovernedGraphWriter,
+    MutationReceipt,
+)
+from mahoun.core.governance.validator_pipeline import ValidatorPipeline
+from mahoun.core.governance.violations import GovernanceViolationError
+
+_log = logging.getLogger(__name__)
 
 
 class GraphOperations:
-    """High-level graph operations"""
-    
+    """High-level graph operations backed by GovernedGraphWriter.
+
+    Every write method delegates to GovernedGraphWriter, which enforces
+    provenance, ontology, and schema validation through ValidatorPipeline
+    before ANY mutation reaches the database.
+    """
+
     def __init__(
         self,
         connection: Optional[Neo4jConnection] = None,
-        metrics: Optional[Neo4jMetrics] = None
+        metrics: Optional[Neo4jMetrics] = None,
+        validator_pipeline: Optional[ValidatorPipeline] = None,
     ):
         """
-        Initialize graph operations
-        
+        Initialize graph operations.
+
         Args:
-            connection: Neo4j connection (uses global if None)
-            metrics: Metrics tracker
+            connection: Neo4j connection (uses global if None).
+            metrics: Metrics tracker.
+            validator_pipeline: Governance pipeline (creates default if None).
         """
         self.conn = connection or get_connection()
         self.metrics = metrics or Neo4jMetrics()
-    
+        self._writer = GovernedGraphWriter(
+            executor=self.conn,
+            pipeline=validator_pipeline,
+        )
+
+    @property
+    def governed_writer(self) -> GovernedGraphWriter:
+        """Direct access to the governed writer for advanced use."""
+        return self._writer
+
     def create_node(
         self,
         label: str,
         properties: Dict[str, Any],
-        merge: bool = True
+        merge: bool = True,
+        correlation_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
-        Create or merge a node
-        
+        Create or merge a node through the governed pipeline.
+
         Args:
-            label: Node label
-            properties: Node properties
-            merge: Use MERGE instead of CREATE
-            
+            label: Node label.
+            properties: Node properties (MUST include 'id' and 'provenance').
+            merge: Use MERGE instead of CREATE.
+            correlation_id: Optional correlation ID.
+
         Returns:
-            Created node properties
+            Created node properties.
+
+        Raises:
+            GovernanceViolationError: If governance validation fails.
         """
         import time
         start = time.time()
-        
-        # Build property string
-        prop_str = ", ".join([f"{k}: ${k}" for k in properties.keys()])
-        
-        if merge:
-            query = f"""
-            MERGE (n:{label} {{{prop_str}}})
-            ON CREATE SET n.created_at = datetime()
-            ON MATCH SET n.updated_at = datetime()
-            RETURN n
-            """
-        else:
-            query = f"""
-            CREATE (n:{label} {{{prop_str}}})
-            SET n.created_at = datetime()
-            RETURN n
-            """
-        
-        result = self.conn.execute_query(query, properties)
-        
+
+        # Ensure 'id' field exists (try common aliases)
+        node_data = {**properties}
+        if "id" not in node_data:
+            node_data["id"] = node_data.get("node_id", node_data.get("verdict_id", ""))
+
+        receipt = self._writer.write_node(
+            label=label,
+            node_data=node_data,
+            merge=merge,
+            correlation_id=correlation_id,
+        )
         self.metrics.record_query(time.time() - start)
-        
-        return dict(result[0]["n"]) if result else {}
-    
+        return {"_governed": True, "_receipt_id": receipt.receipt_id}
+
     def create_relationship(
         self,
         from_label: str,
@@ -81,61 +106,43 @@ class GraphOperations:
         to_id: str,
         rel_type: str,
         properties: Optional[Dict[str, Any]] = None,
-        merge: bool = True
+        merge: bool = True,
+        correlation_id: Optional[str] = None,
     ) -> bool:
         """
-        Create relationship between nodes
-        
+        Create relationship between nodes through the governed pipeline.
+
         Args:
-            from_label: Source node label
-            from_id: Source node ID
-            to_label: Target node label
-            to_id: Target node ID
-            rel_type: Relationship type
-            properties: Relationship properties
-            merge: Use MERGE instead of CREATE
-            
+            from_label: Source node label.
+            from_id: Source node ID.
+            to_label: Target node label.
+            to_id: Target node ID.
+            rel_type: Relationship type (must be in ontology).
+            properties: Relationship properties (MUST include 'provenance').
+            merge: Use MERGE instead of CREATE.
+            correlation_id: Optional correlation ID.
+
         Returns:
-            Success status
+            True on success.
+
+        Raises:
+            GovernanceViolationError: On ontology violation or missing provenance.
         """
         import time
         start = time.time()
-        
-        props = properties or {}
-        prop_str = ", ".join([f"{k}: ${k}" for k in props.keys()])
-        
-        if merge:
-            query = f"""
-            MATCH (a:{from_label} {{id: $from_id}})
-            MATCH (b:{to_label} {{id: $to_id}})
-            MERGE (a)-[r:{rel_type}]->(b)
-            SET r += ${{{prop_str}}}
-            SET r.updated_at = datetime()
-            RETURN r
-            """
-        else:
-            query = f"""
-            MATCH (a:{from_label} {{id: $from_id}})
-            MATCH (b:{to_label} {{id: $to_id}})
-            CREATE (a)-[r:{rel_type} {{{prop_str}}}]->(b)
-            SET r.created_at = datetime()
-            RETURN r
-            """
-        
-        params = {
-            "from_id": from_id,
-            "to_id": to_id,
-            **props
-        }
-        
-        try:
-            self.conn.execute_query(query, params)
-            self.metrics.record_query(time.time() - start)
-            return True
-        except Exception as e:
-            self.metrics.record_error()
-            print(f"❌ Failed to create relationship: {e}")
-            return False
+
+        self._writer.write_relationship(
+            source_type=from_label,
+            source_id=from_id,
+            relationship_type=rel_type,
+            target_type=to_label,
+            target_id=to_id,
+            relationship_data=properties or {},
+            merge=merge,
+            correlation_id=correlation_id,
+        )
+        self.metrics.record_query(time.time() - start)
+        return True
     
     def batch_create_nodes(
         self,
