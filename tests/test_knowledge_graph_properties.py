@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("hypothesis")
 """
 Property-Based Tests for Knowledge Graph
 =========================================

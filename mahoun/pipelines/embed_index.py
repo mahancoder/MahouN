@@ -21,12 +21,41 @@ from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 import hashlib
 
-import torch
-from sentence_transformers import SentenceTransformer
-from tqdm import tqdm
-import chromadb
-from chromadb.config import Settings
-import numpy as np
+try:
+    import torch
+    HAS_TORCH = True
+except ImportError:
+    torch = None
+    HAS_TORCH = False
+
+try:
+    from sentence_transformers import SentenceTransformer
+    HAS_SENTENCE_TRANSFORMERS = True
+except ImportError:
+    SentenceTransformer = None
+    HAS_SENTENCE_TRANSFORMERS = False
+
+import tqdm
+try:
+    from tqdm import tqdm
+except ImportError:
+    tqdm = None
+
+try:
+    import chromadb
+    from chromadb.config import Settings
+    HAS_CHROMADB = True
+except ImportError:
+    chromadb = None
+    Settings = None
+    HAS_CHROMADB = False
+
+try:
+    import numpy as np
+    HAS_NUMPY = True
+except ImportError:
+    np = None
+    HAS_NUMPY = False
 
 # Optional imports for advanced features
 try:
@@ -80,7 +109,7 @@ class EmbeddingConfig:
     max_length: int = 512
     normalize: bool = True
     use_fp16: bool = True
-    device: str = "cuda" if torch.cuda.is_available() else "cpu"
+    device: str = "cuda" if (torch is not None and torch.cuda.is_available()) else "cpu"
 
 
 class AdvancedEmbedder:
@@ -107,6 +136,8 @@ class AdvancedEmbedder:
     ) -> np.ndarray:
         """Embed a batch of texts"""
 
+        if torch is None:
+            raise RuntimeError("torch not installed, cannot embed batch")
         with torch.inference_mode():
             embeddings = self.model.encode(
                 texts,
@@ -285,7 +316,7 @@ class EmbeddingService:
         embed_config = EmbeddingConfig(
             model_name=model_name,
             batch_size=batch_size,
-            use_fp16=torch.cuda.is_available(),
+            use_fp16=(torch is not None and torch.cuda.is_available()),
         )
         self.embedder = AdvancedEmbedder(embed_config)
 
@@ -388,7 +419,7 @@ def main():
     embed_config = EmbeddingConfig(
         model_name=model_name,
         batch_size=batch_size,
-        use_fp16=torch.cuda.is_available(),
+        use_fp16=(torch is not None and torch.cuda.is_available()),
     )
     embedder = AdvancedEmbedder(embed_config)
 

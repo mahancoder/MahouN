@@ -11,7 +11,7 @@ enforcement — runtime and CI/CD — flows through this module.
 Layers:
     Runtime Governance:
         ValidatorPipeline, ProvenanceTracker, OntologyEnforcer,
-        DeterministicResolver
+        DeterministicResolver, GovernanceContext
 
     Lifecycle Governance (CI/CD):
         ForbiddenPatternScanner, ArchitectureComplianceChecker,
@@ -38,6 +38,7 @@ from mahoun.core.governance.validator_pipeline import ValidatorPipeline
 from mahoun.core.governance.provenance_tracker import (
     ProvenanceMetadata,
     ProvenanceTracker,
+    InferenceProvenance,
 )
 from mahoun.core.governance.ontology_enforcer import OntologyEnforcer
 from mahoun.core.governance.deterministic_resolver import DeterministicResolver
@@ -47,6 +48,11 @@ from mahoun.core.governance.mutation_boundary import (
     GovernedWriteTransaction,
     MutationReceipt,
     MutationType,
+)
+from mahoun.core.governance.governance_context import (
+    GovernanceContext,
+    GovernanceContextManager,
+    GovernanceScopeEnforcer,
 )
 
 __all__ = [
@@ -62,8 +68,13 @@ __all__ = [
     "ValidatorPipeline",
     "ProvenanceTracker",
     "ProvenanceMetadata",
+    "InferenceProvenance",
     "OntologyEnforcer",
     "DeterministicResolver",
+    # Governance Context (NEW)
+    "GovernanceContext",
+    "GovernanceContextManager",
+    "GovernanceScopeEnforcer",
     # Governed Persistence Layer
     "MutationAuthorizationBoundary",
     "GovernedNeo4jSession",

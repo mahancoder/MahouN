@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("jwt")
 """
 Comprehensive tests for rate limiter.
 

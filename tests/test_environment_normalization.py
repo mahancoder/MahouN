@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("pydantic_settings")
 """
 Test environment enum normalization and alias handling.
 

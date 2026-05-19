@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("hypothesis")
 """Property-based tests for invariants"""
 from hypothesis import given, strategies as st
 

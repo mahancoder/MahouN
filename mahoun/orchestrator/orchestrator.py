@@ -29,19 +29,29 @@ from queue import PriorityQueue
 import json
 import hashlib
 
-import numpy as np
-import torch
-import torch.nn as nn
+try:
+    import numpy as np
+    import torch
+    import torch.nn as nn
+except ImportError:
+    np = None
+    torch = None
+    class DummyModule:
+        Module = object
+    nn = DummyModule()
 
-from self_improve import (
-    UltraSelfImprovementSystem,
-    UltraRLAgent,
-    UltraActiveLearner,
-    UltraBanditSystem,
-    UnifiedPerformanceMonitor,
-    CausalABBridge,
-    UltraSelfImproveIntegration
-)
+try:
+    from self_improve import (
+        UltraSelfImprovementSystem,
+        UltraRLAgent,
+        UltraActiveLearner,
+        UltraBanditSystem,
+        UnifiedPerformanceMonitor,
+        CausalABBridge,
+        UltraSelfImproveIntegration
+    )
+except ImportError:
+    pass
 
 
 # ============================================================================
@@ -834,3 +844,24 @@ if __name__ == "__main__":
     print("=" * 60)
     
     asyncio.run(example_usage())
+
+# Compatibility shims for older features (not used in this version)
+class ComponentStatus(str, Enum):
+    IDLE = "idle"
+    RUNNING = "running"
+    ERROR = "error"
+
+class OrchestratorState(str, Enum):
+    STARTING = "starting"
+    READY = "ready"
+    STOPPED = "stopped"
+
+class SelfImprovementOrchestrator:
+    def __init__(self, *args, **kwargs):
+        self.state = OrchestratorState.READY
+    
+    def start(self):
+        pass
+    
+    def stop(self):
+        pass

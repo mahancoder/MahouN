@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("jwt")
 """
 End-to-End Security Integration Tests
 ======================================

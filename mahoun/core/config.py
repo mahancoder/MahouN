@@ -35,8 +35,17 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, ClassVar, Dict, FrozenSet, List, Optional, Set, Union
 
+try:
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+except ImportError:
+    # Fallback for older pydantic versions or missing pydantic_settings
+    try:
+        from pydantic.v1 import BaseSettings # If using pydantic 2 but no pydantic-settings
+        SettingsConfigDict: Optional[Any] = None
+    except ImportError:
+        from pydantic import BaseSettings
+        SettingsConfigDict: Optional[Any] = None
 from pydantic import Field, field_validator, model_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from mahoun.core.exceptions import ConfigurationError
 
@@ -425,13 +434,21 @@ class MahounSettings(BaseSettings):
     # Pydantic Settings Configuration
     # =========================================================================
     
-    model_config = SettingsConfigDict(
-        env_prefix="MAHOUN_",
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-        validate_default=True,
-    )
+    if SettingsConfigDict:
+        model_config = SettingsConfigDict(
+            env_prefix="MAHOUN_",
+            env_file=".env",
+            env_file_encoding="utf-8",
+            extra="ignore",
+            validate_default=True,
+        )
+    else:
+        class Config:
+            env_prefix = "MAHOUN_"
+            env_file = ".env"
+            env_file_encoding = "utf-8"
+            extra = "ignore"
+            validate_default = True
     
     # =========================================================================
     # Validators

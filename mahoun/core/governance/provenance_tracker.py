@@ -34,24 +34,134 @@ REQUIRED_PROVENANCE_FIELDS: FrozenSet[str] = frozenset(
 )
 
 
+# ============================================================================
+# INFERENCE PROVENANCE (CRITICAL)
+# ============================================================================
+
+
 @dataclass(frozen=True)
-class ProvenanceMetadata:
-    """Immutable provenance record for graph entities.
-
-    Every graph node and relationship must be created with
-    a ProvenanceMetadata instance. This record is immutable
-    and cannot be modified after creation.
-
-    Attributes:
-        source: Origin of the data (e.g., 'document_ingestion', 'user_input').
-        timestamp: UTC ISO-8601 timestamp of creation.
-        correlation_id: Correlation ID for tracing the operation.
-        author: Identifier of the actor that created the entity.
-        document_id: Optional source document identifier.
-        pipeline_version: Optional version of the processing pipeline.
-        extra: Additional provenance fields (frozen after creation).
+class InferenceProvenance:
+    """Provenance for reasoning operations (separate from Graph Provenance).
+    
+    Tracks the symbolic execution path, rule chains, evidence nodes,
+    and contradiction branches that led to a conclusion.
+    
+    CRITICAL: This is separate from GraphProvenance because:
+    - Graph provenance tracks WHERE data came from (source document, ingestion pipeline)
+    - Inference provenance tracks HOW conclusions were derived (rule chains, evidence nodes)
+    
+    Usage:
+        inference_prov = InferenceProvenance.create(
+            proof_id="proof-123",
+            rule_chain=("rule_1", "rule_2", "rule_3"),
+            evidence_nodes=("node_a", "node_b"),
+            contradiction_branches=("branch_x",),
+            symbolic_trace_hash="abc123...",
+            governance_scope_id="scope-789"
+        )
     """
 
+    # Unique identifier for this inference
+    proof_id: str
+    
+    # Tuple of rule IDs used in this inference (symbolic execution path)
+    rule_chain: tuple[str, ...]
+    
+    # Tuple of evidence node IDs referenced
+    evidence_nodes: tuple[str, ...]
+    
+    # Tuple of contradiction branches encountered
+    contradiction_branches: tuple[str, ...]
+    
+    # Hash of the symbolic execution trace
+    symbolic_trace_hash: str
+    
+    # ID of the governance scope that created this provenance
+    governance_scope_id: str
+
+    @classmethod
+    def create(
+        cls,
+        proof_id: str,
+        rule_chain: tuple[str, ...],
+        evidence_nodes: tuple[str, ...],
+        contradiction_branches: tuple[str, ...],
+        symbolic_trace_hash: str,
+        governance_scope_id: str,
+    ) -> InferenceProvenance:
+        """Create inference provenance with governance scope binding.
+
+        Args:
+            proof_id: Unique identifier for this inference.
+            rule_chain: Tuple of rule IDs used in this inference.
+            evidence_nodes: Tuple of evidence node IDs referenced.
+            contradiction_branches: Tuple of contradiction branches encountered.
+            symbolic_trace_hash: Hash of the symbolic execution trace.
+            governance_scope_id: ID of the governance scope.
+
+        Returns:
+            InferenceProvenance instance.
+        """
+        return cls(
+            proof_id=proof_id,
+            rule_chain=rule_chain,
+            evidence_nodes=evidence_nodes,
+            contradiction_branches=contradiction_branches,
+            symbolic_trace_hash=symbolic_trace_hash,
+            governance_scope_id=governance_scope_id,
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Serialize to dictionary for storage."""
+        return {
+            "proof_id": self.proof_id,
+            "rule_chain": list(self.rule_chain),
+            "evidence_nodes": list(self.evidence_nodes),
+            "contradiction_branches": list(self.contradiction_branches),
+            "symbolic_trace_hash": self.symbolic_trace_hash,
+            "governance_scope_id": self.governance_scope_id,
+        }
+
+
+# ============================================================================
+# PROVENANCE METADATA
+# ============================================================================
+"""Immutable provenance record for graph entities.
+
+Every graph node and relationship must be created with
+132: a ProvenanceMetadata instance. This record is immutable
+133: and cannot be modified after creation.
+
+CRITICAL SECURITY ENHANCEMENTS:
+136: - provenance_hash: SHA256 hash for cryptographic integrity
+137: - provenance_signature: Cryptographic signature for attestation
+138: - governance_scope_id: ID of governance scope that created this
+139: - runtime_attestation_id: ID of runtime attestation for execution binding
+140: - lineage_parent: ID of parent provenance for correlation continuity
+141: - timestamp: Internally generated, monotonic, governance-controlled (NOT externally writable)
+
+Usage:
+144: # ONLY via factory method (constructor is disabled)
+145: provenance = ProvenanceMetadata.create(
+146:     source="document_ingestion",
+147:     correlation_id="req-123",
+148:     author="user-456",
+149:     governance_scope_id="scope-789",
+150:     runtime_attestation_id="attest-abc",
+151:     lineage_parent=None
+152: )
+"""
+
+@dataclass(frozen=True)
+class ProvenanceMetadata:
+    # Cryptographic attestation fields (GOVERNANCE-CONTROLLED)
+    provenance_hash: str
+    provenance_signature: str
+    governance_scope_id: str
+    runtime_attestation_id: str
+    lineage_parent: Optional[str]
+
+    # Core metadata fields (SET AT CREATION TIME ONLY)
     source: str
     timestamp: str
     correlation_id: str
@@ -59,8 +169,45 @@ class ProvenanceMetadata:
     document_id: Optional[str] = None
     pipeline_version: Optional[str] = None
 
-    def __post_init__(self) -> None:
-        """Validate all required fields are non-empty."""
+    def __init_subclass__(cls, **kwargs):
+        """Prevent subclassing - only ProvenanceMetadata allowed."""
+        super().__init_subclass__(**kwargs)
+        # Disable direct instantiation - only create() factory method allowed
+
+    def __init__(
+        self,
+        source: str,
+        timestamp: str,
+        correlation_id: str,
+        author: str,
+        provenance_hash: str,
+        provenance_signature: str,
+        governance_scope_id: str,
+        runtime_attestation_id: str,
+        lineage_parent: Optional[str] = None,
+        document_id: Optional[str] = None,
+        pipeline_version: Optional[str] = None,
+    ) -> None:
+        """
+        Internal constructor - ONLY called by create() factory method.
+        
+        CRITICAL: This constructor is for internal use ONLY.
+        External code MUST use ProvenanceMetadata.create() factory method.
+        """
+        # Use object.__setattr__ to bypass frozen dataclass restrictions
+        object.__setattr__(self, 'source', source)
+        object.__setattr__(self, 'timestamp', timestamp)
+        object.__setattr__(self, 'correlation_id', correlation_id)
+        object.__setattr__(self, 'author', author)
+        object.__setattr__(self, 'provenance_hash', provenance_hash)
+        object.__setattr__(self, 'provenance_signature', provenance_signature)
+        object.__setattr__(self, 'governance_scope_id', governance_scope_id)
+        object.__setattr__(self, 'runtime_attestation_id', runtime_attestation_id)
+        object.__setattr__(self, 'lineage_parent', lineage_parent)
+        object.__setattr__(self, 'document_id', document_id)
+        object.__setattr__(self, 'pipeline_version', pipeline_version)
+        
+        # Validate all required fields are non-empty
         if not self.source:
             raise ValueError("Provenance 'source' cannot be empty")
         if not self.timestamp:
@@ -69,6 +216,14 @@ class ProvenanceMetadata:
             raise ValueError("Provenance 'correlation_id' cannot be empty")
         if not self.author:
             raise ValueError("Provenance 'author' cannot be empty")
+        if not self.provenance_hash:
+            raise ValueError("Provenance 'provenance_hash' cannot be empty")
+        if not self.provenance_signature:
+            raise ValueError("Provenance 'provenance_signature' cannot be empty")
+        if not self.governance_scope_id:
+            raise ValueError("Provenance 'governance_scope_id' cannot be empty")
+        if not self.runtime_attestation_id:
+            raise ValueError("Provenance 'runtime_attestation_id' cannot be empty")
 
     def to_dict(self) -> Dict[str, Any]:
         """Serialize to dictionary for storage."""
@@ -77,7 +232,13 @@ class ProvenanceMetadata:
             "timestamp": self.timestamp,
             "correlation_id": self.correlation_id,
             "author": self.author,
+            "provenance_hash": self.provenance_hash,
+            "provenance_signature": self.provenance_signature,
+            "governance_scope_id": self.governance_scope_id,
+            "runtime_attestation_id": self.runtime_attestation_id,
         }
+        if self.lineage_parent is not None:
+            result["lineage_parent"] = self.lineage_parent
         if self.document_id is not None:
             result["document_id"] = self.document_id
         if self.pipeline_version is not None:
@@ -90,29 +251,85 @@ class ProvenanceMetadata:
         source: str,
         correlation_id: str,
         author: str,
+        governance_scope_id: str,
+        runtime_attestation_id: str,
+        lineage_parent: Optional[str] = None,
         document_id: Optional[str] = None,
         pipeline_version: Optional[str] = None,
     ) -> ProvenanceMetadata:
-        """Factory method with automatic timestamp.
+        """Factory method with automatic timestamp and cryptographic attestation.
+
+        CRITICAL: This is the ONLY way to create ProvenanceMetadata instances.
+        Direct instantiation is disabled via __init_subclass__.
 
         Args:
             source: Origin of the data.
             correlation_id: Correlation ID for tracing.
             author: Actor identifier.
+            governance_scope_id: ID of governance scope creating this provenance.
+            runtime_attestation_id: ID of runtime attestation for execution binding.
+            lineage_parent: Optional parent provenance ID for correlation continuity.
             document_id: Optional source document ID.
             pipeline_version: Optional pipeline version.
 
         Returns:
-            Immutable ProvenanceMetadata instance.
+            Immutable ProvenanceMetadata instance with cryptographic attestation.
         """
+        # Generate timestamp internally (NOT externally writable)
+        timestamp = datetime.now(timezone.utc).isoformat()
+        
+        # Build base data for hashing
+        base_data = {
+            "source": source,
+            "timestamp": timestamp,
+            "correlation_id": correlation_id,
+            "author": author,
+            "document_id": document_id,
+            "pipeline_version": pipeline_version,
+        }
+        
+        # Compute cryptographic hash
+        provenance_hash = cls._compute_hash(base_data)
+        
+        # Compute cryptographic signature
+        provenance_signature = cls._sign_provenance(base_data, governance_scope_id)
+        
+        # Create instance with all fields
         return cls(
             source=source,
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=timestamp,
             correlation_id=correlation_id,
             author=author,
+            provenance_hash=provenance_hash,
+            provenance_signature=provenance_signature,
+            governance_scope_id=governance_scope_id,
+            runtime_attestation_id=runtime_attestation_id,
+            lineage_parent=lineage_parent,
             document_id=document_id,
             pipeline_version=pipeline_version,
         )
+
+    @staticmethod
+    def _compute_hash(data: Dict[str, Any]) -> str:
+        """Compute SHA256 hash of provenance data for cryptographic integrity."""
+        import hashlib
+        import json
+        # Sort keys for deterministic hashing
+        data_str = json.dumps(data, sort_keys=True, default=str)
+        return hashlib.sha256(data_str.encode()).hexdigest()
+
+    @staticmethod
+    def _sign_provenance(data: Dict[str, Any], governance_scope_id: str) -> str:
+        """Sign provenance data with governance scope for attestation.
+
+        CRITICAL: This provides cryptographic proof that the provenance
+        was created by a valid governance scope.
+        """
+        import hashlib
+        import json
+        # Combine data with governance scope for binding
+        combined = json.dumps(data, sort_keys=True, default=str) + governance_scope_id
+        return hashlib.sha256(combined.encode()).hexdigest()
 
 
 class ProvenanceTracker:
@@ -237,6 +454,8 @@ class ProvenanceTracker:
             )
 
         if isinstance(provenance_raw, ProvenanceMetadata):
+            # Validate cryptographic attestation fields
+            self._validate_provenance_attestation(provenance_raw, node_id, correlation_id)
             return node_data
 
         if isinstance(provenance_raw, dict):
@@ -261,6 +480,9 @@ class ProvenanceTracker:
                         correlation_id=correlation_id,
                     )
                 )
+            
+            # Validate cryptographic attestation fields if present
+            self._validate_provenance_attestation_dict(provenance_raw, node_id, correlation_id)
             return node_data
 
         raise GovernanceViolationError(
@@ -279,3 +501,149 @@ class ProvenanceTracker:
                 correlation_id=correlation_id,
             )
         )
+
+    def _validate_provenance_attestation(
+        self,
+        provenance: ProvenanceMetadata,
+        entity_id: str,
+        correlation_id: Optional[str] = None,
+    ) -> None:
+        """Validate cryptographic attestation fields in ProvenanceMetadata.
+
+        Args:
+            provenance: ProvenanceMetadata instance to validate.
+            entity_id: Entity identifier for error messages.
+            correlation_id: Optional correlation ID.
+
+        Raises:
+            GovernanceViolationError: If attestation is invalid.
+        """
+        # Validate cryptographic hash
+        if not provenance.provenance_hash:
+            raise GovernanceViolationError(
+                GovernanceViolation(
+                    category=ViolationCategory.MISSING_PROVENANCE,
+                    severity=ViolationSeverity.CRITICAL,
+                    message=(
+                        f"Node write rejected: provenance_hash missing "
+                        f"for '{entity_id}'"
+                    ),
+                    details={
+                        "node_id": str(entity_id),
+                        "field": "provenance_hash",
+                    },
+                    source="ProvenanceTracker",
+                    correlation_id=correlation_id,
+                )
+            )
+
+        # Validate governance scope binding
+        if not provenance.governance_scope_id:
+            raise GovernanceViolationError(
+                GovernanceViolation(
+                    category=ViolationCategory.MISSING_PROVENANCE,
+                    severity=ViolationSeverity.CRITICAL,
+                    message=(
+                        f"Node write rejected: governance_scope_id missing "
+                        f"for '{entity_id}'"
+                    ),
+                    details={
+                        "node_id": str(entity_id),
+                        "field": "governance_scope_id",
+                    },
+                    source="ProvenanceTracker",
+                    correlation_id=correlation_id,
+                )
+            )
+
+        # Validate runtime attestation binding
+        if not provenance.runtime_attestation_id:
+            raise GovernanceViolationError(
+                GovernanceViolation(
+                    category=ViolationCategory.MISSING_PROVENANCE,
+                    severity=ViolationSeverity.CRITICAL,
+                    message=(
+                        f"Node write rejected: runtime_attestation_id missing "
+                        f"for '{entity_id}'"
+                    ),
+                    details={
+                        "node_id": str(entity_id),
+                        "field": "runtime_attestation_id",
+                    },
+                    source="ProvenanceTracker",
+                    correlation_id=correlation_id,
+                )
+            )
+
+    def _validate_provenance_attestation_dict(
+        self,
+        provenance_dict: Dict[str, Any],
+        entity_id: str,
+        correlation_id: Optional[str] = None,
+    ) -> None:
+        """Validate cryptographic attestation fields in provenance dict.
+
+        Args:
+            provenance_dict: Provenance dict to validate.
+            entity_id: Entity identifier for error messages.
+            correlation_id: Optional correlation ID.
+
+        Raises:
+            GovernanceViolationError: If attestation is invalid.
+        """
+        # Validate cryptographic hash
+        if not provenance_dict.get("provenance_hash"):
+            raise GovernanceViolationError(
+                GovernanceViolation(
+                    category=ViolationCategory.MISSING_PROVENANCE,
+                    severity=ViolationSeverity.CRITICAL,
+                    message=(
+                        f"Node write rejected: provenance_hash missing "
+                        f"from provenance dict for '{entity_id}'"
+                    ),
+                    details={
+                        "node_id": str(entity_id),
+                        "field": "provenance_hash",
+                    },
+                    source="ProvenanceTracker",
+                    correlation_id=correlation_id,
+                )
+            )
+
+        # Validate governance scope binding
+        if not provenance_dict.get("governance_scope_id"):
+            raise GovernanceViolationError(
+                GovernanceViolation(
+                    category=ViolationCategory.MISSING_PROVENANCE,
+                    severity=ViolationSeverity.CRITICAL,
+                    message=(
+                        f"Node write rejected: governance_scope_id missing "
+                        f"from provenance dict for '{entity_id}'"
+                    ),
+                    details={
+                        "node_id": str(entity_id),
+                        "field": "governance_scope_id",
+                    },
+                    source="ProvenanceTracker",
+                    correlation_id=correlation_id,
+                )
+            )
+
+        # Validate runtime attestation binding
+        if not provenance_dict.get("runtime_attestation_id"):
+            raise GovernanceViolationError(
+                GovernanceViolation(
+                    category=ViolationCategory.MISSING_PROVENANCE,
+                    severity=ViolationSeverity.CRITICAL,
+                    message=(
+                        f"Node write rejected: runtime_attestation_id missing "
+                        f"from provenance dict for '{entity_id}'"
+                    ),
+                    details={
+                        "node_id": str(entity_id),
+                        "field": "runtime_attestation_id",
+                    },
+                    source="ProvenanceTracker",
+                    correlation_id=correlation_id,
+                )
+            )

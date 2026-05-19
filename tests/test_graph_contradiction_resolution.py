@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("hypothesis")
 """
 تست Contradiction Resolution در گراف - Graph Contradiction Resolution Tests
 ===========================================================================

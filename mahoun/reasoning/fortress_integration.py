@@ -9,6 +9,9 @@ This module provides a wrapper around UnifiedReasoningService that
 automatically validates all responses through FortressValidator before
 returning them to callers.
 
+CRITICAL: This wrapper enforces governance scope through GovernanceContext.
+NO reasoning operation can execute without an active governance context.
+
 Usage:
     from mahoun.reasoning.fortress_integration import create_fortress_protected_service
     
@@ -34,7 +37,11 @@ from mahoun.core.fortress_validator import (
     SecurityBreachException,
     ValidationResult,
 )
-from mahoun.core.logging_config import get_logger
+from mahoun.core.governance import (
+    GovernanceContextManager,
+    GovernanceScopeEnforcer,
+)
+from mahoun.core.fortress_validator import get_logger
 
 log = get_logger(__name__)
 
@@ -112,12 +119,15 @@ class FortressProtectedReasoningService:
         correlation_id: Optional[str] = None
     ) -> ReasoningResponse:
         """
-        Execute reasoning with automatic fortress validation.
+        Execute reasoning with automatic fortress validation and governance scope.
         
         This method:
-        1. Calls underlying reasoning service
-        2. Validates response through FortressValidator
-        3. Returns validated response or raises SecurityBreachException
+        1. Requires active governance context (CORRELATION LINEAGE)
+        2. Executes reasoning within governance scope (PROOF TRACKING ACTIVE)
+        3. Validates response through FortressValidator
+        4. Returns validated response or raises SecurityBreachException
+        
+        CRITICAL: NO reasoning can execute without active governance context.
         
         Args:
             request: ReasoningRequest to process
@@ -128,6 +138,7 @@ class FortressProtectedReasoningService:
             
         Raises:
             SecurityBreachException: On critical RedLine violations
+            GovernanceViolationError: If governance context not active
         """
         self.stats["total_requests"] += 1
         
@@ -135,8 +146,11 @@ class FortressProtectedReasoningService:
         if correlation_id is None and hasattr(request, 'correlation_id'):
             correlation_id = request.correlation_id
         
+        # CRITICAL: Require active governance context
+        ctx = GovernanceContextManager.require_context()
+        
         try:
-            # Execute reasoning
+            # Execute reasoning within governance scope
             log.debug(f"[{correlation_id}] Executing reasoning request")
             response = await self.reasoning_service.reason(request)
             
@@ -160,12 +174,17 @@ class FortressProtectedReasoningService:
                     f"[{correlation_id}] Response VALIDATED by Fortress "
                     f"({validation_result.execution_time_ms:.2f}ms)"
                 )
-            
+                
             return response
             
         except SecurityBreachException:
             # Re-raise security breaches
             self.stats["blocked_responses"] += 1
+            raise
+            
+        except Exception as e:
+            self.stats["validation_failures"] += 1
+            log.error(f"[{correlation_id}] Validation failed with exception: {e}")
             raise
             
         except Exception as e:
@@ -260,7 +279,8 @@ class FortressProtectedReasoningService:
 def create_fortress_protected_service(
     reasoning_service: Any,
     strict_mode: bool = True,
-    execution_mode: ExecutionMode = ExecutionMode.DESKTOP_MINIMAL
+    execution_mode: ExecutionMode = ExecutionMode.DESKTOP_MINIMAL,
+    validator: Optional[FortressValidator] = None
 ) -> FortressProtectedReasoningService:
     """
     Create a Fortress-protected reasoning service.
@@ -272,6 +292,7 @@ def create_fortress_protected_service(
         reasoning_service: UnifiedReasoningService instance to protect
         strict_mode: If True, raise exceptions on violations
         execution_mode: Current execution mode
+        validator: Optional FortressValidator instance (creates new if None)
         
     Returns:
         FortressProtectedReasoningService instance
@@ -294,6 +315,7 @@ def create_fortress_protected_service(
     """
     return FortressProtectedReasoningService(
         reasoning_service=reasoning_service,
+        validator=validator,
         strict_mode=strict_mode,
         execution_mode=execution_mode
     )

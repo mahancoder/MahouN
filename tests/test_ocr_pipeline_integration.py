@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("PIL")
 """
 OCR Pipeline Integration Tests
 ===============================

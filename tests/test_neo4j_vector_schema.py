@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("neo4j")
 """
 Test Neo4j Vector Schema
 ========================

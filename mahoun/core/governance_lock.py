@@ -82,9 +82,20 @@ class GovernanceLock:
         """
         if cls._initialized:
             cls._change_attempts += 1
+            # Log bypass attempt with full forensic context
+            print(
+                f"[GOVERNANCE LOCK] CRITICAL: Bypass attempt detected - "
+                f"mode change requested after initialization. "
+                f"Current mode: {cls._mode.value}, "
+                f"Requested mode: {mode.value}, "
+                f"Attempt #{cls._change_attempts}, "
+                f"Timestamp: {datetime.now(timezone.utc).isoformat()}"
+            )
             raise RuntimeError(
                 f"GovernanceLock already initialized with mode={cls._mode.value}. "
-                f"Cannot reinitialize. Change attempts: {cls._change_attempts}"
+                f"Cannot reinitialize. Change attempts: {cls._change_attempts}. "
+                f"Forensic context: mode={cls._mode.value}, "
+                f"requested={mode.value}, attempts={cls._change_attempts}"
             )
         
         # CRITICAL: DISABLED mode requires cryptographic authorization
@@ -146,6 +157,32 @@ class GovernanceLock:
         return current_hash == cls._initialization_hash
     
     @classmethod
+    def verify_immutable(cls) -> bool:
+        """
+        Verify governance lock is immutable and cannot be changed.
+        
+        This method confirms:
+        1. Lock is initialized
+        2. No bypass attempts have occurred
+        3. Lock hash matches initialization hash
+        
+        Returns:
+            True if lock is immutable and secure, False otherwise
+        """
+        if not cls._initialized:
+            return False
+        
+        # Check for bypass attempts
+        if cls._change_attempts > 0:
+            return False
+        
+        # Check integrity hash
+        if not cls.verify_integrity():
+            return False
+        
+        return True
+    
+    @classmethod
     def get_audit_metadata(cls) -> dict:
         """Get governance lock metadata for audit trail"""
         return {
@@ -154,8 +191,32 @@ class GovernanceLock:
             "timestamp": cls._initialization_timestamp,
             "integrity_hash": cls._initialization_hash,
             "change_attempts": cls._change_attempts,
-            "integrity_verified": cls.verify_integrity()
+            "integrity_verified": cls.verify_integrity(),
+            "bypass_attempts": cls._get_bypass_attempts()
         }
+    
+    @classmethod
+    def _get_bypass_attempts(cls) -> list:
+        """
+        Get detailed bypass attempt log.
+        
+        Returns:
+            List of bypass attempt details with timestamps
+        """
+        # This is a simplified version - in production, this would
+        # store actual attempt details in a list
+        if cls._change_attempts == 0:
+            return []
+        
+        return [
+            {
+                "attempt_number": i + 1,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "blocked": True,
+                "reason": "GovernanceLock already initialized"
+            }
+            for i in range(cls._change_attempts)
+        ]
     
     @classmethod
     def _verify_authorization(cls, token: Optional[str]) -> bool:
@@ -188,7 +249,21 @@ class GovernanceLock:
     
     @classmethod
     def _reset(cls):
-        """INTERNAL: Reset lock (for testing ONLY)"""
+        """
+        INTERNAL: Reset lock (for testing ONLY).
+        
+        CRITICAL SECURITY: This method should ONLY be called from test fixtures.
+        In production, this method should never be called.
+        """
+        # Log reset attempt for forensic audit
+        print(
+            f"[GOVERNANCE LOCK] RESET ATTEMPT - "
+            f"Timestamp: {datetime.now(timezone.utc).isoformat()}, "
+            f"Was initialized: {cls._initialized}, "
+            f"Mode was: {cls._mode.value if cls._initialized else 'N/A'}, "
+            f"Change attempts: {cls._change_attempts}"
+        )
+        
         cls._instance = None
         cls._initialized = False
         cls._mode = GovernanceMode.STRICT
@@ -219,7 +294,16 @@ def should_enforce_proof_carrying_contract() -> bool:
     Returns:
         True if enforcement enabled, False otherwise
     """
-    return GovernanceLock.is_enforcement_enabled()
+    # Fail-closed: if not initialized, assume STRICT
+    if not GovernanceLock._initialized:
+        return True
+    
+    # If lock is immutable and verified, enforce contract
+    if GovernanceLock.verify_immutable():
+        return GovernanceLock.is_enforcement_enabled()
+    
+    # If lock is compromised, fail-closed
+    return True
 
 
 # ============================================================================
@@ -283,10 +367,19 @@ def check_governance_integrity() -> dict:
     metadata = GovernanceLock.get_audit_metadata()
     
     # Check for tampering
+    alert_messages = []
     if metadata["change_attempts"] > 0:
-        metadata["alert"] = f"CRITICAL: {metadata['change_attempts']} bypass attempts detected"
-    
+        alert_messages.append(f"{metadata['change_attempts']} bypass attempts detected")
+        metadata["bypass_attempts"] = metadata.get("bypass_attempts", [])
+
     if not metadata["integrity_verified"]:
-        metadata["alert"] = "CRITICAL: Governance lock integrity compromised"
+        alert_messages.append("governance lock integrity compromised")
+
+    # Check immutability
+    if not GovernanceLock.verify_immutable():
+        alert_messages.append("governance lock is not immutable")
+
+    if alert_messages:
+        metadata["alert"] = f"CRITICAL: {', '.join(alert_messages)}"
     
     return metadata

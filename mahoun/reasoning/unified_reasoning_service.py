@@ -42,6 +42,14 @@ from reasoning_logic import (
 from mahoun.guardrails.enforcement import guard, enforce_guard
 from mahoun.guardrails.exceptions import InvariantViolation
 
+# CRITICAL: Governance lock - immutable governance enforcement
+from mahoun.core.governance_lock import (
+    GovernanceLock,
+    GovernanceMode,
+    SecurityError,
+    should_enforce_proof_carrying_contract
+)
+
 # CRITICAL: Neural validation layer - prevents LLM hallucination
 from mahoun.reasoning.neural_validation import (
     validate_neural_output,
@@ -239,7 +247,7 @@ class UnifiedReasoningService:
     
     def __init__(self, enable_neural: bool = True):
         """
-        Initialize Unified Reasoning Service with FORTRESS PROTECTION.
+        Initialize Unified Reasoning Service with FORTRESS PROTECTION and GOVERNANCE LOCK.
         
         🏰 FORTRESS INITIALIZATION SEQUENCE:
         1. Activate reasoning layer fortress
@@ -248,10 +256,76 @@ class UnifiedReasoningService:
         4. Start continuous integrity monitoring
         5. Enable fail-safe mechanisms
         
+        🛡️ GOVERNANCE LOCK INITIALIZATION:
+        1. Initialize GovernanceLock at startup (immutable)
+        2. Verify governance enforcement is enabled
+        3. Log governance mode for audit trail
+        4. Fail-closed if governance not initialized
+        
         Args:
             enable_neural: Enable neural reasoning (requires LLM dependencies)
+            
+        Raises:
+            SecurityError: If GovernanceLock initialization fails
+            RuntimeError: If GovernanceLock already initialized (immutable)
         """
-        # 🏰 PHASE 1: FORTRESS ACTIVATION
+        # 🛡️ PHASE 1: GOVERNANCE LOCK INITIALIZATION
+        # Initialize GovernanceLock at startup (immutable, cannot be changed)
+        try:
+            # Check if already initialized
+            if not GovernanceLock._initialized:
+                # Initialize with STRICT mode (fail-closed default)
+                GovernanceLock.initialize(mode=GovernanceMode.STRICT)
+                logger.info(
+                    "🛡️ GOVERNANCE LOCK INITIALIZED",
+                    extra={
+                        "mode": GovernanceMode.STRICT.value,
+                        "immutable": True,
+                        "fail_closed": True
+                    }
+                )
+            else:
+                logger.info(
+                    "🛡️ GOVERNANCE LOCK ALREADY INITIALIZED",
+                    extra={
+                        "mode": GovernanceLock.get_mode().value,
+                        "immutable": True
+                    }
+                )
+        except SecurityError as e:
+            logger.critical(f"GovernanceLock initialization failed: {e}")
+            # Fail-closed: raise exception to prevent unsafe startup
+            raise SecurityError(
+                f"GovernanceLock initialization failed: {e}. "
+                "System cannot operate without governance enforcement."
+            )
+        
+        # 🛡️ PHASE 2: VERIFY GOVERNANCE ENFORCEMENT
+        # Verify governance enforcement is enabled before proceeding
+        if not GovernanceLock.is_enforcement_enabled():
+            logger.critical(
+                "🛡️ GOVERNANCE ENFORCEMENT DISABLED",
+                extra={
+                    "mode": GovernanceLock.get_mode().value,
+                    "bypass_attempt": True,
+                    "fail_closed": True
+                }
+            )
+            raise SecurityError(
+                "Governance enforcement is disabled. "
+                "System cannot operate without governance enforcement."
+            )
+        
+        logger.info(
+            "🛡️ GOVERNANCE ENFORCEMENT VERIFIED",
+            extra={
+                "mode": GovernanceLock.get_mode().value,
+                "enforcement_enabled": True,
+                "immutable": True
+            }
+        )
+        
+        # 🏰 PHASE 3: FORTRESS ACTIVATION
         self.fortress = get_reasoning_fortress()
         
         logger.info(
@@ -260,7 +334,8 @@ class UnifiedReasoningService:
                 "fortress_security_level": self.fortress.security_level.value,
                 "neural_enabled": enable_neural,
                 "protection_active": True,
-                "zero_trust_mode": True
+                "zero_trust_mode": True,
+                "governance_mode": GovernanceLock.get_mode().value
             }
         )
         
@@ -273,7 +348,8 @@ class UnifiedReasoningService:
             extra={
                 "fortress_status": self.fortress.get_fortress_status(),
                 "protected_components": len(self.fortress.protected_components),
-                "security_level": self.fortress.security_level.value
+                "security_level": self.fortress.security_level.value,
+                "governance_mode": GovernanceLock.get_mode().value
             }
         )
     
@@ -380,7 +456,43 @@ class UnifiedReasoningService:
         - G_PARSER_FALLBACK: Parser failures must not compromise correctness
         - G_NEURAL_VALIDATION: Neural outputs must be symbolically validated
         - G_CONSISTENCY_ENFORCEMENT: Cross-layer consistency required
+        
+        GOVERNANCE ENFORCEMENT:
+        - GovernanceLock must be initialized before any reasoning
+        - Governance enforcement must be enabled
+        - All bypass attempts are logged with full forensic context
         """
+        
+        # 🛡️ GOVERNANCE VERIFICATION
+        # Verify governance lock is initialized and enforcement is enabled
+        if not GovernanceLock._initialized:
+            logger.critical(
+                "🛡️ GOVERNANCE LOCK NOT INITIALIZED",
+                extra={
+                    "bypass_attempt": True,
+                    "fail_closed": True,
+                    "action": "reasoning_blocked"
+                }
+            )
+            raise SecurityError(
+                "GovernanceLock is not initialized. "
+                "System cannot process requests without governance enforcement."
+            )
+        
+        if not GovernanceLock.is_enforcement_enabled():
+            logger.critical(
+                "🛡️ GOVERNANCE ENFORCEMENT DISABLED",
+                extra={
+                    "mode": GovernanceLock.get_mode().value,
+                    "bypass_attempt": True,
+                    "fail_closed": True,
+                    "action": "reasoning_blocked"
+                }
+            )
+            raise SecurityError(
+                "Governance enforcement is disabled. "
+                "System cannot process requests without governance enforcement."
+            )
         
         # 🏰 FORTRESS ACCESS CONTROL
         if not hasattr(self, 'fortress') or self.fortress.is_compromised:

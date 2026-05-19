@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("hypothesis")
 """
 Very Hard Level Tests: Property-Based Testing and Stress Tests
 ===============================================================

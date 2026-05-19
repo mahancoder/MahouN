@@ -12,7 +12,10 @@ Features:
 - Token blacklisting
 """
 
-import jwt
+try:
+    import jwt
+except ImportError:
+    jwt = None
 import secrets
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
@@ -64,6 +67,8 @@ class JWTAuthenticator:
             access_token_expire_minutes: Access token expiry
             refresh_token_expire_days: Refresh token expiry
         """
+        if jwt is None:
+            raise RuntimeError("PyJWT is not installed. Install with 'pip install PyJWT'")
         self.secret_key = secret_key
         self.algorithm = algorithm
         self.access_token_expire_minutes = access_token_expire_minutes

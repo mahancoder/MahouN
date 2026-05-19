@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("asyncpg")
 from pathlib import Path
 
 from mahoun.pipelines.ingestion.document_handlers import extract_document_text

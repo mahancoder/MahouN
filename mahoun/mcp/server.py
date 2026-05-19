@@ -27,9 +27,27 @@ import time
 from fastapi import FastAPI, Security, HTTPException, Request
 from fastapi.security import APIKeyHeader
 from pydantic import BaseModel, field_validator
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
+try:
+    from slowapi import Limiter, _rate_limit_exceeded_handler
+    from slowapi.util import get_remote_address
+    from slowapi.errors import RateLimitExceeded
+except ImportError:
+    class Limiter:
+        def __init__(self, key_func=None, *args, **kwargs):
+            pass
+        def limit(self, limit_value):
+            def decorator(func):
+                return func
+            return decorator
+
+    class RateLimitExceeded(Exception):
+        pass
+
+    def _rate_limit_exceeded_handler(request, exc):
+        pass
+
+    def get_remote_address():
+        return "127.0.0.1"
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware

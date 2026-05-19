@@ -1,3 +1,5 @@
+import pytest
+pytest.importorskip("pydantic_settings")
 """
 Configuration Production Validation Tests
 ==========================================

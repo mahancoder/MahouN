@@ -24,7 +24,18 @@ from mahoun.metrics.mode_enforcement import (
     record_config_validation_duration,
 )
 
-from mahoun.metrics.collector import get_metrics_collector, MetricsCollector
+from mahoun.metrics.collector import (
+    get_metrics_collector,
+    MetricsCollector,
+    reset_global_collector,
+    register_counter,
+    register_gauge,
+    register_histogram
+)
+from mahoun.metrics.metrics import Counter, Gauge, Histogram
+from mahoun.metrics.store import MetricsStore
+from mahoun.metrics.system_provider import SystemMetricsProvider
+from mahoun.metrics.snapshot import MetricsSnapshot
 
 __all__ = [
     # Counters
@@ -50,4 +61,14 @@ __all__ = [
     # Metrics Collector
     "get_metrics_collector",
     "MetricsCollector",
+    "reset_global_collector",
+    "register_counter",
+    "register_gauge",
+    "register_histogram",
+    "Counter",
+    "Gauge",
+    "Histogram",
+    "MetricsStore",
+    "SystemMetricsProvider",
+    "MetricsSnapshot",
 ]
