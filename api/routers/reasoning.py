@@ -363,9 +363,32 @@ async def generate_verdict(
         case_id = request.case_id or str(uuid.uuid4())
 
         # Extract steps from proof_tree (ReasoningResponse format)
+        # CRITICAL: ReasoningResponse.proof_tree is VerdictProofTree with .steps tuple
         steps_data = []
-        if verdict.proof_tree and hasattr(verdict.proof_tree, "steps"):
-            steps_data = list(verdict.proof_tree.steps)
+        if verdict.proof_tree is not None:
+            if hasattr(verdict.proof_tree, "steps"):
+                # VerdictProofTree.steps is immutable tuple, convert to list
+                steps_data = list(verdict.proof_tree.steps)
+            else:
+                # FAIL-CLOSED: proof_tree exists but has no steps
+                log.error(
+                    f"proof_tree exists but missing .steps attribute: {type(verdict.proof_tree)}",
+                    extra={"correlation_id": ctx.correlation_id}
+                )
+                raise RuntimeError(
+                    "Governance contract violation: proof_tree missing .steps attribute. "
+                    "This indicates architectural corruption."
+                )
+        else:
+            # FAIL-CLOSED: No proof_tree means no evidence linkage
+            log.error(
+                "ReasoningResponse missing proof_tree - zero-hallucination guarantee violated",
+                extra={"correlation_id": ctx.correlation_id}
+            )
+            raise RuntimeError(
+                "Governance contract violation: ReasoningResponse missing proof_tree. "
+                "Zero-hallucination guarantee requires proof_tree for all successful responses."
+            )
 
         # Generate cryptographic proof if requested
         proof_response = None
