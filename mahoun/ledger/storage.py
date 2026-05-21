@@ -21,29 +21,28 @@ Migration Timeline:
 - v2.0.0 (3 months): This module removed completely
 """
 
-import warnings
-import json
 import hashlib
-from datetime import datetime, timezone
+import json
+import os
+import warnings
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-import os
+
+from mahoun.ledger.models import LedgerEntry
 
 # Import from modern API
 from mahoun.ledger.writer import (
     EvidenceLedgerWriter,
     JSONLLedgerBackend,
-    NoOpLedgerBackend as _NoOpLedgerBackend,
 )
-from mahoun.ledger.models import LedgerEntry
-
 
 # Emit deprecation warning on module import
 warnings.warn(
     "mahoun.ledger.storage is deprecated. Use mahoun.ledger.writer instead. "
     "See migration guide: docs/LEDGER_MIGRATION.md",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 
@@ -54,18 +53,19 @@ def _sha256(value: str) -> str:
 def _canon(obj: Any) -> str:
     return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
+
 class FileLedgerWriter(EvidenceLedgerWriter):
     """
     DEPRECATED: Use JSONLLedgerBackend from mahoun.ledger.writer instead.
-    
+
     This is a legacy compatibility wrapper that will be removed in v2.0.0.
     """
-    
+
     def __init__(self, base_dir: str, fsync: bool = True):
         warnings.warn(
             "FileLedgerWriter is deprecated. Use JSONLLedgerBackend from mahoun.ledger.writer",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         self.base_dir = Path(base_dir)
         self.base_dir.mkdir(parents=True, exist_ok=True)
@@ -81,16 +81,13 @@ class FileLedgerWriter(EvidenceLedgerWriter):
         self._head_path.write_text(value, encoding="utf-8")
 
     def write(
-        self,
-        event_type_or_entry: Any,
-        request_id: str | None = None,
-        payload: dict[str, Any] | None = None
+        self, event_type_or_entry: Any, request_id: str | None = None, payload: dict[str, Any] | None = None
     ) -> str:
         if isinstance(event_type_or_entry, LedgerEntry):
             entry = event_type_or_entry
             event_type = entry.event_type or "verdict"
             request_id = entry.request_id or entry.verdict_id
-            timestamp = entry.created_at or datetime.now(timezone.utc)
+            timestamp = entry.created_at or datetime.now(UTC)
             payload = {
                 "verdict_id": entry.verdict_id,
                 "case_id": entry.case_id,
@@ -103,7 +100,7 @@ class FileLedgerWriter(EvidenceLedgerWriter):
             }
         else:
             event_type = str(event_type_or_entry)
-            timestamp = datetime.now(timezone.utc)
+            timestamp = datetime.now(UTC)
             if request_id is None or payload is None:
                 raise ValueError("request_id and payload are required")
 
@@ -135,30 +132,27 @@ class FileLedgerWriter(EvidenceLedgerWriter):
 # Compatibility alias for tests expecting FileLedgerBackend
 FileLedgerBackend = JSONLLedgerBackend
 
+
 class NoOpLedgerWriter(EvidenceLedgerWriter):
     """
     DEPRECATED: Use NoOpLedgerBackend from mahoun.ledger.writer instead.
-    
+
     This is a legacy compatibility wrapper that will be removed in v2.0.0.
     """
-    
+
     def __init__(self):
         warnings.warn(
             "NoOpLedgerWriter is deprecated. Use NoOpLedgerBackend from mahoun.ledger.writer",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
-        env = os.getenv("MAHOUN_ENV", "dev").lower()
+        from mahoun.core.environment import get_environment_name
+
+        env = get_environment_name()
         if env in ("staging", "prod", "production"):
-            raise RuntimeError(
-                "NoOpLedgerWriter is not allowed in staging/prod. "
-                "Configure JSONLLedgerBackend instead."
-            )
+            raise RuntimeError("NoOpLedgerWriter is not allowed in staging/prod. Configure JSONLLedgerBackend instead.")
 
     def write(
-        self,
-        event_type_or_entry: Any,
-        request_id: str | None = None,
-        payload: dict[str, Any] | None = None
+        self, event_type_or_entry: Any, request_id: str | None = None, payload: dict[str, Any] | None = None
     ) -> str:
         return "0" * 64

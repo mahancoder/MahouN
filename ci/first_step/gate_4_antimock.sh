@@ -79,7 +79,7 @@ check_module_size() {
 }
 
 # Check core modules
-if ! check_module_size "mahoun/agents/base_agent.py" 500; then
+if ! check_module_size "mahoun/agents/base_agent.py" 400; then
     ((VIOLATIONS++))
 fi
 

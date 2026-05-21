@@ -13,6 +13,9 @@ Most endpoints require authentication. Use the `X-API-Key` header with your vali
 ## 1. Core Reasoning (Analysis)
 **Router**: `/mahoun`
 
+> [!IMPORTANT]
+> **Governance Enforcement**: All reasoning endpoints are heavily protected by the `FortressValidator` and require an active `GovernanceContext`. Responses from these endpoints will always adhere to the `ProofCarryingResponse` format, containing a cryptographic `audit_hash`, `validation_timestamp`, and deterministic `proof_tree`.
+
 ### [POST] `/upload`
 Upload and process documents for analysis.
 - **Request**: Multipart/Form-Data

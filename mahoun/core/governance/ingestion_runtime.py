@@ -16,18 +16,17 @@ Core Principles:
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Any
 
+from mahoun.core.exceptions import MahounError
 from mahoun.core.governance.mutation_boundary import GovernedNeo4jSession
 from mahoun.core.governance.provenance_tracker import ProvenanceMetadata
-from mahoun.core.exceptions import MahounError
 
 logger = logging.getLogger(__name__)
 
 
 class IngestionAbortedError(MahounError):
     """Raised when an ingestion sequence violates constraints and is aborted."""
-    pass
 
 
 class GovernedIngestionRuntime:
@@ -45,12 +44,8 @@ class GovernedIngestionRuntime:
         self._session = session
 
     def ingest_document_atomic(
-        self,
-        doc_id: str,
-        text: str,
-        metadata: Dict[str, Any],
-        author_id: str
-    ) -> Dict[str, Any]:
+        self, doc_id: str, text: str, metadata: dict[str, Any], author_id: str
+    ) -> dict[str, Any]:
         """
         Atomically process a document into the graph via the governed boundary.
 
@@ -65,7 +60,7 @@ class GovernedIngestionRuntime:
             source=metadata.get("source", "api_ingestion"),
             correlation_id=doc_id,
             author=author_id,
-            evidence_hash=doc_id, # In reality, hash of the text
+            evidence_hash=doc_id,  # In reality, hash of the text
         )
 
         # 2. Begin Transaction
@@ -77,7 +72,7 @@ class GovernedIngestionRuntime:
                 "id": doc_id,
                 "text_content": text[:2000],  # Minimal preview for graph
                 "title": metadata.get("title", "Untitled"),
-                "provenance": provenance.to_dict()
+                "provenance": provenance.to_dict(),
             }
             tx.queue_node(label="Document", node_data=doc_payload, merge=True)
 
@@ -86,21 +81,15 @@ class GovernedIngestionRuntime:
 
             # 4. Commit (Validate-All-Then-Execute-All)
             receipts = tx.commit()
-            
+
             logger.info(
-                "[RUNTIME] Ingestion sequence finalized successfully. "
-                "Generated %d immutable receipts.", len(receipts)
+                "[RUNTIME] Ingestion sequence finalized successfully. Generated %d immutable receipts.", len(receipts)
             )
-            
-            return {
-                "status": "success",
-                "doc_id": doc_id,
-                "receipts": [r.receipt_id for r in receipts]
-            }
+
+            return {"status": "success", "doc_id": doc_id, "receipts": [r.receipt_id for r in receipts]}
 
         except Exception as e:
             # 5. Natural Abort (No destructive compensation)
             tx.abort()
             logger.error("[RUNTIME] Ingestion sequence aborted due to violation: %s", e)
             raise IngestionAbortedError(f"Deterministic ingestion failed: {e}") from e
-

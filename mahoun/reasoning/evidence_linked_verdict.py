@@ -1,3 +1,4 @@
+# ruff: noqa: N802, N806
 """
 Evidence-Linked Verdict Engine
 ===============================
@@ -8,26 +9,25 @@ ALL reasoning MUST be grounded in Knowledge Graph nodes, edges, rules, precedent
 """
 
 import asyncio
-import uuid
 import hashlib
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
-from datetime import datetime, timezone
 from collections import defaultdict
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:
     from mahoun.reasoning.adapters import ReasoningDependencyContainer
 
 from mahoun.core.logging import setup_logger
-from mahoun.graph.ultra_graph_builder import UltraGraphBuilder, GraphNode, GraphEdge
-from mahoun.reasoning.knowledge_graph import LegalKnowledgeGraph
-from mahoun.reasoning.chain_of_thought import ChainOfThoughtReasoner
-from mahoun.reasoning.semantic_matcher import SemanticMatcher
-from mahoun.ledger.writer import EvidenceLedgerWriter
-from mahoun.ledger.models import LedgerEntry
-from mahoun.ledger.guards import validate_entry
+from mahoun.crypto.proof_system import ProofSystem
+from mahoun.graph.ultra_graph_builder import GraphEdge, GraphNode, UltraGraphBuilder
 from mahoun.invariants.versions import INVARIANT_VERSION
-from mahoun.crypto.proof_system import ProofSystem, CryptographicProof
+from mahoun.ledger.guards import validate_entry
+from mahoun.ledger.models import LedgerEntry
+from mahoun.ledger.writer import EvidenceLedgerWriter
+from mahoun.reasoning.chain_of_thought import ChainOfThoughtReasoner
+from mahoun.reasoning.knowledge_graph import LegalKnowledgeGraph
+from mahoun.reasoning.semantic_matcher import SemanticMatcher
 
 # Setup logger BEFORE using it
 log = setup_logger("evidence_linked_verdict")
@@ -40,6 +40,7 @@ except ImportError:
     def track_legal_query_decorator(func):
         """No-op decorator if monitoring unavailable"""
         return func
+
     log.warning("Monitoring adapter unavailable - metrics collection disabled")
 
 # Guardrails enforcement (CRITICAL for zero-hallucination guarantee)
@@ -48,30 +49,34 @@ except ImportError:
 # In production, missing guardrails is a fatal error.
 # In development, we allow degraded mode but with explicit tracking.
 try:
-    from mahoun.guardrails.runtime_invariants import (
-        G1_EvidenceStepHasEvidence,
-        G2_EvidenceReferencesResolve,
-        G3_NonResurrection,
-        G4_ContradictionVisibility,
-        G5_ResolutionOrder,
-        register_node,
-        get_registry,
-    )
-    from mahoun.guardrails.modes import get_guard_mode
+    import importlib
+
+    runtime_invariants = importlib.import_module("mahoun.guardrails.runtime_invariants")
+    G1_EvidenceStepHasEvidence = runtime_invariants.G1_EvidenceStepHasEvidence
+    G2_EvidenceReferencesResolve = runtime_invariants.G2_EvidenceReferencesResolve
+    G3_NonResurrection = runtime_invariants.G3_NonResurrection
+    G4_ContradictionVisibility = runtime_invariants.G4_ContradictionVisibility
+    G5_ResolutionOrder = runtime_invariants.G5_ResolutionOrder
+    register_node = runtime_invariants.register_node
+    get_registry = runtime_invariants.get_registry
+
+    modes = importlib.import_module("mahoun.guardrails.modes")
+    get_guard_mode = modes.get_guard_mode
     GUARDRAILS_AVAILABLE = True
     log.info("Guardrails enforcement ENABLED - zero-hallucination guarantee active")
 except ImportError as e:
     # FAIL-FAST in production: guards are non-negotiable
     from mahoun.core.environment import get_current_environment
+
     _env_context = get_current_environment()
-    
+
     if _env_context.is_production():
         raise ImportError(
             f"FATAL: Guardrails module failed to import in PRODUCTION mode. "
             f"The system CANNOT operate without invariant enforcement. "
             f"Original error: {e}"
         ) from e
-    
+
     # In development/staging: allow degraded mode with explicit warning
     _env_name = _env_context.environment.value
     log.critical(
@@ -79,7 +84,7 @@ except ImportError as e:
         f"This is ONLY acceptable in development mode (current: {_env_name})."
     )
     GUARDRAILS_AVAILABLE = False
-    
+
     # Provide fail-loud implementations that log EVERY invocation
     def G1_EvidenceStepHasEvidence(*args, **kwargs):
         log.error("G1_EvidenceStepHasEvidence: DEGRADED MODE — guard not enforced")
@@ -101,10 +106,11 @@ except ImportError as e:
 
     def get_registry(*args, **kwargs):
         return {}
-    
+
     def get_guard_mode():
         class MockMode:
             value = "DEGRADED"
+
         return MockMode()
 
 # Logger must be defined AFTER all imports and guard setup
@@ -121,7 +127,7 @@ class EvidenceReference:
 
     node_id: str
     node_type: str
-    edge_id: Optional[str] = None
+    edge_id: str | None = None
     justification: str = ""
     confidence: float = 0.0
 
@@ -131,7 +137,7 @@ class VerdictStep:
     """Single step in the verdict reasoning chain"""
 
     statement: str
-    evidence: List[EvidenceReference] = field(default_factory=list)
+    evidence: list[EvidenceReference] = field(default_factory=list)
 
 
 @dataclass
@@ -139,11 +145,11 @@ class EvidenceLinkedVerdict:
     """Complete verdict with explicit evidence links"""
 
     final_verdict: str
-    steps: List[VerdictStep] = field(default_factory=list)
-    unresolved_conflicts: List[str] = field(default_factory=list)
+    steps: list[VerdictStep] = field(default_factory=list)
+    unresolved_conflicts: list[str] = field(default_factory=list)
     confidence_score: float = 0.0
-    verdict_id: Optional[str] = None  # Added for ledger traceability
-    ledger_hash: Optional[str] = None  # Added for audit proof
+    verdict_id: str | None = None  # Added for ledger traceability
+    ledger_hash: str | None = None  # Added for audit proof
 
 
 # ============================================================================
@@ -169,7 +175,7 @@ class EvidenceLinkedVerdictEngine:
     - Same input always produces same output
     - Deterministic tie-breaking ensures reproducibility
     - No locks needed for contradiction resolution
-    
+
     CONCURRENCY SAFETY:
     - Deterministic resolution works correctly with concurrent calls
     - Sequential ledger writing protected by lock (audit integrity)
@@ -181,7 +187,7 @@ class EvidenceLinkedVerdictEngine:
         graph_builder: UltraGraphBuilder,
         knowledge_graph: LegalKnowledgeGraph,
         ledger_writer: EvidenceLedgerWriter,
-        container: Optional['ReasoningDependencyContainer'] = None,
+        container: Optional["ReasoningDependencyContainer"] = None,
     ):
         """
         Initialize Evidence-Linked Verdict Engine
@@ -204,7 +210,7 @@ class EvidenceLinkedVerdictEngine:
 
         # Semantic matcher for contradiction detection
         self.semantic_matcher = SemanticMatcher()
-        
+
         # Cryptographic proof system
         self.proof_system = ProofSystem()
 
@@ -228,9 +234,7 @@ class EvidenceLinkedVerdictEngine:
         )
 
     @track_legal_query_decorator
-    async def generate_verdict(
-        self, question: str, facts: List[Any]
-    ) -> EvidenceLinkedVerdict:
+    async def generate_verdict(self, question: str, facts: list[Any]) -> EvidenceLinkedVerdict:
         """
         Generate evidence-linked verdict with atomic contradiction resolution
 
@@ -240,7 +244,7 @@ class EvidenceLinkedVerdictEngine:
 
         Returns:
             EvidenceLinkedVerdict with explicit evidence links
-            
+
         Raises:
             RuntimeError: If operation requires resources unavailable in current mode
         """
@@ -252,7 +256,7 @@ class EvidenceLinkedVerdictEngine:
         # without compromising semantic correctness.
         # ============================================================================
         from mahoun.core.runtime_config import is_desktop_minimal, should_skip_graph
-        
+
         if is_desktop_minimal() and should_skip_graph():
             # Log blocked attempt with context
             log.warning(
@@ -264,33 +268,29 @@ class EvidenceLinkedVerdictEngine:
                     "facts_count": len(facts),
                 },
             )
-            
+
             # Record metrics
             try:
-                from mahoun.metrics import record_blocked_attempt, record_mode_check
-                record_blocked_attempt(
-                    mode="desktop_minimal",
-                    reason="graph_disabled",
-                    entry_point="engine"
-                )
-                record_mode_check(
-                    mode="desktop_minimal",
-                    graph_enabled=False,
-                    passed=False
-                )
+                import importlib
+
+                metrics = importlib.import_module("mahoun.metrics")
+                record_blocked_attempt = metrics.record_blocked_attempt
+                record_mode_check = metrics.record_mode_check
+                record_blocked_attempt(mode="desktop_minimal", reason="graph_disabled", entry_point="engine")
+                record_mode_check(mode="desktop_minimal", graph_enabled=False, passed=False)
             except ImportError:
                 log.debug("Metrics module not available - skipping metrics recording")
-            
+
             raise RuntimeError(
                 "Evidence-linked verdict generation requires full graph reasoning and "
                 "ledger guarantees. This operation is not supported in DESKTOP_MINIMAL "
                 "mode with graph disabled. Please run in ENTERPRISE_FULL mode or enable "
                 "graph operations (MAHOUN_ENABLE_GRAPH=true)."
             )
-        
+
         log.info(f"Generating evidence-linked verdict for question: {question[:50]}...")
         log.debug(f"Facts: {facts}")
-        
+
         # HARDENING: EL-I1/EL-I3 - Cannot generate verdict without evidence
         if not facts:
             raise RuntimeError("EL-I1/EL-I3 violation: Cannot generate verdict without evidence")
@@ -316,10 +316,7 @@ class EvidenceLinkedVerdictEngine:
             raise RuntimeError("Privacy violation: sensitive facts detected in input")
 
         # HARDENING PATCH P08: Initialize request-scoped edge state
-        edge_state = {
-            "counter": 0,
-            "id_map": {}
-        }
+        edge_state = {"counter": 0, "id_map": {}}
 
         # Step 1: Build graph from facts
         case_graph_nodes, case_graph_edges = self._build_case_graph(fact_texts, edge_state)
@@ -331,9 +328,7 @@ class EvidenceLinkedVerdictEngine:
         similar_precedents = self.knowledge_graph.find_similar_precedents(fact_texts)
 
         # Step 4: Create graph nodes for rules and precedents
-        rule_nodes, rule_edges = self._create_rule_nodes(
-            applicable_rules, case_graph_nodes, edge_state
-        )
+        rule_nodes, rule_edges = self._create_rule_nodes(applicable_rules, case_graph_nodes, edge_state)
         precedent_nodes, precedent_edges = self._create_precedent_nodes(
             similar_precedents, case_graph_nodes, edge_state
         )
@@ -341,9 +336,10 @@ class EvidenceLinkedVerdictEngine:
         # HARDENING PATCH P15: Graph-Symbolic Bridge Integration
         # Ensure the symbolic reasoner operates on facts grounded in the KG
         from mahoun.reasoning.graph_symbolic_bridge import GraphSymbolicBridge
+
         try:
             bridge = GraphSymbolicBridge()
-            
+
             # Convert internal node representations to dicts for the bridge
             all_nodes_dict = [
                 {"id": n.id, "label": n.node_type, "properties": n.properties}
@@ -353,7 +349,7 @@ class EvidenceLinkedVerdictEngine:
                 {"source": e.source_id, "target": e.target_id, "type": e.relationship_type, "properties": e.properties}
                 for e in case_graph_edges + rule_edges + precedent_edges
             ]
-            
+
             symbolic_facts = bridge.graph_to_facts(all_nodes_dict, all_edges_dict)
             log.info(f"Generated {len(symbolic_facts)} symbolic facts from the grounded KG subset.")
             # In a full implementation, these symbolic_facts are passed to the SymbolicReasoningEngine
@@ -362,9 +358,7 @@ class EvidenceLinkedVerdictEngine:
             log.warning(f"Failed to generate symbolic facts: {e}")
 
         # Step 5: Detect contradictions
-        contradictions = self._detect_contradictions(
-            rule_nodes, precedent_nodes, rule_edges
-        )
+        contradictions = self._detect_contradictions(rule_nodes, precedent_nodes, rule_edges)
 
         # Step 6: Resolve contradictions (DETERMINISTIC - NO LOCK NEEDED)
         # Contradiction resolution is now purely functional and deterministic.
@@ -374,9 +368,7 @@ class EvidenceLinkedVerdictEngine:
             resolved_nodes,
             unresolved_conflicts,
             excluded_nodes,
-        ) = await self._resolve_contradictions_async(
-            contradictions, rule_nodes, precedent_nodes
-        )
+        ) = await self._resolve_contradictions_async(contradictions, rule_nodes, precedent_nodes)
 
         # Register all resolved nodes for guard checks
         # from mahoun.guardrails.runtime_invariants import register_node, get_registry
@@ -420,9 +412,7 @@ class EvidenceLinkedVerdictEngine:
         G3_NonResurrection(excluded_nodes, resolved_nodes, verdict_steps)
 
         # Step 8: Generate final verdict from steps
-        final_verdict = self._synthesize_final_verdict(
-            verdict_steps, resolved_nodes, unresolved_conflicts
-        )
+        final_verdict = self._synthesize_final_verdict(verdict_steps, resolved_nodes, unresolved_conflicts)
 
         # Guard G4: If unresolved conflicts, verdict must be UNDETERMINED
         G4_ContradictionVisibility(unresolved_conflicts, final_verdict)
@@ -447,32 +437,31 @@ class EvidenceLinkedVerdictEngine:
         # This prevents publishing verdicts without audit trail.
         # ============================================================================
 
-        log.debug(
-            f"Evidence Ledger writing with invariant version: {INVARIANT_VERSION}"
-        )
+        log.debug(f"Evidence Ledger writing with invariant version: {INVARIANT_VERSION}")
 
         # HARDENING PATCH P10: Deterministic IDs
         # Generate IDs deterministically to ensure replayability
         case_basis = f"{question}|{'|'.join(sorted(fact_texts))}"
         case_id = hashlib.sha256(case_basis.encode()).hexdigest()[:16]
-        
-        # We add a timestamp hour bucket to verdict_id to allow the same case 
+
+        # We add a timestamp hour bucket to verdict_id to allow the same case
         # to produce different verdicts across major time boundaries, but
         # remain deterministic within the same hour for replay testing.
         # For testing, check if MAHOUN_DETERMINISTIC_TESTING env var is set
         import os
+
         if os.getenv("MAHOUN_DETERMINISTIC_TESTING") == "true":
             # Pure deterministic mode for testing - no time component
             verdict_basis = case_id
         else:
             # Production mode - include hour bucket for time-based differentiation
-            hour_bucket = datetime.now(timezone.utc).strftime("%Y%m%d%H")
+            hour_bucket = datetime.now(UTC).strftime("%Y%m%d%H")
             verdict_basis = f"{case_id}|{hour_bucket}"
         verdict_id = f"verdict_{hashlib.sha256(verdict_basis.encode()).hexdigest()[:12]}"
 
         # Extract evidence references for ledger
-        referenced_ltm_nodes: List[Any] = []
-        referenced_facts: List[Any] = []
+        referenced_ltm_nodes: list[Any] = []
+        referenced_facts: list[Any] = []
         for step in verdict_steps:
             for ev in step.evidence:
                 if ev.node_type in ["rule", "statute", "precedent", "LegalRule", "LegalPrecedent"]:
@@ -483,19 +472,17 @@ class EvidenceLinkedVerdictEngine:
                         referenced_facts.append(ev.node_id)
 
         # CRITICAL: Write to ledger FIRST (before creating verdict object)
-        ledger_hash: Optional[str] = None
+        ledger_hash: str | None = None
         async with self._ledger_lock:
-            log.debug(
-                f"Acquired ledger lock for sequential writing (agent: {id(self)})"
-            )
+            log.debug(f"Acquired ledger lock for sequential writing (agent: {id(self)})")
 
             try:
                 # For deterministic testing, use fixed timestamp
                 if os.getenv("MAHOUN_DETERMINISTIC_TESTING") == "true":
-                    fixed_timestamp = datetime(2026, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+                    fixed_timestamp = datetime(2026, 1, 1, 0, 0, 0, tzinfo=UTC)
                 else:
-                    fixed_timestamp = datetime.now(timezone.utc)
-                
+                    fixed_timestamp = datetime.now(UTC)
+
                 entry = LedgerEntry(
                     verdict_id=verdict_id,
                     case_id=case_id,
@@ -511,10 +498,13 @@ class EvidenceLinkedVerdictEngine:
                 if referenced_ltm_nodes or referenced_facts:
                     validate_entry(entry)
                     ledger_hash = await self._write_ledger_entry_async(entry)
-                    log.info(f"Ledger entry written successfully: verdict_id={verdict_id}, hash={ledger_hash[:16] if ledger_hash else 'N/A'}...")
+                    log.info(
+                        f"Ledger entry written successfully: verdict_id={verdict_id}, hash={ledger_hash[:16] if ledger_hash else 'N/A'}..."
+                    )
                 else:
                     # No evidence references — this is a structural problem
                     from mahoun.core.environment import is_production
+
                     if is_production():
                         raise RuntimeError(
                             "EL-I3 VIOLATION: Verdict has no evidence references "
@@ -533,9 +523,7 @@ class EvidenceLinkedVerdictEngine:
                 log.error(f"Ledger write failed - verdict will NOT be created: {e}")
                 raise RuntimeError(f"Ledger write failed - verdict blocked per EL-I3: {e}") from e
             finally:
-                log.debug(
-                    f"Released ledger lock after ledger writing (agent: {id(self)})"
-                )
+                log.debug(f"Released ledger lock after ledger writing (agent: {id(self)})")
 
         # ============================================================================
         # VERDICT CREATION - ONLY AFTER SUCCESSFUL LEDGER WRITE
@@ -566,9 +554,7 @@ class EvidenceLinkedVerdictEngine:
 
         return verdict
 
-    def generate_verdict_sync(
-        self, question: str, facts: List[Any]
-    ) -> EvidenceLinkedVerdict:
+    def generate_verdict_sync(self, question: str, facts: list[Any]) -> EvidenceLinkedVerdict:
         """
         Synchronous wrapper for generate_verdict (DEPRECATED)
 
@@ -604,8 +590,8 @@ class EvidenceLinkedVerdictEngine:
         return asyncio.run(self.generate_verdict(question, facts))
 
     def _build_case_graph(
-        self, facts: List[str], edge_state: Dict[str, Any]
-    ) -> Tuple[Dict[str, GraphNode], List[GraphEdge]]:
+        self, facts: list[str], edge_state: dict[str, Any]
+    ) -> tuple[dict[str, GraphNode], list[GraphEdge]]:
         """
         Build graph from case facts
 
@@ -613,8 +599,8 @@ class EvidenceLinkedVerdictEngine:
             Tuple of (nodes_dict, edges_list)
         """
         # Create nodes for each fact
-        nodes: Dict[str, Any] = {}
-        edges: List[Any] = []
+        nodes: dict[str, Any] = {}
+        edges: list[Any] = []
         for i, fact in enumerate(facts):
             node_id = f"fact_{i}"
             node = GraphNode(
@@ -651,16 +637,16 @@ class EvidenceLinkedVerdictEngine:
         return nodes, edges
 
     def _create_rule_nodes(
-        self, applicable_rules: List[Dict], case_nodes: Dict[str, GraphNode], edge_state: Dict[str, Any]
-    ) -> Tuple[Dict[str, GraphNode], List[GraphEdge]]:
+        self, applicable_rules: list[dict], case_nodes: dict[str, GraphNode], edge_state: dict[str, Any]
+    ) -> tuple[dict[str, GraphNode], list[GraphEdge]]:
         """
         Create graph nodes for applicable rules and link to case facts
 
         Returns:
             Tuple of (rule_nodes_dict, edges_list)
         """
-        rule_nodes: Dict[str, Any] = {}
-        edges: List[Any] = []
+        rule_nodes: dict[str, Any] = {}
+        edges: list[Any] = []
         for rule_data in applicable_rules:
             # Handle mock formats (where rule_data itself is the rule) vs real format
             if "rule" in rule_data:
@@ -679,7 +665,7 @@ class EvidenceLinkedVerdictEngine:
                 confidence = rule.get("confidence", 1.0)
                 source = rule.get("source", "unknown")
                 match_score = rule.get("match_score", 1.0)
-                
+
             rule_id = f"rule_{r_id}"
 
             # Create rule node
@@ -699,7 +685,7 @@ class EvidenceLinkedVerdictEngine:
             rule_nodes[rule_id] = rule_node
 
             # Link rule to matching facts
-            fact_text = " ".join([n.label for n in case_nodes.values()]).lower()
+            " ".join([n.label for n in case_nodes.values()]).lower()
             condition_keywords = condition.lower().split()
 
             for fact_id, fact_node in case_nodes.items():
@@ -720,9 +706,7 @@ class EvidenceLinkedVerdictEngine:
                         properties={
                             "edge_id": edge_id,
                             "match_score": match_score,
-                            "matched_keywords": [
-                                k for k in condition_keywords if k in fact_lower
-                            ],
+                            "matched_keywords": [k for k in condition_keywords if k in fact_lower],
                         },
                         confidence=match_score,
                     )
@@ -733,16 +717,16 @@ class EvidenceLinkedVerdictEngine:
         return rule_nodes, edges
 
     def _create_precedent_nodes(
-        self, similar_precedents: List[Dict], case_nodes: Dict[str, GraphNode], edge_state: Dict[str, Any]
-    ) -> Tuple[Dict[str, GraphNode], List[GraphEdge]]:
+        self, similar_precedents: list[dict], case_nodes: dict[str, GraphNode], edge_state: dict[str, Any]
+    ) -> tuple[dict[str, GraphNode], list[GraphEdge]]:
         """
         Create graph nodes for similar precedents and link to case facts
 
         Returns:
             Tuple of (precedent_nodes_dict, edges_list)
         """
-        precedent_nodes: Dict[str, Any] = {}
-        edges: List[Any] = []
+        precedent_nodes: dict[str, Any] = {}
+        edges: list[Any] = []
         for prec_data in similar_precedents:
             # Handle mock formats (where prec_data itself is the precedent) vs real format
             if "precedent" in prec_data:
@@ -763,7 +747,7 @@ class EvidenceLinkedVerdictEngine:
                 date = precedent.get("date", "unknown")
                 relevance_score = precedent.get("relevance_score", 1.0)
                 similarity = precedent.get("similarity", precedent.get("confidence", 1.0))
-                
+
             prec_id = f"precedent_{c_id}"
 
             # Create precedent node
@@ -812,25 +796,23 @@ class EvidenceLinkedVerdictEngine:
                     )
                     edges.append(edge)
 
-        log.debug(
-            f"Created {len(precedent_nodes)} precedent nodes with {len(edges)} edges"
-        )
+        log.debug(f"Created {len(precedent_nodes)} precedent nodes with {len(edges)} edges")
 
         return precedent_nodes, edges
 
     def _detect_contradictions(
         self,
-        rule_nodes: Dict[str, GraphNode],
-        precedent_nodes: Dict[str, GraphNode],
-        rule_edges: List[GraphEdge],
-    ) -> List[Dict[str, Any]]:
+        rule_nodes: dict[str, GraphNode],
+        precedent_nodes: dict[str, GraphNode],
+        rule_edges: list[GraphEdge],
+    ) -> list[dict[str, Any]]:
         """
         Detect contradictions between rules and precedents
 
         Returns:
             List of contradiction dictionaries
         """
-        contradictions: List[Any] = []
+        contradictions: list[Any] = []
         # Check for contradictory rules
         rule_list = list(rule_nodes.values())
         for i, rule1 in enumerate(rule_list):
@@ -843,9 +825,7 @@ class EvidenceLinkedVerdictEngine:
                             "node2_id": rule2.id,
                             "node1": rule1,
                             "node2": rule2,
-                            "severity": self._calculate_contradiction_severity(
-                                rule1, rule2
-                            ),
+                            "severity": self._calculate_contradiction_severity(rule1, rule2),
                         }
                     )
 
@@ -861,9 +841,7 @@ class EvidenceLinkedVerdictEngine:
                             "node2_id": prec2.id,
                             "node1": prec1,
                             "node2": prec2,
-                            "severity": self._calculate_contradiction_severity(
-                                prec1, prec2
-                            ),
+                            "severity": self._calculate_contradiction_severity(prec1, prec2),
                         }
                     )
 
@@ -874,7 +852,7 @@ class EvidenceLinkedVerdictEngine:
     def _are_rules_contradictory(self, rule1: GraphNode, rule2: GraphNode) -> bool:
         """
         Check if two rules are contradictory using semantic matching.
-        
+
         Uses SemanticMatcher with Persian legal synonym dictionary for
         deterministic contradiction detection without LLM hallucination.
         """
@@ -885,7 +863,7 @@ class EvidenceLinkedVerdictEngine:
 
         # Same or similar condition but opposite conclusions
         conditions_match = self.semantic_matcher.are_semantically_equivalent(cond1, cond2)
-        
+
         if conditions_match:
             # Check if conclusions contradict
             conclusions_contradict = self.semantic_matcher.are_contradictory(concl1, concl2)
@@ -904,9 +882,7 @@ class EvidenceLinkedVerdictEngine:
         facts1_words = set(facts1.split())
         facts2_words = set(facts2.split())
         similarity = (
-            len(facts1_words & facts2_words) / len(facts1_words | facts2_words)
-            if (facts1_words | facts2_words)
-            else 0
+            len(facts1_words & facts2_words) / len(facts1_words | facts2_words) if (facts1_words | facts2_words) else 0
         )
 
         if similarity > 0.5:  # Similar facts
@@ -920,9 +896,7 @@ class EvidenceLinkedVerdictEngine:
 
         return False
 
-    def _calculate_contradiction_severity(
-        self, node1: GraphNode, node2: GraphNode
-    ) -> float:
+    def _calculate_contradiction_severity(self, node1: GraphNode, node2: GraphNode) -> float:
         """Calculate severity of contradiction"""
         conf1 = node1.confidence
         conf2 = node2.confidence
@@ -938,27 +912,27 @@ class EvidenceLinkedVerdictEngine:
 
     async def _resolve_contradictions_async(
         self,
-        contradictions: List[Dict[str, Any]],
-        rule_nodes: Dict[str, GraphNode],
-        precedent_nodes: Dict[str, GraphNode],
-    ) -> Tuple[Dict[str, GraphNode], List[str]]:
+        contradictions: list[dict[str, Any]],
+        rule_nodes: dict[str, GraphNode],
+        precedent_nodes: dict[str, GraphNode],
+    ) -> tuple[dict[str, GraphNode], list[str]]:
         """
         Resolve contradictions using deterministic strategies.
-        
+
         DETERMINISM GUARANTEES:
         1. Contradictions processed in sorted order (by node IDs)
         2. Resolution uses only immutable node properties
         3. Deterministic tie-breaking (lexicographic node ID comparison)
         4. No shared state, no locks needed
         5. Same input always produces same output
-        
+
         This ensures reproducible verdicts for legal accountability.
-        
+
         Returns:
             Tuple of (resolved_nodes_dict, unresolved_conflicts_list)
         """
-        resolved_nodes: Dict[str, Any] = {}
-        unresolved_conflicts: List[Any] = []
+        resolved_nodes: dict[str, Any] = {}
+        unresolved_conflicts: list[Any] = []
         # Start with all nodes
         all_nodes = {**rule_nodes, **precedent_nodes}
 
@@ -973,7 +947,7 @@ class EvidenceLinkedVerdictEngine:
         excluded_nodes = set()
 
         # DETERMINISM: Process contradictions in sorted order
-        for (node1_id, node2_id) in sorted(contradiction_groups.keys()):
+        for node1_id, node2_id in sorted(contradiction_groups.keys()):
             if node1_id not in all_nodes or node2_id not in all_nodes:
                 continue
 
@@ -989,14 +963,10 @@ class EvidenceLinkedVerdictEngine:
                 # Mark the other as excluded (don't add to resolved_nodes)
                 excluded_id = node2_id if resolution.id == node1_id else node1_id
                 excluded_nodes.add(excluded_id)
-                log.debug(
-                    f"Resolved contradiction: kept {resolution.id}, excluded {excluded_id}"
-                )
+                log.debug(f"Resolved contradiction: kept {resolution.id}, excluded {excluded_id}")
             else:
                 # Cannot resolve - add to unresolved
-                unresolved_conflicts.append(
-                    f"Contradiction between {node1_id} and {node2_id} cannot be resolved"
-                )
+                unresolved_conflicts.append(f"Contradiction between {node1_id} and {node2_id} cannot be resolved")
                 # Keep both but mark as conflicting
                 resolved_nodes[node1_id] = node1
                 resolved_nodes[node2_id] = node2
@@ -1022,36 +992,34 @@ class EvidenceLinkedVerdictEngine:
         )
 
         return resolved_nodes, unresolved_conflicts, excluded_nodes
-    
-    def _resolve_contradiction_deterministic(
-        self, node1: GraphNode, node2: GraphNode
-    ) -> Optional[GraphNode]:
+
+    def _resolve_contradiction_deterministic(self, node1: GraphNode, node2: GraphNode) -> GraphNode | None:
         """
         Resolve contradiction between two nodes using deterministic strategies.
-        
+
         DETERMINISM GUARANTEES:
         - Uses only immutable node properties
         - No floating-point arithmetic (uses integer comparison where possible)
         - Deterministic tie-breaking (lexicographic node ID comparison)
         - No shared state
-        
+
         Resolution order:
         1. Higher confidence (if difference > threshold)
         2. Higher credibility (if difference > threshold)
         3. Newer date (if both have dates)
         4. Deterministic tie-breaking (lexicographic node ID)
-        
+
         Args:
             node1: First node in contradiction
             node2: Second node in contradiction
-        
+
         Returns:
             Resolved node, or None if cannot resolve
         """
         # Strategy 1: Higher confidence (with threshold to avoid floating-point issues)
         CONFIDENCE_THRESHOLD = 0.01  # 1% difference required
         conf_diff = node1.confidence - node2.confidence
-        
+
         if abs(conf_diff) > CONFIDENCE_THRESHOLD:
             if conf_diff > 0:
                 log.debug(f"Resolved by confidence: {node1.id} ({node1.confidence}) > {node2.id} ({node2.confidence})")
@@ -1059,13 +1027,13 @@ class EvidenceLinkedVerdictEngine:
             else:
                 log.debug(f"Resolved by confidence: {node2.id} ({node2.confidence}) > {node1.id} ({node1.confidence})")
                 return node2
-        
+
         # Strategy 2: Higher credibility (with threshold)
         CREDIBILITY_THRESHOLD = 0.01
         cred1 = node1.properties.get("credibility", node1.properties.get("relevance_score", 0.0))
         cred2 = node2.properties.get("credibility", node2.properties.get("relevance_score", 0.0))
         cred_diff = cred1 - cred2
-        
+
         if abs(cred_diff) > CREDIBILITY_THRESHOLD:
             if cred_diff > 0:
                 log.debug(f"Resolved by credibility: {node1.id} ({cred1}) > {node2.id} ({cred2})")
@@ -1073,11 +1041,11 @@ class EvidenceLinkedVerdictEngine:
             else:
                 log.debug(f"Resolved by credibility: {node2.id} ({cred2}) > {node1.id} ({cred1})")
                 return node2
-        
+
         # Strategy 3: Newer date (deterministic if both have dates)
         date1 = node1.properties.get("date")
         date2 = node2.properties.get("date")
-        
+
         if date1 and date2:
             if date1 > date2:
                 log.debug(f"Resolved by date: {node1.id} ({date1}) > {node2.id} ({date2})")
@@ -1085,7 +1053,7 @@ class EvidenceLinkedVerdictEngine:
             elif date2 > date1:
                 log.debug(f"Resolved by date: {node2.id} ({date2}) > {node1.id} ({date1})")
                 return node2
-        
+
         # No more deterministic strategies - return None to indicate ambiguous tie.
         # This will result in an unresolved conflict and UNDETERMINED verdict (EL-I4).
         return None
@@ -1096,22 +1064,24 @@ class EvidenceLinkedVerdictEngine:
 
         CRITICAL: This method ensures sequential ledger writing to maintain
         chronological audit trail integrity for legal accountability.
-        
+
         Returns:
             Ledger hash for audit proof
         """
         # Run the synchronous ledger write in a thread pool to avoid blocking
         loop = asyncio.get_event_loop()
         ledger_hash = await loop.run_in_executor(None, self.ledger_writer.write, entry)
-        log.debug(f"Ledger entry written: verdict_id={entry.verdict_id}, hash={ledger_hash[:16] if ledger_hash else 'N/A'}...")
+        log.debug(
+            f"Ledger entry written: verdict_id={entry.verdict_id}, hash={ledger_hash[:16] if ledger_hash else 'N/A'}..."
+        )
         return ledger_hash
 
     def _resolve_contradictions(
         self,
-        contradictions: List[Dict[str, Any]],
-        rule_nodes: Dict[str, GraphNode],
-        precedent_nodes: Dict[str, GraphNode],
-    ) -> Tuple[Dict[str, GraphNode], List[str]]:
+        contradictions: list[dict[str, Any]],
+        rule_nodes: dict[str, GraphNode],
+        precedent_nodes: dict[str, GraphNode],
+    ) -> tuple[dict[str, GraphNode], list[str]]:
         """
         Resolve contradictions using specified strategies (SYNCHRONOUS VERSION - DEPRECATED)
 
@@ -1126,8 +1096,8 @@ class EvidenceLinkedVerdictEngine:
             "Consider migrating to async generate_verdict for concurrency safety."
         )
 
-        resolved_nodes: Dict[str, Any] = {}
-        unresolved_conflicts: List[Any] = []
+        resolved_nodes: dict[str, Any] = {}
+        unresolved_conflicts: list[Any] = []
         # Start with all nodes
         all_nodes = {**rule_nodes, **precedent_nodes}
 
@@ -1169,14 +1139,10 @@ class EvidenceLinkedVerdictEngine:
                 # Mark the other as excluded (don't add to resolved_nodes)
                 excluded_id = node2_id if resolution.id == node1_id else node1_id
                 excluded_nodes.add(excluded_id)
-                log.debug(
-                    f"Resolved contradiction: kept {resolution.id}, excluded {excluded_id}"
-                )
+                log.debug(f"Resolved contradiction: kept {resolution.id}, excluded {excluded_id}")
             else:
                 # Cannot resolve - add to unresolved
-                unresolved_conflicts.append(
-                    f"Contradiction between {node1_id} and {node2_id} cannot be resolved"
-                )
+                unresolved_conflicts.append(f"Contradiction between {node1_id} and {node2_id} cannot be resolved")
                 # Keep both but mark as conflicting
                 resolved_nodes[node1_id] = node1
                 resolved_nodes[node2_id] = node2
@@ -1196,9 +1162,7 @@ class EvidenceLinkedVerdictEngine:
         # HARDENING PATCH P06: Return excluded_nodes instead of storing in instance state
         return resolved_nodes, unresolved_conflicts, excluded_nodes
 
-    def _resolve_by_confidence(
-        self, node1: GraphNode, node2: GraphNode
-    ) -> Optional[GraphNode]:
+    def _resolve_by_confidence(self, node1: GraphNode, node2: GraphNode) -> GraphNode | None:
         """Resolve contradiction by selecting higher confidence node"""
         if node1.confidence > node2.confidence:
             return node1
@@ -1206,16 +1170,10 @@ class EvidenceLinkedVerdictEngine:
             return node2
         return None
 
-    def _resolve_by_credibility(
-        self, node1: GraphNode, node2: GraphNode
-    ) -> Optional[GraphNode]:
+    def _resolve_by_credibility(self, node1: GraphNode, node2: GraphNode) -> GraphNode | None:
         """Resolve contradiction by selecting higher credibility source"""
-        cred1 = node1.properties.get(
-            "credibility", node1.properties.get("relevance_score", 0.0)
-        )
-        cred2 = node2.properties.get(
-            "credibility", node2.properties.get("relevance_score", 0.0)
-        )
+        cred1 = node1.properties.get("credibility", node1.properties.get("relevance_score", 0.0))
+        cred2 = node2.properties.get("credibility", node2.properties.get("relevance_score", 0.0))
 
         if cred1 > cred2:
             return node1
@@ -1223,9 +1181,7 @@ class EvidenceLinkedVerdictEngine:
             return node2
         return None
 
-    def _resolve_by_temporal_precedence(
-        self, node1: GraphNode, node2: GraphNode
-    ) -> Optional[GraphNode]:
+    def _resolve_by_temporal_precedence(self, node1: GraphNode, node2: GraphNode) -> GraphNode | None:
         """Resolve contradiction by selecting newer node"""
         date1 = node1.properties.get("date")
         date2 = node2.properties.get("date")
@@ -1245,9 +1201,7 @@ class EvidenceLinkedVerdictEngine:
 
         return None
 
-    def _resolve_by_graph_analytics(
-        self, node1: GraphNode, node2: GraphNode
-    ) -> Optional[GraphNode]:
+    def _resolve_by_graph_analytics(self, node1: GraphNode, node2: GraphNode) -> GraphNode | None:
         """Resolve contradiction using graph analytics score"""
         # Calculate composite score
         score1 = self._calculate_node_score(node1)
@@ -1278,19 +1232,19 @@ class EvidenceLinkedVerdictEngine:
     def _build_verdict_steps(
         self,
         question: str,
-        facts: List[str],
-        case_nodes: Dict[str, GraphNode],
-        resolved_nodes: Dict[str, GraphNode],
-        edges: List[GraphEdge],
-        applicable_rules: List[Dict],
-        similar_precedents: List[Dict],
-    ) -> List[VerdictStep]:
+        facts: list[str],
+        case_nodes: dict[str, GraphNode],
+        resolved_nodes: dict[str, GraphNode],
+        edges: list[GraphEdge],
+        applicable_rules: list[dict],
+        similar_precedents: list[dict],
+    ) -> list[VerdictStep]:
         """
         Build verdict steps with explicit evidence links
 
         CRITICAL: Each step MUST reference at least one graph node
         """
-        steps: List[Any] = []
+        steps: list[Any] = []
         # Step 1: Facts identification
         fact_evidence = [
             EvidenceReference(
@@ -1314,20 +1268,12 @@ class EvidenceLinkedVerdictEngine:
         # If no facts, we'll handle it in the fallback at the end
 
         # Step 2: Applicable rules (ONLY from resolved_nodes - contradictions already resolved)
-        rule_evidence: List[Any] = []
+        rule_evidence: list[Any] = []
         for node_id, node in resolved_nodes.items():
             if node.node_type == "LegalRule":
                 # Find edges connecting facts to this rule
-                connecting_edges = [
-                    e
-                    for e in edges
-                    if e.target_id == node_id and e.relationship_type == "TRIGGERS"
-                ]
-                edge_id = (
-                    connecting_edges[0].properties.get("edge_id")
-                    if connecting_edges
-                    else None
-                )
+                connecting_edges = [e for e in edges if e.target_id == node_id and e.relationship_type == "TRIGGERS"]
+                edge_id = connecting_edges[0].properties.get("edge_id") if connecting_edges else None
 
                 condition = node.properties.get("condition", "")
                 conclusion = node.properties.get("conclusion", "")
@@ -1351,24 +1297,14 @@ class EvidenceLinkedVerdictEngine:
                 )
 
         # Step 3: Similar precedents (ONLY from resolved_nodes - contradictions already resolved)
-        prec_evidence: List[Any] = []
+        prec_evidence: list[Any] = []
         for node_id, node in resolved_nodes.items():
             if node.node_type == "LegalPrecedent":
                 # Find edges connecting facts to this precedent
-                connecting_edges = [
-                    e
-                    for e in edges
-                    if e.target_id == node_id and e.relationship_type == "SIMILAR_TO"
-                ]
-                edge_id = (
-                    connecting_edges[0].properties.get("edge_id")
-                    if connecting_edges
-                    else None
-                )
+                connecting_edges = [e for e in edges if e.target_id == node_id and e.relationship_type == "SIMILAR_TO"]
+                edge_id = connecting_edges[0].properties.get("edge_id") if connecting_edges else None
 
-                case_id = node.properties.get(
-                    "case_id", node_id.replace("precedent_", "")
-                )
+                case_id = node.properties.get("case_id", node_id.replace("precedent_", ""))
                 court = node.properties.get("court", "Unknown")
                 decision = node.properties.get("decision", "")
 
@@ -1391,11 +1327,9 @@ class EvidenceLinkedVerdictEngine:
                 )
 
         # Step 4: Rule application (ONLY from resolved_nodes - contradictions already resolved)
-        application_evidence: List[Any] = []
+        application_evidence: list[Any] = []
         rule_nodes_resolved = [
-            (node_id, node)
-            for node_id, node in resolved_nodes.items()
-            if node.node_type == "LegalRule"
+            (node_id, node) for node_id, node in resolved_nodes.items() if node.node_type == "LegalRule"
         ]
         # Top 3 rules by confidence
         rule_nodes_resolved.sort(key=lambda x: x[1].confidence, reverse=True)
@@ -1422,19 +1356,15 @@ class EvidenceLinkedVerdictEngine:
                 )
 
         # Step 5: Precedent application (ONLY from resolved_nodes - contradictions already resolved)
-        prec_application_evidence: List[Any] = []
+        prec_application_evidence: list[Any] = []
         prec_nodes_resolved = [
-            (node_id, node)
-            for node_id, node in resolved_nodes.items()
-            if node.node_type == "LegalPrecedent"
+            (node_id, node) for node_id, node in resolved_nodes.items() if node.node_type == "LegalPrecedent"
         ]
         # Top 2 precedents by confidence
         prec_nodes_resolved.sort(key=lambda x: x[1].confidence, reverse=True)
 
         for prec_id, prec_node in prec_nodes_resolved[:2]:
-            case_id = prec_node.properties.get(
-                "case_id", prec_id.replace("precedent_", "")
-            )
+            case_id = prec_node.properties.get("case_id", prec_id.replace("precedent_", ""))
             decision = prec_node.properties.get("decision", "")
 
             prec_application_evidence.append(
@@ -1509,9 +1439,9 @@ class EvidenceLinkedVerdictEngine:
 
     def _synthesize_final_verdict(
         self,
-        steps: List[VerdictStep],
-        resolved_nodes: Dict[str, GraphNode],
-        unresolved_conflicts: Optional[List[str]] = None,
+        steps: list[VerdictStep],
+        resolved_nodes: dict[str, GraphNode],
+        unresolved_conflicts: list[str] | None = None,
     ) -> str:
         """
         Synthesize final verdict from steps
@@ -1526,12 +1456,10 @@ class EvidenceLinkedVerdictEngine:
             return "UNDETERMINED"
 
         if not steps:
-            return (
-                "Unable to generate verdict: insufficient evidence in knowledge graph."
-            )
+            return "Unable to generate verdict: insufficient evidence in knowledge graph."
 
         # Extract conclusions from rule nodes
-        rule_conclusions: List[Any] = []
+        rule_conclusions: list[Any] = []
         for node_id, node in resolved_nodes.items():
             if node.node_type == "LegalRule":
                 conclusion = node.properties.get("conclusion", "")
@@ -1539,7 +1467,7 @@ class EvidenceLinkedVerdictEngine:
                     rule_conclusions.append(conclusion)
 
         # Extract decisions from precedent nodes
-        precedent_decisions: List[Any] = []
+        precedent_decisions: list[Any] = []
         for node_id, node in resolved_nodes.items():
             if node.node_type == "LegalPrecedent":
                 decision = node.properties.get("decision", "")
@@ -1547,7 +1475,7 @@ class EvidenceLinkedVerdictEngine:
                     precedent_decisions.append(decision)
 
         # Synthesize verdict
-        verdict_parts: List[Any] = []
+        verdict_parts: list[Any] = []
         if rule_conclusions:
             verdict_parts.append(f"بر اساس قوانین قابل اعمال: {rule_conclusions[0]}")
 
@@ -1555,15 +1483,13 @@ class EvidenceLinkedVerdictEngine:
             verdict_parts.append(f"مطابق سوابق قضایی: {precedent_decisions[0]}")
 
         if not verdict_parts:
-            verdict_parts.append(
-                "بر اساس اطلاعات موجود در گراف دانش، نمی‌توان نتیجه‌گیری قطعی ارائه داد."
-            )
+            verdict_parts.append("بر اساس اطلاعات موجود در گراف دانش، نمی‌توان نتیجه‌گیری قطعی ارائه داد.")
 
         final_verdict = " ".join(verdict_parts)
 
         return final_verdict
 
-    def _calculate_confidence_score(self, steps: List[VerdictStep]) -> float:
+    def _calculate_confidence_score(self, steps: list[VerdictStep]) -> float:
         """
         Calculate confidence score from evidence confidence values
 
@@ -1572,7 +1498,7 @@ class EvidenceLinkedVerdictEngine:
         if not steps:
             return 0.0
 
-        all_confidences: List[Any] = []
+        all_confidences: list[Any] = []
         for step in steps:
             for evidence in step.evidence:
                 all_confidences.append(evidence.confidence)

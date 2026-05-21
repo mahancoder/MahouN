@@ -64,11 +64,18 @@ jobs:
             --cov-report=term-missing \
             -v -x
 
-      # Gate 8: Static Quality
+      # Gate 8: Ruff Lint
       - name: "Gate 8: Ruff Lint"
         run: |
           pip install ruff
           ruff check mahoun/core/governance/
+
+      # Gate 9: Governance Validation & Fortress checks
+      - name: "Gate 9: Governance Validation & Fortress checks"
+        run: |
+          pytest tests/test_fortress_validator.py -v --tb=short
+          chmod +x ci/first_step/gate_9_governance.sh
+          ./ci/first_step/gate_9_governance.sh
 
   security-audit:
     name: "Security & Supply Chain"

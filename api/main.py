@@ -5,29 +5,29 @@ MAHOUN Self-Improvement REST API
 FastAPI-based REST API for the self-improvement system.
 """
 
-from contextlib import asynccontextmanager
-from fastapi import FastAPI, BackgroundTasks, Request
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
-from typing import Any, Dict, List, Literal, Optional
-from datetime import datetime
 import os
 import time
-import uvicorn
+from contextlib import asynccontextmanager
+from datetime import datetime
+from typing import Any, Literal
 
-from mahoun.pipelines._logging import get_logger
-from mahoun.core.settings import load_security_settings
+import uvicorn
+from fastapi import BackgroundTasks, FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 # Import validation middleware
 from api.middleware.validation import InputValidationMiddleware, RateLimitMiddleware
 
-# Import system router for runtime configuration and health
-from api.routers import system as system_router
-
 # Import search router for legal verdict search
 from api.routers import search as search_router
+
+# Import system router for runtime configuration and health
+from api.routers import system as system_router
+from mahoun.core.settings import load_security_settings
+from mahoun.pipelines._logging import get_logger
 
 HAS_SEARCH_ROUTER = True
 
@@ -57,17 +57,18 @@ async def lifespan(app: FastAPI):
     # runtime failures that could compromise zero-hallucination guarantees.
     # ============================================================================
     import time as validation_time
+
     validation_start = validation_time.time()
-    
+
     try:
         from mahoun.core.config_validator import validate_runtime_config
         from mahoun.core.runtime_config import get_runtime_settings
-        
+
         validate_runtime_config()
-        
+
         validation_duration = validation_time.time() - validation_start
-        logger.info(f"✅ Runtime configuration validated successfully ({validation_duration*1000:.1f}ms)")
-        
+        logger.info(f"✅ Runtime configuration validated successfully ({validation_duration * 1000:.1f}ms)")
+
         # Record metrics
         try:
             from mahoun.metrics import (
@@ -75,38 +76,32 @@ async def lifespan(app: FastAPI):
                 set_current_mode,
                 set_graph_enabled,
             )
-            
+
             settings = get_runtime_settings()
             record_config_validation_duration(validation_duration)
             set_current_mode(settings.mode)
             set_graph_enabled(settings.graph_enabled)
-            
-            logger.info(
-                f"📊 Runtime mode: {settings.mode}, "
-                f"graph_enabled: {settings.graph_enabled}"
-            )
+
+            logger.info(f"📊 Runtime mode: {settings.mode}, graph_enabled: {settings.graph_enabled}")
         except ImportError:
             logger.debug("Metrics module not available - skipping metrics recording")
-            
+
     except Exception as e:
         logger.error(f"❌ Configuration validation failed: {e}")
-        
+
         # Record failure metric
         try:
-            from mahoun.metrics import record_config_validation_failure
             from mahoun.core.runtime_config import get_runtime_settings
-            
+            from mahoun.metrics import record_config_validation_failure
+
             settings = get_runtime_settings()
-            record_config_validation_failure(
-                validation_rule="startup_validation",
-                mode=settings.mode
-            )
+            record_config_validation_failure(validation_rule="startup_validation", mode=settings.mode)
         except ImportError:
-            pass
-        
+            logger.debug("Metrics module not available")
+
         # Fail-fast: Do not start application with invalid configuration
         raise
-    
+
     # Startup
     app.state.start_time = time.time()
 
@@ -192,9 +187,7 @@ def apply_security_middleware(application):
 
     # Skip trusted host middleware in test environment
     if os.getenv("MAHOUN_TESTING") != "1":
-        application.add_middleware(
-            TrustedHostMiddleware, allowed_hosts=SECURITY_SETTINGS.allowed_hosts
-        )
+        application.add_middleware(TrustedHostMiddleware, allowed_hosts=SECURITY_SETTINGS.allowed_hosts)
 
 
 # Security middleware
@@ -208,12 +201,8 @@ logger.info("✓ Input validation middleware enabled")
 if os.getenv("MAHOUN_ENABLE_RATE_LIMIT", "true").lower() == "true":
     max_requests = int(os.getenv("MAHOUN_RATE_LIMIT_REQUESTS", "100"))
     window_seconds = int(os.getenv("MAHOUN_RATE_LIMIT_WINDOW", "60"))
-    app.add_middleware(
-        RateLimitMiddleware, max_requests=max_requests, window_seconds=window_seconds
-    )
-    logger.info(
-        f"✓ Rate limiting enabled: {max_requests} requests per {window_seconds}s"
-    )
+    app.add_middleware(RateLimitMiddleware, max_requests=max_requests, window_seconds=window_seconds)
+    logger.info(f"✓ Rate limiting enabled: {max_requests} requests per {window_seconds}s")
 
 
 # Global exception handler
@@ -244,9 +233,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 # Register routers
 app.include_router(system_router.router, prefix="/system")  # /system/* endpoints
-app.include_router(
-    system_router.router, prefix="/api/system"
-)  # /api/system/* endpoints for frontend compatibility
+app.include_router(system_router.router, prefix="/api/system")  # /api/system/* endpoints for frontend compatibility
 
 # Register search router if available
 if HAS_SEARCH_ROUTER and search_router:
@@ -376,12 +363,11 @@ async def detailed_health():
         - SLA compliance
     """
     import time
+
     from mahoun.monitoring.legal_metrics import legal_monitoring
 
     # Calculate uptime
-    uptime_seconds = (
-        time.time() - app.state.start_time if hasattr(app.state, "start_time") else 0
-    )
+    uptime_seconds = time.time() - app.state.start_time if hasattr(app.state, "start_time") else 0
 
     # Get legal monitoring health
     legal_health = await legal_monitoring.health_check()
@@ -407,6 +393,7 @@ async def reset_metrics():
     """
     # Block in production
     from mahoun.core.environment import is_production, is_staging
+
     if is_production() or is_staging():
         return JSONResponse(
             status_code=403,
@@ -468,7 +455,7 @@ class FeedbackRequest(BaseModel):
     accuracy: float = Field(ge=0.0, le=1.0)
     latency: float = Field(gt=0.0)
     user_satisfaction: float = Field(ge=0.0, le=1.0)
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class PolicyDeployRequest(BaseModel):
@@ -476,15 +463,15 @@ class PolicyDeployRequest(BaseModel):
     version: str
     mode: Literal["shadow", "canary", "full"] = "shadow"
     traffic_percentage: float = Field(default=0.0, ge=0.0, le=100.0)
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class ExperimentRequest(BaseModel):
     name: str
-    variants: List[str]
-    traffic_split: List[float]
-    metrics: List[str]
-    metadata: Optional[Dict[str, Any]] = None
+    variants: list[str]
+    traffic_split: list[float]
+    metrics: list[str]
+    metadata: dict[str, Any] | None = None
 
 
 class RollbackRequest(BaseModel):
@@ -496,8 +483,9 @@ class RollbackRequest(BaseModel):
 @app.get("/health")
 async def health_check():
     """Health check endpoint connected to the internal health system"""
-    from mahoun.infrastructure.health_checker import HealthChecker
     from datetime import datetime
+
+    from mahoun.infrastructure.health_checker import HealthChecker
 
     checker = HealthChecker()
     results = await checker.check_all()
@@ -533,8 +521,9 @@ def get_feedback_pipeline():
 async def process_feedback_task(feedback: FeedbackRequest):
     """Process feedback in background"""
     try:
-        from mahoun.finetuning.feedback_pipeline import UserFeedback, FeedbackType
         from datetime import datetime
+
+        from mahoun.finetuning.feedback_pipeline import FeedbackType, UserFeedback
 
         pipeline = get_feedback_pipeline()
 
@@ -600,11 +589,7 @@ async def get_feedback_stats():
 
         # Calculate averages
         ratings = [f.rating for f in pipeline.feedback_store if f.rating is not None]
-        confidences = [
-            f.confidence_score
-            for f in pipeline.feedback_store
-            if f.confidence_score is not None
-        ]
+        confidences = [f.confidence_score for f in pipeline.feedback_store if f.confidence_score is not None]
 
         avg_satisfaction = sum(ratings) / len(ratings) / 5.0 if ratings else 0.0
         avg_accuracy = sum(confidences) / len(confidences) if confidences else 0.0
@@ -614,9 +599,7 @@ async def get_feedback_stats():
             "avg_satisfaction": round(avg_satisfaction, 3),
             "avg_accuracy": round(avg_accuracy, 3),
             "feedback_rate": 0.65,  # This would come from query logs
-            "high_quality_count": len(
-                [f for f in pipeline.feedback_store if f.rating and f.rating >= 4.0]
-            ),
+            "high_quality_count": len([f for f in pipeline.feedback_store if f.rating and f.rating >= 4.0]),
         }
     except Exception as e:
         logger.error(f"Failed to get feedback stats: {e}")
@@ -662,7 +645,7 @@ async def deploy_policy(request: PolicyDeployRequest):
 
 
 @app.get("/api/v1/policy/list")
-async def list_policies(status: Optional[str] = None, limit: int = 10):
+async def list_policies(status: str | None = None, limit: int = 10):
     """List available policies"""
     policies = [
         {
@@ -719,7 +702,7 @@ async def create_experiment(request: ExperimentRequest):
 
 
 @app.get("/api/v1/experiments")
-async def list_experiments(status: Optional[str] = None, limit: int = 10):
+async def list_experiments(status: str | None = None, limit: int = 10):
     """List experiments"""
     experiments = [
         {
@@ -770,9 +753,7 @@ async def get_experiment_results(experiment_id: str):
 
 # Metrics endpoints
 @app.get("/api/v1/metrics")
-async def get_metrics(
-    component: Optional[str] = None, metric: Optional[str] = None, window: int = 3600
-):
+async def get_metrics(component: str | None = None, metric: str | None = None, window: int = 3600):
     """Get system metrics from the real collector"""
     from mahoun.metrics import get_metrics_collector
 
@@ -852,7 +833,7 @@ async def get_config():
 
 
 @app.put("/api/v1/config")
-async def update_config(config: Dict[str, Any]):
+async def update_config(config: dict[str, Any]):
     """Update system configuration"""
     logger.info(f"Updating configuration: {list(config.keys())}")
 

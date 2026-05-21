@@ -106,3 +106,31 @@ markers = [
   "integration: Tests that require external services (databases, APIs, etc.)",
   "slow: Tests that are slow to run (large data, complex computations)"
 ]
+
+[tool.ruff]
+ignore = ["E402", "UP042", "N818", "E501", "W291"]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".kilo",
+    "MAHOUN_v2_clean",
+    "build",
+    "dist",
+    "venv",
+    "archive",
+    "backups",
+]
+
+# Set the maximum line length
+line-length = 120

@@ -19,37 +19,38 @@ Architecture:
 
 import hashlib
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-from fastapi import APIRouter, HTTPException, status, Depends
+from datetime import UTC, datetime
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
-from mahoun.core.logging import setup_logger
+from api.models.proof_carrying import ProofCarryingResponse
 from mahoun.api.errors import (
-    handle_runtime_error,
-    handle_value_error,
     VerdictGenerationError,
     VerificationError,
-)
-from mahoun.reasoning.evidence_linked_verdict import (
-    EvidenceLinkedVerdictEngine,
-)
-from mahoun.graph.ultra_graph_builder import UltraGraphBuilder
-from mahoun.reasoning.knowledge_graph import LegalKnowledgeGraph
-from mahoun.ledger.writer import EvidenceLedgerWriter
-from mahoun.ledger.blockchain import ImmutableLedger
-from mahoun.crypto.proof_system import ProofSystem
-from mahoun.crypto.signatures import generate_keypair
-from mahoun.core.runtime_config import is_desktop_minimal, should_skip_graph
-from mahoun.reasoning.fortress_integration import (
-    FortressProtectedReasoningService,
-    create_fortress_protected_service,
+    handle_runtime_error,
+    handle_value_error,
 )
 from mahoun.core.governance import (
     GovernanceContextManager,
-    GovernanceScopeEnforcer,
 )
-from api.models.proof_carrying import ProofCarryingResponse
+from mahoun.core.fortress_validator import SecurityBreachException
+from mahoun.core.logging import setup_logger
+from mahoun.core.runtime_config import is_desktop_minimal, should_skip_graph
+from mahoun.crypto.proof_system import ProofSystem
+from mahoun.crypto.signatures import generate_keypair
+from mahoun.graph.ultra_graph_builder import UltraGraphBuilder
+from mahoun.ledger.blockchain import ImmutableLedger
+from mahoun.ledger.writer import EvidenceLedgerWriter
+from mahoun.reasoning.evidence_linked_verdict import (
+    EvidenceLinkedVerdictEngine,
+)
+from mahoun.reasoning.fortress_integration import (
+    FortressProtectedReasoningService,  # noqa: F401
+    create_fortress_protected_service,
+)
+from mahoun.reasoning.knowledge_graph import LegalKnowledgeGraph
 
 log = setup_logger("reasoning_api")
 
@@ -71,20 +72,18 @@ router = APIRouter(
 class FactInput(BaseModel):
     """Single fact input"""
 
-    id: Optional[str] = Field(None, description="Fact identifier (optional)")
+    id: str | None = Field(None, description="Fact identifier (optional)")
     value: str = Field(..., description="Fact text", min_length=1)
-    type: Optional[str] = Field("UNKNOWN", description="Fact type")
-    confidence: Optional[float] = Field(
-        1.0, ge=0.0, le=1.0, description="Fact confidence"
-    )
+    type: str | None = Field("UNKNOWN", description="Fact type")
+    confidence: float | None = Field(1.0, ge=0.0, le=1.0, description="Fact confidence")
 
 
 class VerdictGenerationRequest(BaseModel):
     """Request for verdict generation"""
 
     question: str = Field(..., description="Legal question to answer", min_length=1)
-    facts: List[FactInput] = Field(..., description="Case facts", min_length=0)
-    case_id: Optional[str] = Field(None, description="Case identifier (optional)")
+    facts: list[FactInput] = Field(..., description="Case facts", min_length=0)
+    case_id: str | None = Field(None, description="Case identifier (optional)")
     generate_proof: bool = Field(True, description="Generate cryptographic proof")
 
 
@@ -93,7 +92,7 @@ class EvidenceReferenceResponse(BaseModel):
 
     node_id: str
     node_type: str
-    edge_id: Optional[str] = None
+    edge_id: str | None = None
     justification: str
     confidence: float
 
@@ -102,7 +101,7 @@ class VerdictStepResponse(BaseModel):
     """Verdict step in response"""
 
     statement: str
-    evidence: List[EvidenceReferenceResponse]
+    evidence: list[EvidenceReferenceResponse]
 
 
 class CryptographicProofResponse(BaseModel):
@@ -125,22 +124,20 @@ class VerdictGenerationResponse(ProofCarryingResponse):
     verdict_id: str
     case_id: str
     final_verdict: str
-    steps: List[VerdictStepResponse]
-    unresolved_conflicts: List[str]
+    steps: list[VerdictStepResponse]
+    unresolved_conflicts: list[str]
     confidence_score: float
-    proof: Optional[CryptographicProofResponse] = None
-    ledger_entry_id: Optional[str] = None
+    proof: CryptographicProofResponse | None = None
+    ledger_entry_id: str | None = None
     processing_time_ms: float
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class VerdictVerificationRequest(BaseModel):
     """Request for verdict verification"""
 
     verdict_id: str = Field(..., description="Verdict identifier")
-    proof: CryptographicProofResponse = Field(
-        ..., description="Cryptographic proof to verify"
-    )
+    proof: CryptographicProofResponse = Field(..., description="Cryptographic proof to verify")
 
 
 class VerdictVerificationResponse(ProofCarryingResponse):
@@ -149,25 +146,25 @@ class VerdictVerificationResponse(ProofCarryingResponse):
     success: bool
     verdict_id: str
     is_valid: bool
-    verification_details: Dict[str, Any]
+    verification_details: dict[str, Any]
     timestamp: str
 
 
 class LedgerQueryRequest(BaseModel):
     """Request for ledger query"""
 
-    case_id: Optional[str] = Field(None, description="Case identifier")
-    verdict_id: Optional[str] = Field(None, description="Verdict identifier")
-    node_id: Optional[str] = Field(None, description="Node identifier")
-    start_time: Optional[str] = Field(None, description="Start time (ISO 8601)")
-    end_time: Optional[str] = Field(None, description="End time (ISO 8601)")
+    case_id: str | None = Field(None, description="Case identifier")
+    verdict_id: str | None = Field(None, description="Verdict identifier")
+    node_id: str | None = Field(None, description="Node identifier")
+    start_time: str | None = Field(None, description="Start time (ISO 8601)")
+    end_time: str | None = Field(None, description="End time (ISO 8601)")
 
 
 class LedgerQueryResponse(ProofCarryingResponse):
     """Response for ledger query with proof-carrying contract"""
 
     success: bool
-    entries: List[Dict[str, Any]]
+    entries: list[dict[str, Any]]
     total_count: int
     query_time_ms: float
 
@@ -176,11 +173,11 @@ class LedgerQueryResponse(ProofCarryingResponse):
 # Dependencies
 # ============================================================================
 
-_verdict_engine: Optional[EvidenceLinkedVerdictEngine] = None
-_immutable_ledger: Optional[ImmutableLedger] = None
-_proof_system: Optional[ProofSystem] = None
-_private_key: Optional[str] = None
-_public_key: Optional[str] = None
+_verdict_engine: EvidenceLinkedVerdictEngine | None = None
+_immutable_ledger: ImmutableLedger | None = None
+_proof_system: ProofSystem | None = None
+_private_key: str | None = None
+_public_key: str | None = None
 
 
 def get_verdict_engine() -> EvidenceLinkedVerdictEngine:
@@ -199,23 +196,16 @@ def get_verdict_engine() -> EvidenceLinkedVerdictEngine:
                     "entry_point": "api",
                 },
             )
-            
+
             # Record metrics
             try:
                 from mahoun.metrics import record_blocked_attempt, record_mode_check
-                record_blocked_attempt(
-                    mode="desktop_minimal",
-                    reason="graph_disabled",
-                    entry_point="api"
-                )
-                record_mode_check(
-                    mode="desktop_minimal",
-                    graph_enabled=False,
-                    passed=False
-                )
+
+                record_blocked_attempt(mode="desktop_minimal", reason="graph_disabled", entry_point="api")
+                record_mode_check(mode="desktop_minimal", graph_enabled=False, passed=False)
             except ImportError:
                 log.debug("Metrics module not available - skipping metrics recording")
-            
+
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail={
@@ -241,13 +231,14 @@ def get_verdict_engine() -> EvidenceLinkedVerdictEngine:
         )
 
         log.info("Evidence-Linked Verdict Engine initialized")
-        
+
         # Record metrics
         try:
             from mahoun.metrics import set_verdict_engine_initialized
+
             set_verdict_engine_initialized(True)
         except ImportError:
-            pass
+            log.debug("Metrics module not available")
 
     return _verdict_engine
 
@@ -286,9 +277,7 @@ def get_keypair() -> tuple[str, str]:
         # In production, load from secure storage
         # For now, generate ephemeral keypair
         _private_key, _public_key = generate_keypair()
-        log.warning(
-            "Using ephemeral keypair - configure persistent keys for production"
-        )
+        log.warning("Using ephemeral keypair - configure persistent keys for production")
 
     return _private_key, _public_key
 
@@ -345,27 +334,28 @@ async def generate_verdict(
 
         # CRITICAL: Create governance context with correlation lineage
         async with GovernanceContextManager.active_context(
-            correlation_id=request.case_id or str(uuid.uuid4()),
-            execution_mode="STRICT"
+            correlation_id=request.case_id or str(uuid.uuid4()), execution_mode="STRICT"
         ) as ctx:
             # Adapt verdict engine to reasoning service interface
             from mahoun.reasoning.verdict_engine_adapter import create_verdict_engine_adapter
+
             adapted_engine = create_verdict_engine_adapter(engine)
-            
+
             # Wrap adapted engine with Fortress protection
-            protected_service = create_fortress_protected_service(
-                reasoning_service=adapted_engine,
-                strict_mode=True
-            )
-            
+            protected_service = create_fortress_protected_service(reasoning_service=adapted_engine, strict_mode=True)
+
             # Execute reasoning (auto-validated through Fortress)
             verdict = await protected_service.reason(
-                request=type('ReasoningRequest', (), {
-                    'question': request.question,
-                    'facts': facts_list,
-                    'correlation_id': ctx.correlation_id,
-                })(),
-                correlation_id=ctx.correlation_id
+                request=type(
+                    "ReasoningRequest",
+                    (),
+                    {
+                        "question": request.question,
+                        "facts": facts_list,
+                        "correlation_id": ctx.correlation_id,
+                    },
+                )(),
+                correlation_id=ctx.correlation_id,
             )
 
         # Generate verdict ID
@@ -374,7 +364,7 @@ async def generate_verdict(
 
         # Extract steps from proof_tree (ReasoningResponse format)
         steps_data = []
-        if verdict.proof_tree and hasattr(verdict.proof_tree, 'steps'):
+        if verdict.proof_tree and hasattr(verdict.proof_tree, "steps"):
             steps_data = list(verdict.proof_tree.steps)
 
         # Generate cryptographic proof if requested
@@ -384,29 +374,36 @@ async def generate_verdict(
             private_key, public_key = get_keypair()
 
             # Extract graph nodes and edges from verdict steps
-            graph_nodes: Dict[str, Any] = {}
-            graph_edges: List[Any] = []
+            graph_nodes: dict[str, Any] = {}
+            graph_edges: list[Any] = []
 
             # Collect nodes from verdict steps
             for step in steps_data:
                 if isinstance(step, dict):
-                    evidence_list = step.get('evidence', [])
+                    evidence_list = step.get("evidence", [])
                     if isinstance(evidence_list, list):
                         for ev in evidence_list:
                             if isinstance(ev, dict):
-                                node_id = ev.get('node_id')
+                                node_id = ev.get("node_id")
                                 if node_id and node_id not in graph_nodes:
                                     graph_nodes[node_id] = {
                                         "id": node_id,
-                                        "type": ev.get('node_type', 'unknown'),
-                                        "confidence": ev.get('confidence', 1.0),
+                                        "type": ev.get("node_type", "unknown"),
+                                        "confidence": ev.get("confidence", 1.0),
                                     }
-                            elif hasattr(ev, 'node_id'):
+                            elif hasattr(ev, "node_id"):
                                 if ev.node_id not in graph_nodes:
                                     graph_nodes[ev.node_id] = {
                                         "id": ev.node_id,
-                                        "type": getattr(ev, 'node_type', 'unknown'),
-                                        "confidence": getattr(ev, 'confidence', 1.0),
+                                        "type": getattr(ev, "node_type", "unknown"),
+                                        "confidence": getattr(ev, "confidence", 1.0),
+                                    }
+                            elif isinstance(ev, str):
+                                if ev not in graph_nodes:
+                                    graph_nodes[ev] = {
+                                        "id": ev,
+                                        "type": "unknown",
+                                        "confidence": 1.0,
                                     }
 
             # Generate proof
@@ -436,18 +433,40 @@ async def generate_verdict(
         steps_response = []
         for step in steps_data:
             if isinstance(step, dict):
-                statement = step.get('conclusion', '')
-                evidence_list = step.get('evidence', [])
+                statement = step.get("conclusion", "")
+                evidence_list = step.get("evidence", [])
                 steps_response.append(
                     VerdictStepResponse(
                         statement=statement,
                         evidence=[
                             EvidenceReferenceResponse(
-                                node_id=ev.get('node_id', '') if isinstance(ev, dict) else getattr(ev, 'node_id', ''),
-                                node_type=ev.get('node_type', 'unknown') if isinstance(ev, dict) else getattr(ev, 'node_type', 'unknown'),
-                                edge_id=ev.get('edge_id') if isinstance(ev, dict) else getattr(ev, 'edge_id', None),
-                                justification=ev.get('justification', '') if isinstance(ev, dict) else getattr(ev, 'justification', ''),
-                                confidence=ev.get('confidence', 1.0) if isinstance(ev, dict) else getattr(ev, 'confidence', 1.0),
+                                node_id=ev
+                                if isinstance(ev, str)
+                                else (ev.get("node_id", "") if isinstance(ev, dict) else getattr(ev, "node_id", "")),
+                                node_type="unknown"
+                                if isinstance(ev, str)
+                                else (
+                                    ev.get("node_type", "unknown")
+                                    if isinstance(ev, dict)
+                                    else getattr(ev, "node_type", "unknown")
+                                ),
+                                edge_id=None
+                                if isinstance(ev, str)
+                                else (ev.get("edge_id") if isinstance(ev, dict) else getattr(ev, "edge_id", None)),
+                                justification=""
+                                if isinstance(ev, str)
+                                else (
+                                    ev.get("justification", "")
+                                    if isinstance(ev, dict)
+                                    else getattr(ev, "justification", "")
+                                ),
+                                confidence=1.0
+                                if isinstance(ev, str)
+                                else (
+                                    ev.get("confidence", 1.0)
+                                    if isinstance(ev, dict)
+                                    else getattr(ev, "confidence", 1.0)
+                                ),
                             )
                             for ev in evidence_list
                         ],
@@ -463,8 +482,8 @@ async def generate_verdict(
         )
 
         # Extract metadata fields
-        final_verdict = verdict.result if verdict.result else verdict.metadata.get('final_verdict', 'UNKNOWN')
-        unresolved_conflicts_raw = verdict.metadata.get('unresolved_conflicts', [])
+        final_verdict = verdict.result if verdict.result else verdict.metadata.get("final_verdict", "UNKNOWN")
+        unresolved_conflicts_raw = verdict.metadata.get("unresolved_conflicts", [])
         unresolved_conflicts = unresolved_conflicts_raw if isinstance(unresolved_conflicts_raw, list) else []
 
         return VerdictGenerationResponse(
@@ -476,19 +495,70 @@ async def generate_verdict(
             unresolved_conflicts=unresolved_conflicts,
             confidence_score=verdict.confidence,
             proof=proof_response,
-            ledger_entry_id=verdict_id, # Ledger entry uses verdict_id
+            ledger_entry_id=verdict_id,  # Ledger entry uses verdict_id
             processing_time_ms=processing_time_ms,
             # Proof-carrying contract fields from validated ReasoningResponse
             fortress_validated=verdict.fortress_validated,
             audit_hash=verdict.audit_hash or "unknown",
-            validation_timestamp=verdict.validation_timestamp or datetime.now(timezone.utc).isoformat(),
+            validation_timestamp=verdict.validation_timestamp or datetime.now(UTC).isoformat(),
             correlation_id=verdict.correlation_id or verdict_id,
             metadata={
                 "total_steps": len(steps_data),
-                "total_evidence": sum(len(step.get('evidence', [])) if isinstance(step, dict) else len(getattr(step, 'evidence', [])) for step in steps_data),
+                "total_evidence": sum(
+                    len(step.get("evidence", [])) if isinstance(step, dict) else len(getattr(step, "evidence", []))
+                    for step in steps_data
+                ),
                 "has_unresolved_conflicts": len(unresolved_conflicts) > 0,
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
             },
+        )
+
+    except SecurityBreachException as e:
+        # CRITICAL: Fortress validator breach - convert to controlled HTTP response
+        log.error(
+            f"SecurityBreachException in generate_verdict: {e}",
+            extra={
+                "violation_type": getattr(e, "violation_type", "UNKNOWN"),
+                "severity": getattr(e, "severity", "UNKNOWN"),
+                "forensic_ctx": getattr(e, "forensic_ctx", {}),
+            },
+            exc_info=True,
+        )
+
+        # Build safe error payload (dict) for stable contract
+        forensic_ctx = getattr(e, "forensic_ctx", {})
+        violation_type = getattr(e, "violation_type", None)
+        
+        # Extract violation type string
+        if violation_type:
+            violation_str = str(violation_type).split(".")[-1] if hasattr(violation_type, "__class__") else str(violation_type)
+        else:
+            violation_str = "UNKNOWN_VIOLATION"
+
+        error_payload = {
+            "error": "SECURITY_BREACH",
+            "violation": violation_str,
+            "message": "Fortress validation failed: reasoning response violated governance constraints",
+            "correlation_id": forensic_ctx.get("correlation_id"),
+            "timestamp": forensic_ctx.get("timestamp") or datetime.now(UTC).isoformat(),
+        }
+
+        # Include sanitized violations list if available
+        if "violations" in forensic_ctx:
+            violations_list = forensic_ctx["violations"]
+            if isinstance(violations_list, list):
+                error_payload["violations"] = [
+                    {
+                        "type": v.get("type") if isinstance(v, dict) else str(v),
+                        "severity": v.get("severity") if isinstance(v, dict) else "UNKNOWN",
+                        "message": v.get("message") if isinstance(v, dict) else str(v),
+                    }
+                    for v in violations_list
+                ]
+
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=error_payload,
         )
 
     except RuntimeError as e:
@@ -505,6 +575,7 @@ async def generate_verdict(
 
     except ValueError as e:
         # Handle validation errors
+        log.error(f"ValueError in generate_verdict: {e}", exc_info=True)
         api_error = handle_value_error(e)
         raise HTTPException(
             status_code=api_error.status_code,
@@ -588,24 +659,22 @@ async def verify_verdict(
 
         processing_time_ms = (time.time() - start_time) * 1000
 
-        log.info(
-            f"Verification completed: valid={is_valid}, time={processing_time_ms:.1f}ms"
-        )
+        log.info(f"Verification completed: valid={is_valid}, time={processing_time_ms:.1f}ms")
 
         # Generate proof-carrying metadata for verification response
         correlation_id = f"verify-{request.verdict_id}"
         audit_hash_value = hashlib.sha256(f"{request.verdict_id}:{is_valid}".encode()).hexdigest()[:16]
-        
+
         return VerdictVerificationResponse(
             success=True,
             verdict_id=request.verdict_id,
             is_valid=is_valid,
             verification_details=verification_details,
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=datetime.now(UTC).isoformat(),
             # Proof-carrying contract fields
             fortress_validated=True,
             audit_hash=audit_hash_value,
-            validation_timestamp=datetime.now(timezone.utc).isoformat(),
+            validation_timestamp=datetime.now(UTC).isoformat(),
             correlation_id=correlation_id,
         )
 
@@ -677,14 +746,12 @@ async def query_ledger(
 
         processing_time_ms = (time.time() - start_time) * 1000
 
-        log.info(
-            f"Ledger query completed: {len(entries)} entries, time={processing_time_ms:.1f}ms"
-        )
+        log.info(f"Ledger query completed: {len(entries)} entries, time={processing_time_ms:.1f}ms")
 
         # Generate proof-carrying metadata for ledger query response
         correlation_id = f"ledger-{request.verdict_id or request.case_id or request.node_id or 'query'}"
         audit_hash_value = hashlib.sha256(f"ledger:{processing_time_ms}".encode()).hexdigest()[:16]
-        
+
         return LedgerQueryResponse(
             success=True,
             entries=entries_dict,
@@ -693,13 +760,24 @@ async def query_ledger(
             # Proof-carrying contract fields
             fortress_validated=True,
             audit_hash=audit_hash_value,
-            validation_timestamp=datetime.now(timezone.utc).isoformat(),
+            validation_timestamp=datetime.now(UTC).isoformat(),
             correlation_id=correlation_id,
+        )
+
+    except ValueError as e:
+        api_error = handle_value_error(e)
+        raise HTTPException(
+            status_code=api_error.status_code,
+            detail={
+                "error": api_error.error_code.value,
+                "message": api_error.message,
+                "details": api_error.details,
+            },
         )
 
     except Exception as e:
         log.error(f"Ledger query failed: {e}", exc_info=True)
-        from mahoun.api.errors import MAHOUNAPIError, ErrorCode
+        from mahoun.api.errors import ErrorCode, MAHOUNAPIError
 
         error = MAHOUNAPIError(
             error_code=ErrorCode.INTERNAL_ERROR,
@@ -718,7 +796,7 @@ async def query_ledger(
     summary="Reasoning API health check",
     description="Check if reasoning API is available and operational",
 )
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """Health check for reasoning API"""
     try:
         # Check if we're in supported mode
@@ -728,7 +806,7 @@ async def health_check() -> Dict[str, Any]:
                 "mode": "DESKTOP_MINIMAL",
                 "graph_enabled": False,
                 "message": "Reasoning API requires ENTERPRISE_FULL mode or graph enabled",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
 
         # Check components
@@ -741,9 +819,7 @@ async def health_check() -> Dict[str, Any]:
 
         return {
             "status": "healthy",
-            "mode": "ENTERPRISE_FULL"
-            if not is_desktop_minimal()
-            else "DESKTOP_MINIMAL",
+            "mode": "ENTERPRISE_FULL" if not is_desktop_minimal() else "DESKTOP_MINIMAL",
             "graph_enabled": not should_skip_graph(),
             "components": {
                 "verdict_engine": "initialized",
@@ -752,7 +828,7 @@ async def health_check() -> Dict[str, Any]:
                 "ledger_integrity": ledger_integrity,
                 "ledger_blocks": len(ledger),
             },
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
     except Exception as e:
@@ -760,5 +836,5 @@ async def health_check() -> Dict[str, Any]:
         return {
             "status": "unhealthy",
             "error": str(e),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }

@@ -59,11 +59,19 @@ Docker handles log rotation by default if configured in `daemon.json`. Ensure yo
 {
   "log-driver": "json-file",
   "log-opts": {
+  "log-opts": {
     "max-size": "10m",
     "max-file": "3"
   }
 }
 ```
+
+### Governance Monitoring & Alerts
+When deploying to staging or production, ensure Prometheus is configured with the Governance Alerting Rules (`monitoring/prometheus/alerts/governance_alerts.yml`).
+Critical alerts that MUST trigger immediate pages (e.g., via PagerDuty):
+- `GovernanceBypassAttemptDetected`
+- `FortressValidationFailureHigh`
+- `ProofTreeViolationSpike`
 ---
 
 ## 4. Troubleshooting

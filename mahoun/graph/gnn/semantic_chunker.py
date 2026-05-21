@@ -8,18 +8,22 @@ Semantic Chunker with Entity Awareness for MAHOUN Legal AI
 - Dynamic chunk sizing
 """
 
+import importlib
 import json
-import numpy as np
-from dataclasses import dataclass, asdict
-from typing import List, Dict, Any, Optional, Tuple
+from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
+import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer
-from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
+from transformers import AutoModelForTokenClassification, AutoTokenizer, pipeline
 
-from mahoun.pipelines._logging import setup_logger
-from mahoun.pipelines.utils_text import sent_tokenize_simple, normalize_fa
+from mahoun.core.logging import setup_logger
+
+utils_text = importlib.import_module("mahoun.pipelines.utils_text")
+sent_tokenize_simple = utils_text.sent_tokenize_simple
+normalize_fa = utils_text.normalize_fa
 
 log = setup_logger("semantic_chunker")
 
@@ -44,9 +48,9 @@ class Chunk:
 
     id: str
     text: str
-    embedding: Optional[np.ndarray] = None
-    entities: Dict[str, List[str]] = None
-    metadata: Dict[str, Any] = None
+    embedding: np.ndarray | None = None
+    entities: dict[str, list[str]] = None
+    metadata: dict[str, Any] = None
     coherence_score: float = 0.0
     entity_count: int = 0
     semantic_density: float = 0.0
@@ -59,7 +63,7 @@ class Chunk:
         if self.metadata is None:
             self.metadata = {}
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization"""
         d = asdict(self)
         # Convert numpy array to list for JSON serialization
@@ -68,7 +72,7 @@ class Chunk:
         return d
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Chunk":
+    def from_dict(cls, data: dict[str, Any]) -> "Chunk":
         """Create Chunk from dictionary"""
         # Convert embedding list back to numpy array
         if "embedding" in data and data["embedding"] is not None:
@@ -93,7 +97,7 @@ class Chunk:
     @classmethod
     def load(cls, path: str) -> "Chunk":
         """Load chunk from file"""
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             return cls.from_json(f.read())
 
 
@@ -147,7 +151,7 @@ class SemanticChunker:
         )
         log.info("NER model loaded")
 
-    def _compute_embeddings(self, sentences: List[str]) -> np.ndarray:
+    def _compute_embeddings(self, sentences: list[str]) -> np.ndarray:
         """
         Compute embeddings for sentences
 
@@ -183,7 +187,7 @@ class SemanticChunker:
         similarity = np.dot(normalized, normalized.T)
         return similarity
 
-    def _extract_entities(self, text: str) -> Dict[str, List[str]]:
+    def _extract_entities(self, text: str) -> dict[str, list[str]]:
         """
         Extract entities from text using NER
 
@@ -214,9 +218,7 @@ class SemanticChunker:
             log.warning(f"NER extraction failed: {e}")
             return {}
 
-    def _find_entity_positions(
-        self, text: str, entities: Dict[str, List[str]]
-    ) -> List[Tuple[int, int]]:
+    def _find_entity_positions(self, text: str, entities: dict[str, list[str]]) -> list[tuple[int, int]]:
         """
         Find positions of entities in text
 
@@ -262,8 +264,8 @@ class SemanticChunker:
         coherence_threshold: float = 0.7,
         preserve_entities: bool = True,
         doc_id: str = None,
-        metadata: Dict[str, Any] = None,
-    ) -> List[Chunk]:
+        metadata: dict[str, Any] = None,
+    ) -> list[Chunk]:
         """
         Chunk text with semantic awareness
 
@@ -319,9 +321,7 @@ class SemanticChunker:
 
         # Adjust boundaries to preserve entities
         if preserve_entities and entity_positions:
-            boundaries = self._adjust_boundaries_for_entities(
-                text, sentences, boundaries, entity_positions
-            )
+            boundaries = self._adjust_boundaries_for_entities(text, sentences, boundaries, entity_positions)
 
         # Create chunks
         chunks = []
@@ -367,13 +367,13 @@ class SemanticChunker:
 
     def _find_semantic_boundaries(
         self,
-        sentences: List[str],
+        sentences: list[str],
         similarity_matrix: np.ndarray,
         threshold: float,
         min_size: int,
         max_size: int,
         target_size: int,
-    ) -> List[Tuple[int, int]]:
+    ) -> list[tuple[int, int]]:
         """
         Find semantic boundaries based on similarity drops
 
@@ -467,10 +467,10 @@ class SemanticChunker:
     def _adjust_boundaries_for_entities(
         self,
         text: str,
-        sentences: List[str],
-        boundaries: List[Tuple[int, int]],
-        entity_positions: List[Tuple[int, int]],
-    ) -> List[Tuple[int, int]]:
+        sentences: list[str],
+        boundaries: list[tuple[int, int]],
+        entity_positions: list[tuple[int, int]],
+    ) -> list[tuple[int, int]]:
         """
         Adjust chunk boundaries to avoid splitting entities
 
@@ -519,7 +519,6 @@ class SemanticChunker:
                 # Check if entity spans the boundary
                 if ent_start < chunk_end_char < ent_end:
                     # Entity is split! Need to adjust
-                    needs_adjustment = True
 
                     # Extend chunk to include entire entity
                     # Find which sentence contains the entity end

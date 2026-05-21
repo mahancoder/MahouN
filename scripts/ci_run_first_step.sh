@@ -133,6 +133,11 @@ if [ "$CONTINUE" = true ]; then
     echo ""
 fi
 
+if [ "$CONTINUE" = true ]; then
+    run_gate 9 "Governance Validation" "${CI_DIR}/gate_9_governance.sh"
+    echo ""
+fi
+
 # End timer
 END_TIME=$(date +%s)
 TOTAL_DURATION=$((END_TIME - START_TIME))
@@ -148,7 +153,7 @@ echo ""
 # Show results table
 echo "Gate Results:"
 echo "----------------------------------------"
-for gate in 0 1 2 3 4 5 6 7 8; do
+for gate in 0 1 2 3 4 5 6 7 8 9; do
     result=${GATE_RESULTS[$gate]:-"SKIPPED"}
     duration=${GATE_DURATIONS[$gate]:-"0"}
     

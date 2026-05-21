@@ -25,43 +25,40 @@ cd "$PROJECT_ROOT"
 
 # Check if basedpyright is available, fall back to pyright, then mypy
 TYPE_CHECKER=""
-if command -v basedpyright &> /dev/null; then
+if [ -f "venv/bin/basedpyright" ]; then
+    TYPE_CHECKER="venv/bin/basedpyright"
+elif [ -f "venv/bin/pyright" ]; then
+    TYPE_CHECKER="venv/bin/pyright"
+elif [ -f "venv/bin/mypy" ]; then
+    TYPE_CHECKER="venv/bin/mypy"
+elif command -v basedpyright &> /dev/null; then
     TYPE_CHECKER="basedpyright"
 elif command -v pyright &> /dev/null; then
     TYPE_CHECKER="pyright"
 elif command -v mypy &> /dev/null; then
     TYPE_CHECKER="mypy"
 else
-    echo -e "${YELLOW}⚠️  No type checker found. Installing basedpyright...${NC}"
-    pip install basedpyright
-    TYPE_CHECKER="basedpyright"
+    echo -e "${YELLOW}⚠️  No type checker found. Installing mypy inside venv...${NC}"
+    venv/bin/pip install mypy
+    TYPE_CHECKER="venv/bin/mypy"
 fi
 
 echo "📊 Using type checker: $TYPE_CHECKER"
 echo ""
 
 # Baseline file
-BASELINE_FILE="${PROJECT_ROOT}/mypy_baseline.txt"
+BASELINE_FILE="${PROJECT_ROOT}/ci/mypy/baseline.txt"
 
-if [ "$TYPE_CHECKER" = "mypy" ]; then
-    echo "🔍 Running mypy..."
+if [ "$TYPE_CHECKER" = "mypy" ] || [ "${TYPE_CHECKER##*/}" = "mypy" ]; then
+    echo "🔍 Running mypy non-regression check..."
     
-    # Run mypy
-    if mypy mahoun/ output/ api/ --config-file=mypy.ini > /tmp/mypy_output.txt 2>&1; then
-        echo -e "${GREEN}✓ No type errors${NC}"
+    # Run python non-regression script
+    if python3 ci/mypy/check_mypy_non_regression.py; then
+        echo -e "${GREEN}✓ No new type errors${NC}"
         TYPE_CHECK_PASSED=true
     else
-        # Check if errors are in baseline
-        NEW_ERRORS=$(diff <(sort /tmp/mypy_output.txt) <(sort "$BASELINE_FILE") 2>/dev/null | grep "^<" | wc -l || echo "0")
-        
-        if [ "$NEW_ERRORS" -gt 0 ]; then
-            echo -e "${RED}❌ Found $NEW_ERRORS new type error(s):${NC}"
-            diff <(sort /tmp/mypy_output.txt) <(sort "$BASELINE_FILE") | grep "^<" || true
-            TYPE_CHECK_PASSED=false
-        else
-            echo -e "${GREEN}✓ No new type errors (baseline unchanged)${NC}"
-            TYPE_CHECK_PASSED=true
-        fi
+        echo -e "${RED}❌ Type check regression detected${NC}"
+        TYPE_CHECK_PASSED=false
     fi
     
 elif [ "$TYPE_CHECKER" = "basedpyright" ] || [ "$TYPE_CHECKER" = "pyright" ]; then
