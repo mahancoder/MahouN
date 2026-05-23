@@ -38,14 +38,9 @@ from typing import Any, ClassVar, Dict, FrozenSet, List, Optional, Set, Union
 try:
     from pydantic_settings import BaseSettings, SettingsConfigDict
 except ImportError:
-    # Fallback for older pydantic versions or missing pydantic_settings
-    try:
-        from pydantic.v1 import BaseSettings # If using pydantic 2 but no pydantic-settings
-        SettingsConfigDict: Optional[Any] = None
-    except ImportError:
-        from pydantic import BaseSettings
-        SettingsConfigDict: Optional[Any] = None
-from pydantic import Field, field_validator, model_validator
+    # Graceful degradation when pydantic-settings extra is not installed
+    from pydantic import BaseSettings  # type: ignore
+    SettingsConfigDict = None  # type: ignore
 
 from mahoun.core.exceptions import ConfigurationError
 
@@ -431,9 +426,8 @@ class MahounSettings(BaseSettings):
     )
     
     # =========================================================================
-    # Pydantic Settings Configuration
+    # Pydantic Settings Configuration (v2 preferred)
     # =========================================================================
-    
     if SettingsConfigDict:
         model_config = SettingsConfigDict(
             env_prefix="MAHOUN_",
@@ -442,13 +436,8 @@ class MahounSettings(BaseSettings):
             extra="ignore",
             validate_default=True,
         )
-    else:
-        class Config:
-            env_prefix = "MAHOUN_"
-            env_file = ".env"
-            env_file_encoding = "utf-8"
-            extra = "ignore"
-            validate_default = True
+    # If pydantic-settings is missing, BaseSettings will still work with env vars
+    # but without the advanced model_config features (acceptable in dev)
     
     # =========================================================================
     # Validators

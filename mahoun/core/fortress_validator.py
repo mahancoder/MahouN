@@ -97,7 +97,12 @@ class ExecutionMode(str, Enum):
 # ============================================================================
 
 
-class SecurityBreachException(Exception):
+from mahoun.core.exceptions import BaseMahounError, SecurityBreachException as CanonicalSecurityBreach
+
+
+class SecurityBreachException(CanonicalSecurityBreach, Exception):  # type: ignore[misc]
+    """Legacy alias that now inherits the canonical deterministic error contract (403)."""
+    pass
     """
     Raised when a RedLine violation is detected.
 

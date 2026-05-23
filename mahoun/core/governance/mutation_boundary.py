@@ -44,9 +44,45 @@ from typing import Any, Dict, Generator, List, Optional, Tuple
 
 from mahoun.core.governance.validator_pipeline import ValidatorPipeline, PipelineResult
 from mahoun.core.governance.provenance_tracker import ProvenanceMetadata
+from mahoun.core.governance.governance_context import GovernanceContextManager
 from mahoun.core.governance.violations import GovernanceViolationError, GovernanceViolation, ViolationSeverity, ViolationCategory
 
 logger = logging.getLogger(__name__)
+
+# ============================================================================
+# IMMUTABLE GOVERNANCE AUDIT LOG (P0 requirement)
+# ============================================================================
+
+import os
+
+_GOVERNANCE_AUDIT_PATH = "logs/governance.audit"
+
+
+def _append_governance_audit(entry: dict[str, Any]) -> None:
+    """
+    Append an immutable, fsynced entry to the governance audit log.
+
+    This MUST succeed BEFORE any graph mutation is committed.
+    Failure here causes the mutation to be rejected (fail-closed).
+    """
+    try:
+        os.makedirs(os.path.dirname(_GOVERNANCE_AUDIT_PATH) or ".", exist_ok=True)
+        line = json.dumps(entry, default=str, sort_keys=True) + "\n"
+        with open(_GOVERNANCE_AUDIT_PATH, "a", encoding="utf-8") as f:
+            f.write(line)
+            f.flush()
+            os.fsync(f.fileno())
+    except Exception as exc:
+        # Fail-closed: audit append failure MUST block mutation
+        raise GovernanceViolationError(
+            GovernanceViolation(
+                category=ViolationCategory.AUDIT_FAILURE,
+                severity=ViolationSeverity.CRITICAL,
+                message="GOVERNANCE AUDIT APPEND FAILED — mutation aborted",
+                details={"error": str(exc), "audit_path": _GOVERNANCE_AUDIT_PATH},
+                source="GovernedNeo4jSession._append_governance_audit",
+            )
+        ) from exc
 
 # ---------------------------------------------------------------------------
 # Cypher Mutation Intent Classifier
@@ -224,10 +260,15 @@ class GovernedNeo4jSession:
         raw_executor: Any,  # callable(query, params) -> list
         pipeline: Optional[ValidatorPipeline] = None,
         correlation_id: str = "",
+        actor_id: str = "",
     ) -> None:
+        # CRITICAL P0: Reject mutation surface creation if no GovernanceContext
+        ctx = GovernanceContextManager.require_context()
         self._raw_executor = raw_executor
         self._pipeline = pipeline or ValidatorPipeline()
-        self._correlation_id = correlation_id
+        self._correlation_id = correlation_id or ctx.correlation_id
+        self._actor_id = actor_id or getattr(ctx, "actor_id", "system")
+        self._governance_scope_id = ctx.context_id
         self._ledger: List[MutationReceipt] = []
 
     # ------------------------------------------------------------------
@@ -245,14 +286,28 @@ class GovernedNeo4jSession:
 
         Requires:
             - node_data["id"] — unique identifier
-            - node_data["provenance"] — provenance metadata dict
+            - node_data["provenance"] — provenance metadata dict (or will be injected)
+
+        CRITICAL ORDER (P0 TRANSACTIONAL GOVERNANCE ORDERING):
+            1. governance validation (context + pipeline)
+            2. provenance generation
+            3. immutable audit append (must succeed or mutation aborts)
+            4. graph mutation commit
+            5. attestation finalization
 
         Raises:
             GovernanceViolationError: fail-closed on any violation.
         """
-        # Phase 1: Governance validation
+        # STEP 1: Governance validation (already enforced at __init__ via require_context)
+        ctx = GovernanceContextManager.require_context()
         result = self._pipeline.validate_node_write(
             node_data, self._correlation_id
+        )
+
+        # STEP 2: Provenance generation (must succeed before audit/mutation)
+        provenance = GovernanceContextManager.require_provenance(
+            source="graph_mutation:write_node",
+            author=self._actor_id,
         )
 
         # Phase 2: Build Cypher (provenance stays out of graph properties)
@@ -273,7 +328,22 @@ class GovernedNeo4jSession:
             )
             m_type = MutationType.NODE_CREATE
 
-        # Phase 3: Execute under authorization
+        # STEP 3: Immutable audit append — FAILS CLOSED if this raises
+        audit_entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "correlation_id": self._correlation_id,
+            "governance_scope_id": self._governance_scope_id,
+            "actor_id": self._actor_id,
+            "provenance_hash": getattr(provenance, "provenance_hash", str(provenance)),
+            "operation": "write_node",
+            "label": label,
+            "entity_id": str(node_data.get("id", "")),
+            "query_preview": query[:200],
+            "params_keys": list(cypher_props.keys()),
+        }
+        _append_governance_audit(audit_entry)
+
+        # STEP 4: Execute under authorization (mutation only after audit success)
         self._execute_authorized(query, cypher_props)
 
         # Phase 4: Receipt
@@ -309,16 +379,30 @@ class GovernedNeo4jSession:
             - rel_data["provenance"] — provenance metadata dict
             - relationship_type must be in OntologyEnforcer ruleset
 
+        CRITICAL ORDER (P0 TRANSACTIONAL GOVERNANCE ORDERING):
+            1. governance validation
+            2. provenance generation
+            3. immutable audit append (must succeed)
+            4. graph mutation
+            5. attestation
+
         Raises:
             GovernanceViolationError: fail-closed on any violation.
         """
-        # Phase 1: Governance validation
+        # STEP 1: Governance validation
+        ctx = GovernanceContextManager.require_context()
         result = self._pipeline.validate_relationship_write(
             source_type=source_type,
             relationship_type=relationship_type,
             target_type=target_type,
             relationship_data=rel_data,
             correlation_id=self._correlation_id,
+        )
+
+        # STEP 2: Provenance generation
+        provenance = GovernanceContextManager.require_provenance(
+            source="graph_mutation:write_relationship",
+            author=self._actor_id,
         )
 
         # Phase 2: Build Cypher
@@ -346,7 +430,22 @@ class GovernedNeo4jSession:
 
         params = {"__src": source_id, "__tgt": target_id, **cypher_props}
 
-        # Phase 3: Execute under authorization
+        # STEP 3: Immutable audit append — must succeed or abort
+        audit_entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "correlation_id": self._correlation_id,
+            "governance_scope_id": self._governance_scope_id,
+            "actor_id": self._actor_id,
+            "provenance_hash": getattr(provenance, "provenance_hash", str(provenance)),
+            "operation": "write_relationship",
+            "relationship_type": relationship_type,
+            "source": f"{source_type}/{source_id}",
+            "target": f"{target_type}/{target_id}",
+            "query_preview": query[:200],
+        }
+        _append_governance_audit(audit_entry)
+
+        # STEP 4: Execute under authorization
         self._execute_authorized(query, params)
 
         # Phase 4: Receipt

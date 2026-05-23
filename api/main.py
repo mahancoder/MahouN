@@ -16,6 +16,14 @@ from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
+
+# Deterministic error contracts (P0)
+from mahoun.core.exceptions import (
+    BaseMahounError,
+    SecurityBreachException,
+    LogicViolationException,
+    GraphIntegrityException,
+)
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 # Import validation middleware
@@ -205,7 +213,45 @@ if os.getenv("MAHOUN_ENABLE_RATE_LIMIT", "true").lower() == "true":
     logger.info(f"✓ Rate limiting enabled: {max_requests} requests per {window_seconds}s")
 
 
-# Global exception handler
+# ============================================================================
+# DETERMINISTIC ERROR CONTRACT HANDLERS (P0 - NO MORE VAGUE 500 FOR SECURITY)
+# ============================================================================
+
+@app.exception_handler(BaseMahounError)
+async def mahoun_deterministic_error_handler(request: Request, exc: BaseMahounError):
+    """Maps all known Mahoun errors to their declared exact HTTP status code."""
+    logger.warning(
+        "Deterministic governance error",
+        extra={
+            "error_type": exc.error_type,
+            "status_code": exc.status_code,
+            "correlation_id": exc.correlation_id,
+        },
+    )
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error": exc.error_type,
+            "message": exc.message,
+            "correlation_id": exc.correlation_id,
+            "details": exc.details,
+            "timestamp": datetime.now().isoformat(),
+        },
+    )
+
+
+# Specific aliases for clarity (in case old SecurityBreachException is raised directly)
+@app.exception_handler(SecurityBreachException)
+async def security_breach_handler(request: Request, exc: SecurityBreachException):
+    return await mahoun_deterministic_error_handler(request, exc)
+
+
+@app.exception_handler(LogicViolationException)
+async def logic_violation_handler(request: Request, exc: LogicViolationException):
+    return await mahoun_deterministic_error_handler(request, exc)
+
+
+# Global catch-all remains 500 only for truly unexpected bugs (never for governance)
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     """

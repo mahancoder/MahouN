@@ -46,10 +46,10 @@ def setup_governance():
     """Setup governance for all tests"""
     GovernanceLock._reset()
     GovernanceLock.initialize(mode=GovernanceMode.STRICT)
-    GovernanceContextManager._context_stack.clear()
+    GovernanceContextManager._reset_for_test()
     yield
     GovernanceLock._reset()
-    GovernanceContextManager._context_stack.clear()
+    GovernanceContextManager._reset_for_test()
 
 
 class MockReasoningService:

@@ -89,11 +89,11 @@ def setup_governance_lock_and_context():
     # Reset governance context
     from mahoun.core.governance import GovernanceContextManager
 
-    GovernanceContextManager._context_stack.clear()
+    GovernanceContextManager._reset_for_test()
     yield
     # Cleanup after test
     GovernanceLock._reset()
-    GovernanceContextManager._context_stack.clear()
+    GovernanceContextManager._reset_for_test()
 
 
 class MockProofTree:

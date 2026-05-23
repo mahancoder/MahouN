@@ -118,7 +118,7 @@ class TestContextRequirement:
     def test_get_current_context_no_context(self):
         """Test get_current_context when no context is active"""
         # Ensure no context is active
-        GovernanceContextManager._local_context = None
+        GovernanceContextManager._reset_for_test()
 
         ctx = GovernanceContextManager.get_current_context()
 
@@ -127,7 +127,7 @@ class TestContextRequirement:
     def test_require_context_no_context(self):
         """Test require_context when no context is active"""
         # Ensure no context is active
-        GovernanceContextManager._local_context = None
+        GovernanceContextManager._reset_for_test()
 
         with pytest.raises(GovernanceViolationError) as exc_info:
             GovernanceContextManager.require_context()
@@ -145,7 +145,7 @@ class TestContextRequirement:
 
     def test_require_provenance(self):
         """Test require_provenance method"""
-        GovernanceContextManager._local_context = None
+        GovernanceContextManager._reset_for_test()
 
         with pytest.raises(GovernanceViolationError):
             GovernanceContextManager.require_provenance(source="test", author="system")
@@ -370,7 +370,7 @@ class TestEdgeCases:
 
     def test_multiple_get_current_context_calls(self):
         """Test multiple get_current_context calls"""
-        GovernanceContextManager._local_context = None
+        GovernanceContextManager._reset_for_test()
 
         ctx1 = GovernanceContextManager.get_current_context()
         ctx2 = GovernanceContextManager.get_current_context()
@@ -380,10 +380,10 @@ class TestEdgeCases:
 
     def test_context_after_reset(self):
         """Test context after reset"""
-        GovernanceContextManager._local_context = None
+        GovernanceContextManager._reset_for_test()
 
         GovernanceContextManager.create_context(correlation_id="test-018", execution_mode="STRICT")
 
-        GovernanceContextManager._local_context = None
+        GovernanceContextManager._reset_for_test()
 
         assert GovernanceContextManager.get_current_context() is None

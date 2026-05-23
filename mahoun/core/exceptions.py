@@ -252,3 +252,61 @@ def wrap_exception(
             "original_message": str(exc)
         }
     )
+
+
+# =============================================================================
+# GOVERNANCE & SECURITY ERROR CONTRACTS (P0 DETERMINISTIC FAIL-CLOSED)
+# =============================================================================
+
+class BaseMahounError(Exception):
+    """
+    Canonical base for all Mahoun errors that must produce deterministic HTTP responses.
+    Every subclass declares an immutable status_code.
+    Never return 500 for known governance/logic/security failures.
+    """
+    status_code: int = 400
+    error_type: str = "base_mahoun_error"
+
+    def __init__(self, message: str, *, correlation_id: str | None = None, details: dict | None = None):
+        super().__init__(message)
+        self.message = message
+        self.correlation_id = correlation_id
+        self.details = details or {}
+
+    def to_dict(self) -> dict:
+        return {
+            "error_type": self.error_type,
+            "message": self.message,
+            "correlation_id": self.correlation_id,
+            "details": self.details,
+        }
+
+
+class SecurityBreachException(BaseMahounError):
+    """
+    Raised on RedLine / constitutional / governance bypass.
+    MUST always map to HTTP 403 Forbidden.
+    """
+    status_code = 403
+    error_type = "security_breach"
+
+
+class LogicViolationException(BaseMahounError):
+    """
+    Raised when business logic or ontology invariants are violated.
+    MUST map to HTTP 422 Unprocessable Entity.
+    """
+    status_code = 422
+    error_type = "logic_violation"
+
+
+class GraphIntegrityException(BaseMahounError):
+    """Graph provenance / hash chain / mutation receipt violation."""
+    status_code = 422
+    error_type = "graph_integrity_violation"
+
+
+class AuditFailureException(BaseMahounError):
+    """Immutable audit append failed — fail-closed before any mutation."""
+    status_code = 500  # rare, but internal
+    error_type = "audit_failure"

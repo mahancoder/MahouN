@@ -287,7 +287,7 @@ class TestGovernanceContextBypass:
         GovernanceLock.initialize(mode=GovernanceMode.STRICT)
 
         # Ensure no context is active
-        GovernanceContextManager._local_context = None
+        GovernanceContextManager._reset_for_test()
 
         # Try to require context
         with pytest.raises(GovernanceViolationError):
@@ -299,7 +299,7 @@ class TestGovernanceContextBypass:
         GovernanceLock.initialize(mode=GovernanceMode.STRICT)
 
         # Ensure no context is active
-        GovernanceContextManager._local_context = None
+        GovernanceContextManager._reset_for_test()
 
         # Try to create provenance
         with pytest.raises(GovernanceViolationError):

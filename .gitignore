@@ -331,6 +331,10 @@ log/
 *.out
 *.err
 
+# EXCEPTION: Immutable governance audit log MUST be preserved for forensic integrity
+!logs/governance.audit
+!logs/governance.audit.*
+
 # Monitoring data
 monitoring/data/
 prometheus_data/
@@ -583,6 +587,12 @@ wip/
 scratch/
 sandbox/
 
+# Temporary review folders (not part of the project)
+MAHOUN_v2_clean/
+
+# YAML configuration files (temporary/local)
+yamlfiles/
+
 # ============================================================================
 # ALLOW CRITICAL EXAMPLES & TEMPLATES
 # ============================================================================
@@ -597,3 +607,12 @@ sandbox/
 # ============================================================================
 # END OF SECURITY-HARDENED .gitignore
 # ============================================================================
+yamlfiles/advanced.yaml
+yamlfiles/app.yaml
+yamlfiles/gat_reranking.yaml
+yamlfiles/gnn_config.yaml
+yamlfiles/model_config.yaml
+yamlfiles/neo4j.yaml
+yamlfiles/reasoning-api.yaml
+yamlfiles/runtime_profile.yaml
+yamlfiles/self_improve_advanced.yaml

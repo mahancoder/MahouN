@@ -509,8 +509,8 @@ class TestErrorHandling:
             "/api/v1/reasoning/query-ledger", json={"start_time": "invalid-date", "end_time": "invalid-date"}
         )
 
-        # Should return validation error
-        assert response.status_code in [400, 422]
+        # Should return validation error (deterministic)
+        assert response.status_code == 422
 
 
 # ============================================================================

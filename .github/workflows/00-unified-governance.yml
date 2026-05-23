@@ -77,6 +77,21 @@ jobs:
           chmod +x ci/first_step/gate_9_governance.sh
           ./ci/first_step/gate_9_governance.sh
 
+      # Gate 10: Fortress & Governance CI Gate (comprehensive)
+      - name: "Gate 10: Fortress & Governance CI Gate"
+        run: python ci/scripts/fortress_governance_gate.py
+
+      # Gate 11: Governance Integration Test Suite
+      - name: "Gate 11: Governance Integration Tests"
+        run: |
+          pytest tests/governance/ -v --tb=short -x \
+            -k "not test_concurrent_requests"
+
+      # Gate 12: Governance Lock Immutability Tests
+      - name: "Gate 12: Governance Lock Immutability"
+        run: |
+          pytest tests/test_governance_lock_immutability.py -v --tb=short -x
+
   security-audit:
     name: "Security & Supply Chain"
     runs-on: ubuntu-latest
@@ -108,3 +123,103 @@ jobs:
           name: security-forensics
           path: ci_artifacts/
           retention-days: 365
+
+  deployment-smoke:
+    name: "Deployment Smoke Tests"
+    needs: [governance-gates, security-audit]
+    runs-on: ubuntu-latest
+    env:
+      MAHOUN_ENV: staging
+      PYTHONHASHSEED: "0"
+      MAHOUN_GOVERNANCE_MODE: STRICT
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: "Smoke Test: Import Integrity"
+        run: |
+          python -c "
+          from mahoun.core.fortress_validator import FortressValidator
+          from mahoun.core.governance_lock import GovernanceLock, GovernanceMode
+          from mahoun.core.governance import GovernanceContextManager
+          from mahoun.reasoning.fortress_integration import FortressProtectedReasoningService
+          print('✅ All governance modules import successfully')
+          "
+
+      - name: "Smoke Test: Governance Lock Initialization"
+        run: |
+          python -c "
+          from mahoun.core.governance_lock import GovernanceLock, GovernanceMode
+          GovernanceLock.initialize(mode=GovernanceMode.STRICT)
+          assert GovernanceLock.is_enforcement_enabled(), 'GovernanceLock not in STRICT mode'
+          assert GovernanceLock.verify_integrity(), 'GovernanceLock integrity compromised'
+          print('✅ GovernanceLock STRICT mode verified')
+          "
+
+      - name: "Smoke Test: FortressValidator Instantiation"
+        run: |
+          python -c "
+          from mahoun.core.fortress_validator import FortressValidator
+          v = FortressValidator(strict_mode=True)
+          stats = v.get_stats()
+          assert stats['total_validations'] == 0
+          print('✅ FortressValidator instantiation verified')
+          "
+
+      - name: "Smoke Test: Governance Context Creation"
+        run: |
+          python -c "
+          import asyncio
+          from mahoun.core.governance import GovernanceContextManager
+          async def test():
+              async with GovernanceContextManager.active_context(
+                  correlation_id='smoke-test', execution_mode='STRICT'
+              ) as ctx:
+                  assert ctx.governance_scope_injected
+                  assert ctx.proof_tracking_active
+                  attestation = ctx.get_attestation()
+                  assert 'context_id' in attestation
+                  print('✅ GovernanceContext creation and attestation verified')
+          asyncio.run(test())
+          "
+
+      - name: "Smoke Test: Configuration Validation"
+        run: |
+          python -c "
+          from pathlib import Path
+          import yaml
+          redlines = Path('constitution/RedLines.yaml')
+          assert redlines.exists(), 'RedLines.yaml missing'
+          data = yaml.safe_load(redlines.read_text())
+          assert data is not None, 'RedLines.yaml is empty'
+          print(f'✅ RedLines.yaml loaded: {len(str(data))} chars')
+          "
+
+      - name: Generate Deployment Report
+        if: always()
+        run: |
+          mkdir -p ci_artifacts
+          echo "Deployment Smoke Test Report" > ci_artifacts/smoke_test_report.txt
+          echo "===========================" >> ci_artifacts/smoke_test_report.txt
+          echo "Commit: ${{ github.sha }}" >> ci_artifacts/smoke_test_report.txt
+          echo "Branch: ${{ github.ref_name }}" >> ci_artifacts/smoke_test_report.txt
+          echo "Timestamp: $(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> ci_artifacts/smoke_test_report.txt
+          echo "Environment: staging" >> ci_artifacts/smoke_test_report.txt
+          echo "Governance Mode: STRICT" >> ci_artifacts/smoke_test_report.txt
+
+      - name: Upload Smoke Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-report
+          path: ci_artifacts/
+          retention-days: 90

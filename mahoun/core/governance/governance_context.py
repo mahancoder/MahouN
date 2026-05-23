@@ -25,6 +25,7 @@ from __future__ import annotations
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
@@ -236,7 +237,35 @@ class GovernanceContextManager:
             result = await reasoning_service.reason(request)
     """
 
-    _context_stack: list[GovernanceContext] = []
+    # Replaced with contextvars for async-safe isolation (P0 GOVERNANCE CONTEXT ISOLATION)
+    # Old mutable class list removed to prevent cross-request leakage.
+    # NOTE: default must be immutable (None); we lazily create per-context stack.
+    _governance_stack: ContextVar[list[GovernanceContext] | None] = ContextVar(
+        "mahoun_governance_stack", default=None
+    )
+
+    @classmethod
+    def _get_stack(cls) -> list[GovernanceContext]:
+        """Return the isolated stack for the current async context (or create one)."""
+        stack = cls._governance_stack.get()
+        if stack is None:
+            stack = []
+            cls._governance_stack.set(stack)
+        return stack
+
+    @classmethod
+    def _reset_for_test(cls) -> None:
+        """
+        Test-only helper to reset governance context for the current async task.
+
+        CRITICAL: This does NOT affect other concurrent tasks due to contextvars.
+        Production code MUST NEVER call this.
+        """
+        try:
+            cls._governance_stack.set([])
+        except LookupError:
+            # No context var set yet in this task
+            pass
 
     @classmethod
     def create_context(
@@ -302,8 +331,9 @@ class GovernanceContextManager:
             # Validate governance scope
             ctx.validate_governance_scope()
 
-            # Push to context stack
-            cls._context_stack.append(ctx)
+            # Push to isolated context stack (contextvars ensures per-task isolation)
+            stack = cls._get_stack()
+            stack.append(ctx)
 
             log.info(
                 "GovernanceContext activated",
@@ -317,9 +347,10 @@ class GovernanceContextManager:
             yield ctx
 
         finally:
-            # Pop from context stack
-            if cls._context_stack and cls._context_stack[-1] == ctx:
-                cls._context_stack.pop()
+            # Pop from isolated stack (safe even under concurrent async tasks)
+            stack = cls._get_stack()
+            if stack and stack[-1] == ctx:
+                stack.pop()
 
             log.info(
                 "GovernanceContext deactivated",
@@ -331,9 +362,10 @@ class GovernanceContextManager:
 
     @classmethod
     def get_current_context(cls) -> GovernanceContext | None:
-        """Get the current active governance context."""
-        if cls._context_stack:
-            return cls._context_stack[-1]
+        """Get the current active governance context (isolated per async task)."""
+        stack = cls._get_stack()
+        if stack:
+            return stack[-1]
         return None
 
     @classmethod

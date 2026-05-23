@@ -18,16 +18,10 @@ import logging
 
 try:
     from pydantic_settings import BaseSettings, SettingsConfigDict
-    from pydantic import Field, field_validator, computed_field, SecretStr
 except ImportError:
-    # Fallback for older pydantic versions or missing pydantic_settings
-    try:
-        from pydantic import Field, field_validator, computed_field, SecretStr
-        from pydantic.v1 import BaseSettings # If using pydantic 2 but no pydantic-settings
-    except ImportError:
-        from pydantic import BaseSettings, Field, validator as field_validator, SecretStr
-        computed_field = property # Very basic fallback
-    SettingsConfigDict: Optional[Any] = None
+    from pydantic import BaseSettings  # type: ignore
+    SettingsConfigDict = None  # type: ignore
+from pydantic import Field, field_validator, computed_field, SecretStr
 logger = logging.getLogger(__name__)
 
 
@@ -376,13 +370,9 @@ class Settings(BaseSettings):
             env_file_encoding="utf-8",
             case_sensitive=False,
             extra="ignore",
-            validate_default=True
+            validate_default=True,
         )
-    else:
-        class Config:
-            env_file = ".env"
-            case_sensitive = False
-            extra = "ignore"
+    # Graceful: works without pydantic-settings extra in constrained environments
 
 
 @lru_cache()

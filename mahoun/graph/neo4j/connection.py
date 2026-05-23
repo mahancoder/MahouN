@@ -19,6 +19,7 @@ from mahoun.core.governance.mutation_boundary import (
 )
 from mahoun.core.governance.validator_pipeline import ValidatorPipeline
 from mahoun.core.governance.violations import GovernanceViolationError
+from mahoun.core.governance.governance_context import GovernanceContextManager
 
 _conn_logger = logging.getLogger(__name__)
 
@@ -239,6 +240,7 @@ class Neo4jConnection:
         self,
         pipeline: Optional[ValidatorPipeline] = None,
         correlation_id: str = "",
+        actor_id: str = "",
     ) -> Generator[GovernedNeo4jSession, None, None]:
         """
         The ONLY authorized entry point for graph mutation.
@@ -247,23 +249,29 @@ class Neo4jConnection:
         may execute mutation Cypher.  Direct execute_query() with
         MERGE/CREATE/DELETE/SET will raise GovernanceViolationError.
 
+        Enforces P0: GovernanceContext MUST be active, else fail-closed.
+
         Usage::
 
-            with connection.governed_session(correlation_id="op-123") as session:
-                session.write_node("Document", {"id": "d1", "provenance": {...}})
-                session.write_relationship("Case", "c1", "CITES", "Law", "l1", {...})
+            async with GovernanceContextManager.active_context(...):
+                with connection.governed_session(correlation_id="op-123", actor_id="judge-42") as session:
+                    session.write_node(...)
 
         Args:
-            pipeline: Optional ValidatorPipeline (creates default if None).
-            correlation_id: Correlation ID for the session's audit trail.
+            pipeline: Optional ValidatorPipeline.
+            correlation_id: Correlation ID (falls back to active context).
+            actor_id: Actor responsible for the mutation (for provenance).
 
         Yields:
             GovernedNeo4jSession
         """
+        # Enforce governance context at the boundary entry (fail-closed)
+        GovernanceContextManager.require_context()
         yield GovernedNeo4jSession(
             raw_executor=self._raw_execute,
             pipeline=pipeline,
             correlation_id=correlation_id,
+            actor_id=actor_id,
         )
     
     def execute_write(self, *args, **kwargs):  # type: ignore[override]

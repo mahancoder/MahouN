@@ -47,6 +47,13 @@ repos:
         language: system
         pass_filenames: false
 
+      - id: verify-governance
+        name: Verify no raw Neo4j access bypasses GovernedNeo4jSession
+        entry: python scripts/verify_governance.py
+        language: system
+        pass_filenames: false
+        # This is a P0 constitutional gate. Failure blocks all commits.
+
 
 
 

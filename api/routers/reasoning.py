@@ -536,17 +536,11 @@ async def generate_verdict(
             },
         )
 
-    except SecurityBreachException as e:
-        # CRITICAL: Fortress validator breach - convert to controlled HTTP response
-        log.error(
-            f"SecurityBreachException in generate_verdict: {e}",
-            extra={
-                "violation_type": getattr(e, "violation_type", "UNKNOWN"),
-                "severity": getattr(e, "severity", "UNKNOWN"),
-                "forensic_ctx": getattr(e, "forensic_ctx", {}),
-            },
-            exc_info=True,
-        )
+    except SecurityBreachException:
+        # Let the global deterministic handler return exact 403.
+        # This guarantees the single canonical error contract.
+        log.error("SecurityBreachException — propagating to deterministic 403 handler")
+        raise
 
         # Build safe error payload (dict) for stable contract
         forensic_ctx = getattr(e, "forensic_ctx", {})
